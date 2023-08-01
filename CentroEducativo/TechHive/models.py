@@ -110,17 +110,15 @@ class Usuario(AbstractBaseUser):
 
 
 class Departamento(models.Model):
-    idDepartamento = models.AutoField(primary_key=True, unique=True, null=False)
-    Departamento = models.CharField(max_length=100, validators=[RegexValidator(r'^[a-zA-ZñÑ áéíóúÁÉÍÓÚ ]*$', "No se puede ingresar números a este campo.")])
-
+    departamento = models.CharField(max_length=100,unique=True)
+    
 
     def __str__(self):
-        return self.Departamento
+        return self.departamento
 
 class Municipio(models.Model):
-    idMunicipio= models.AutoField(primary_key=True, unique=True, null= False)
-    nombreMunicipio = models.CharField(max_length=100)
-    Departamento=models.ForeignKey(Departamento, on_delete=models.CASCADE)
+    nombreMunicipio = models.CharField(max_length=100,unique=True)
+    departamento=models.ForeignKey(Departamento, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.nombreMunicipio
@@ -133,6 +131,8 @@ class TipoSanguineo(models.Model):
     
 class DocumentoDPI(models.Model):
     DocumentoDPI = models.CharField(max_length=30)
+    longitud = models.PositiveSmallIntegerField()
+
 
     def __str__(self):
         return self.DocumentoDPI
@@ -185,7 +185,7 @@ class Tutor(models.Model):
     NombresTutor = models.CharField(max_length=20,  help_text='No debe contener numeros, caracteres: 3-20 ')
     ApellidosTutor = models.CharField(max_length=30,  help_text='No debe contener numeros, caracteres: 2-30 ')
     DocumentoDPI = models.ForeignKey(DocumentoDPI, on_delete=models.CASCADE)
-    DPI = models.CharField(max_length=20,  help_text='No, debe contenes letras, digitos: 13-15 ')
+    DPI = models.CharField(max_length=20, unique=True,help_text='No, debe contenes letras, digitos: 13-15 ')
     Tel_Tutor = models.CharField(max_length=8,  help_text='Longitud requerida: 8 digitos ')
     Parentesco = models.CharField(max_length=15, help_text='No debe contener numeros, caracteres 3-15 ')
     
@@ -200,7 +200,7 @@ class Alumno(models.Model):
     NombresAlumno = models.CharField(max_length=20, help_text='No debe contener numeros, caracteres: 3-20 ')
     ApellidosAlumno = models.CharField(max_length=30, help_text='No debe contener numeros, caracteres: 2-30 ')
     DocumentoDPI = models.ForeignKey(DocumentoDPI, on_delete=models.CASCADE)
-    DPI = models.CharField(max_length=20,  help_text='No, debe contenes letras, digitos: 13-15 ')
+    DPI = models.CharField(max_length=20, unique=True,help_text='No, debe contenes letras, digitos: 13-15 ')
     FechaNacimientoAlumno = models.DateField()
     DireccionAlumno = models.CharField(max_length=30, help_text=' No se permiten espacios dobles, Longitud requerida: 5-30 ')
     Departamento=models.ForeignKey(Departamento, on_delete=models.CASCADE)
@@ -217,7 +217,7 @@ class Catedratico(models.Model):
     NombresCatedratico = models.CharField(max_length=20, help_text='No debe contener numeros, caracteres 3-20 ')
     ApellidosCatedratico = models.CharField(max_length=30, help_text='No debe contener numeros, caracteres 2-30 ')
     DocumentoDPI = models.ForeignKey(DocumentoDPI, on_delete=models.CASCADE)
-    DPI = models.CharField(max_length=20,  help_text='No, debe contenes letras, digitos: 13-15 ')
+    DPI = models.CharField(max_length=20, unique=True,help_text='No, debe contenes letras, digitos: 13-15 ')
     FechaNacimientoCatedratico = models.DateField()
     Tel_Catedratico = models.CharField(max_length=8, help_text='No debe contener letras, 8 digitos' )
 
@@ -239,7 +239,7 @@ class Empleado(models.Model):
     ])
     ApellidosEmpleado = models.CharField(max_length=30, help_text='No debe contener numeros, caracteres 2-30 ')
     DocumentoDPI = models.ForeignKey(DocumentoDPI, on_delete=models.CASCADE)
-    DPI = models.CharField(max_length=20,  help_text='No, debe contenes letras, digitos: 13-15 ')
+    DPI = models.CharField(max_length=20, unique=True,help_text='No, debe contenes letras, digitos: 13-15 ')
     FechaNacimientoEmpleado = models.DateField()
     CategoriaEmpleado = models.ForeignKey(CategoriaEmpleado, on_delete=models.CASCADE)
     Tel_Empleado = models.CharField(max_length=8, help_text='No debe contener letras, 8 digitos ')

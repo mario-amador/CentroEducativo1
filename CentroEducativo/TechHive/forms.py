@@ -1,14 +1,53 @@
+from ast import pattern
+from datetime import datetime
+
 import re
 from django import forms
-from django.forms import Select, DateInput
-from .models import Usuario ,Alumno,Empleado,Catedratico, ExpedienteEscolar, Grado, Municipio,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Departamento, ParametrosSAR, Pagos, Meses, CategoriaEmpleado, DocumentoDPI, Facturacion
-from datetime import datetime 
-import re
-from django import forms
+from .models import Alumno, DocumentoDPI,Empleado,Catedratico,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Municipio, TipoPago,Seccion
+from typing import Required, Self
+	
+from django.core.validators import RegexValidator
+from .models import Grado,Facturacion,ParametrosSAR,Meses,TipoReporte,Departamento,TipoPago,CategoriaEmpleado,ExpedienteEscolar,ExpedienteMedico,TipoSanguineo,Pagos
 
 
 from django.core.exceptions import ValidationError
 
+def validate_direccion(value):
+    # Verificar que la dirección no esté vacía
+    if not value.strip():
+        raise ValidationError("La dirección no puede estar vacía.")
+
+    # Verificar que la dirección tenga al menos 5 caracteres
+    if len(value) < 5:
+        raise ValidationError("La dirección debe tener al menos 5 caracteres.")
+
+    # Verificar que la dirección solo contenga letras con tildes y espacios en blanco
+    if not re.match(r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$', value):
+        raise ValidationError("La dirección no puede contener Números ")
+
+    # Verificar que la dirección no contenga tres o más letras iguales repetidas seguidas
+    for i in range(len(value) - 2):
+        if value[i] == value[i+1] == value[i+2]:
+            raise ValidationError("La dirección no puede contener tres o más letras iguales repetidas seguidas.")
+
+    # Verificar que la dirección no contenga dobles espacios en blanco seguidos
+    if '  ' in value:
+        raise ValidationError("La dirección no puede contener dobles espacios en blanco.")
+
+class DPIValidator:
+
+    def __init__(self, queryset):
+        self.queryset = queryset
+
+    def __call__(self, value):
+        # Obtener la opción seleccionada en el campo "DocumentoDPI"
+        documento_dpi_id = self.queryset.get(pk=value.DocumentoDPI_id)
+        # Obtener la longitud requerida según la opción seleccionada
+        longitud_requerida = documento_dpi_id.longitud
+
+        # Verificar la longitud del DPI
+        if len(value) != longitud_requerida:
+            raise forms.ValidationError(f'El {documento_dpi_id} debe tener {longitud_requerida} caracteres.')
 
 
 def password_validator(password):
@@ -70,11 +109,11 @@ def telefono_validator(value):
         raise forms.ValidationError('El número de teléfono debe tener 8 dígitos y comenzar con 9, 8 o 3.')
 
 def fecha_rango_validator(value):
-    min_fecha = datetime.strptime('1974-01-01', '%Y-%m-%d').date()
-    max_fecha = datetime.strptime('2004-01-01', '%Y-%m-%d').date()
+    min_fecha = datetime.strptime('2004-01-01', '%Y-%m-%d').date()
+    max_fecha = datetime.strptime('2019-01-01', '%Y-%m-%d').date()
 
     if value < min_fecha or value > max_fecha:
-        raise forms.ValidationError(' Tienes que ser mayor a 18 Años.')
+        raise forms.ValidationError(' Ingrese  una edad entre 5  a 18 años.')
 
 
 def solo_letras_validator(value):
@@ -116,27 +155,109 @@ def no_tres_letras_iguales_validator(value):
         if value[i] == value[i+1] == value[i+2]:
             raise forms.ValidationError('No se permiten tres letras iguales seguidas.')
 
-    
+
+from django import forms
+from .models import Alumno, DocumentoDPI
+
+import re
+from django import forms
+from .models import Alumno, DocumentoDPI
+
+def validate_dpi(value):
+    # Verificar que el DPI no esté en blanco
+    if not value.strip():
+        raise forms.ValidationError("El DPI no puede estar en blanco.")
+
+    # Verificar que el DPI tenga solo números y letras (si el tipo de documento es pasaporte)
+    if not re.match(r'^[a-zA-Z0-9]+$' if value.startswith('Pasaporte') else r'^[0-9]+$', value):
+        raise forms.ValidationError("El DPI solo puede contener números o letras (si el tipo de documento es Pasaporte).")
+
+    # Verificar que el DPI no contenga dos o más espacios en blanco seguidos
+    if '  ' in value:
+        raise forms.ValidationError("El DPI no puede contener dos o más espacios en blanco seguidos.")
+
+    # Verificar que el DPI no contenga tres o más letras iguales repetidas seguidas
+    for i in range(len(value) - 2):
+        if value[i] == value[i+1] == value[i+2]:
+            raise forms.ValidationError("El DPI no puede contener tres o más letras iguales repetidas seguidas.")
+
+    # Verificar que el DPI no contenga tildes ni caracteres especiales
+    if not re.match(r'^[a-zA-Z0-9ÁÉÍÓÚáéíóúÑñ]+$', value):
+        raise forms.ValidationError("El DPI no puede contener tildes ni caracteres especiales.")
+
+import re
+from django import forms
+from .models import Alumno, DocumentoDPI
+
+import re
+from django import forms
+from .models import Alumno, DocumentoDPI
+
+from django.core.exceptions import ValidationError
+import re
+
+def validate_dpi(value, documento_dpi):
+    # Verificar que el DPI no esté en blanco
+    if not value.strip():
+        raise ValidationError("El Campo  no puede estar en blanco.")
+
+    # Verificar que el DPI tenga solo números si no es pasaporte
+    if documento_dpi.DocumentoDPI != 'PASAPORTE' and not value.isdigit():
+        raise ValidationError("El DNI O RTN solo puede contener números.")
+
+    # Verificar que el DPI tenga letras y números si es pasaporte
+    if documento_dpi.DocumentoDPI == 'PASAPORTE' and not re.match(r'^[a-zA-Z0-9]+$', value):
+        raise ValidationError("El DPI puede contener letras y números si el tipo de documento es Pasaporte.")
+
+    # Verificar la longitud del DPI de acuerdo al tipo de documento seleccionado
+    if len(value) != documento_dpi.longitud:
+        raise ValidationError(f"El Documento debe tener {documento_dpi.longitud} caracteres.")
+
+    # Verificar que el DPI no contenga dos o más espacios en blanco seguidos
+    if '  ' in value:
+        raise ValidationError("El Documento no puede contener dos o más espacios en blanco seguidos.")
+
+    # Verificar que el DPI no contenga tildes ni caracteres especiales
+    if not re.match(r'^[a-zA-Z0-9ÁÉÍÓÚáéíóúÑñ]+$', value):
+        raise ValidationError("El Documento no puede contener tildes ni caracteres especiales.")
+
+    # Verificar que el pasaporte no tenga letras repetidas
+    if documento_dpi.DocumentoDPI == 'PASAPORTE':
+        for i in range(len(value) - 2):
+            if value[i] == value[i+1] == value[i+2] and value[i].isalpha():
+                raise ValidationError("El pasaporte no puede contener tres o más letras iguales repetidas seguidas.")
 
 
-from .models import Alumno,Empleado,Catedratico,TipoSanguineo,TipoReporte,TipoPago, ExpedienteEscolar, Grado, Municipio,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Departamento, ParametrosSAR, Pagos, Meses, CategoriaEmpleado, DocumentoDPI
 class AlumnoForm(forms.ModelForm):
-
+    DPI = forms.CharField(
+        max_length=30,
+        label='Número de Documento',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Ingrese  el Documento',
+        })
+    )
+    DireccionAlumno = forms.CharField(
+        max_length=200,
+        label='Dirección del Alumno',
+        validators=[validate_direccion],
+        widget=forms.TextInput(attrs={'class': 'form-control'})  # Agregamos el atributo 'class' al campo
+    )
     class Meta:
         model = Alumno
-        fields = ['NombresAlumno', 'ApellidosAlumno', 'DocumentoDPI', 'DPI', 'FechaNacimientoAlumno', 'DireccionAlumno', 'Departamento', 'Municipio', 'Grado', 'Seccion', 'TipoSanguineo']
+        fields = ['NombresAlumno', 'ApellidosAlumno', 'DocumentoDPI', 'DPI', 'FechaNacimientoAlumno', 'DireccionAlumno', 'Departamento', 'Municipio', 'Grado','Seccion', 'TipoSanguineo']
         labels = {
             'NombresAlumno': 'Nombres del Alumno:',
-            'ApellidosAlumno': 'Apellidos del Alumno',
-            'DocumentoDPI': 'Tipo de Documento',
+            'ApellidosAlumno': 'Apellidos del Alumno:',
+            'DocumentoDPI': 'Tipo de Documento:',
             'DPI': 'Documento',
-            'FechaNacimientoAlumno': 'Fecha de Nacimiento del Alumno',
-            'DireccionAlumno': 'Dirección del Alumno',
-            'Departamento': 'Departamento nativo',
-            'Municipio': 'Municipio nativo',
-            'Grado': 'Grado al que aspira',
-            'Seccion': 'Sección',
-            'TipoSanguineo': 'Tipo de Sangre del Alumno',
+            'FechaNacimientoAlumno': 'Fecha de Nacimiento del Alumno:',
+            'DireccionAlumno': 'Dirección del Alumno:',
+            'Departamento': 'Departamento nativo:',
+            'Municipio': 'Municipio nativo:',
+            'Grado': 'Grado al que aspira:',
+            'Seccion': 'Secciones:',
+            'TipoSanguineo': 'Tipo de Sangre del Alumno:',
         }
         widgets = {
             'NombresAlumno': forms.TextInput(
@@ -145,25 +266,18 @@ class AlumnoForm(forms.ModelForm):
                 attrs={'class': 'form-control'}),
             'DocumentoDPI': forms.Select(
                 attrs={'class': 'form-control'}),
-            'DPI': forms.TextInput(
-                attrs={'class': 'form-control'}),
             'FechaNacimientoAlumno': forms.DateInput(
-                attrs={'class': 'form-control', 
-                       'placeholder': 'YYYY-MM-DD', 
-                       'type': 'date',
-                       'min': '1974-01-01',
-                       'max': '2019-01-01'}),
+                attrs={
+                    'class': 'form-control', 
+                    'placeholder': 'DD/MM/YYYY', 
+                    'type': 'date',
+                }
+            ),
             'DireccionAlumno': forms.TextInput(
-    attrs={
-        'class': 'form-control',
-        'required': 'required',
-        'id': 'DireccionAlumno',
-        'type': 'text',
-        'min_length': '4',
-        'max_length': '30',
-        'pattern': '^(?!.*\s{2}).*$'  # Expresión regular para no permitir dos espacios en blanco consecutivos
-    }
-),
+            attrs={
+                'class': 'form-control',
+                'required': 'required',
+                'id': 'DireccionAlumno',}),
 
 
             'Departamento': forms.Select(
@@ -174,23 +288,43 @@ class AlumnoForm(forms.ModelForm):
                 attrs={'class': 'form-control'}),
             'TipoSanguineo': forms.Select(
                 attrs={'class': 'form-control'}),
-        }
+    }
 
-    def _init_(self, *args, **kwargs):
-      super()._init_(*args, **kwargs)
-      self.fields['Municipio'].queryset = Municipio.objects.none()
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Obtener el queryset para las opciones del campo "DocumentoDPI"
+        queryset = DocumentoDPI.objects.all()
+        # Agregar las opciones de DocumentoDPI al campo "DocumentoDPI" del formulario
+        self.fields['DocumentoDPI'].queryset = queryset
 
     def clean_DPI(self):
         dpi = self.cleaned_data.get('DPI')
         documento_dpi = self.cleaned_data.get('DocumentoDPI')
 
-        if documento_dpi == 'DNI' and len(dpi) != 13:
-            raise forms.ValidationError('El DNI debe tener 13 dígitos.')
+        # Verificar que el campo "DocumentoDPI" tenga una opción seleccionada
+        if not documento_dpi:
+            raise forms.ValidationError("Debe seleccionar un tipo de documento.")
 
-        if documento_dpi == 'RTN' and len(dpi) != 14:
-            raise forms.ValidationError('El RTN debe tener 14 dígitos.')
+        # Validar el DPI de acuerdo al tipo de documento seleccionado
+        validate_dpi(dpi, documento_dpi)
 
         return dpi
+
+    def __init__(self, *args, **kwargs):
+        super(AlumnoForm, self).__init__(*args, **kwargs)
+        if 'Departamento' in self.data:
+            try:
+                departamento_id = int(self.data.get('departamento'))
+                self.fields['Municipio'].queryset = Municipio.objects.filter(departamento_id=departamento_id).order_by('departamento')
+            except (ValueError, TypeError):
+                pass
+
+    def clean_FechaNacimientoAlumno(self):
+        fecha_nacimiento = self.cleaned_data.get('FechaNacimientoAlumno')
+        fecha_rango_validator(fecha_nacimiento)
+        return fecha_nacimiento
+    
 
     
     def clean_NombresAlumno(self):
@@ -203,7 +337,7 @@ class AlumnoForm(forms.ModelForm):
             raise forms.ValidationError('La longitud del nombre debe ser entre 3 y 20 caracteres.')
 
         if re.search(r'(\w)\1', nombres_alumno):
-            raise forms.ValidationError('El nombre no puede contener letras repetidas.')
+            raise forms.ValidationError('El nombre no puede contener mas  letras repetidas, Asegurate de Poner Los Nombres Validos.')
 
         if '  ' in nombres_alumno:
             raise forms.ValidationError('El nombre no puede contener espacios dobles.')
@@ -220,16 +354,12 @@ class AlumnoForm(forms.ModelForm):
             raise forms.ValidationError('La longitud de los apellidos debe ser entre 2 y 30 caracteres.')
 
         if re.search(r'(\w)\1', apellidos_alumno):
-            raise forms.ValidationError('Los apellidos no pueden contener letras repetidas.')
+            raise forms.ValidationError('Los apellidos no puede contener mas  letras repetidas, Asegurate de Poner Los Apellidos Validos..')
 
         if '  ' in apellidos_alumno:
             raise forms.ValidationError('Los apellidos no pueden contener espacios dobles.')
 
         return apellidos_alumno.capitalize()
-
-
-        
-
     
    
     
@@ -318,23 +448,7 @@ class EmpleadoForm(forms.ModelForm):
         return nombres_empleado.capitalize()
     
 
-    def clean_DPI(self):
-        documento_dpi = self.cleaned_data.get('DocumentoDPI')
-        dpi = self.cleaned_data.get('DPI')
-
-        if documento_dpi == 'DNI':
-            if not dpi.isdigit() or len(dpi) != 13:
-                raise forms.ValidationError('El DNI debe contener solo números y tener exactamente 13 dígitos.')
-        elif documento_dpi == 'RTN':
-            if not dpi.isdigit() or len(dpi) != 14:
-                raise forms.ValidationError('El RTN debe contener solo números y tener exactamente 14 dígitos.')
-        elif documento_dpi == 'Pasaporte':
-            if len(dpi) != 20 or not dpi.isalnum():
-                raise forms.ValidationError('El pasaporte debe contener 20 caracteres alfanuméricos.')
-        else:
-            raise forms.ValidationError('Tipo de documento no válido.')
-
-        return dpi
+   
 
 
 class CatedraticoForm(forms.ModelForm):
@@ -1045,12 +1159,12 @@ class ExpedienteEscolarForm(forms.ModelForm):
 class DepartamentoForm(forms.ModelForm):
     class Meta:
         model = Departamento
-        fields = ['Departamento']
+        fields = ['departamento']
         labels = {
-            'Departamento': 'Departamento',
+            'departamento': 'Departamento',
         }
         widgets = {
-            'Departamento': forms.TextInput(
+            'departamento': forms.TextInput(
                 attrs={'class': 'form-control'}),
             
         }
@@ -1082,16 +1196,16 @@ class DepartamentoForm(forms.ModelForm):
 class MunicipioForm(forms.ModelForm):
     class Meta:
         model = Municipio
-        fields = ['nombreMunicipio', 'Departamento']
+        fields = ['nombreMunicipio', 'departamento']
         labels = {
             'nombeMunicipio': 'Municipio',
-            'Departamento': 'Departamento',
+            'departamento': 'Departamento',
         }
         widgets = {
             'nombreMunicipio': forms.TextInput(
                 attrs={'class': 'form-control',
                        'pattern':'[a-zA-Z].{4,20}',}),
-            'Departamento': forms.Select(
+            'departamento': forms.Select(
                 attrs={'class': 'form-control'}),
         }
 

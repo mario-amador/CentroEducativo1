@@ -334,44 +334,134 @@
     <!DOCTYPE html>
     <html>
       <head>
-        <title>Actualizar Alumnos</title>
+        <title>Actualizar Alumno</title>
       </head>
       <body>
-        <form method="post">
-          {% csrf_token %}
-          {{ form.as_p }}
-          <button type="submit" class="btn btn-success">
-            <i class="fas fa-save"></i>Guardar</button>
-          <a href="{% url 'alumno_listar' %}" class="btn btn-secondary">
-            <i class="fas fa-times"></i> Cancelar</a>
+        <form method="post" id="AlumnoForm" data-municipios-url="{% url 'ajax_load_municipios' %}" novalidate>
+            {% csrf_token %}
+            {% if form.errors %}
+                <div class="alert alert-danger" role="alert">
+                    <strong>Error de validación:</strong>
+                    <ul>
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <li>{{ field.label }}: {{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+            {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.auto_id }}">{{ field.label }}</label>
+                    <div class="input-group">
+                        {% if field.name == 'NombresAlumno' or field.name == 'ApellidosAlumno' %} <!-- Campos de nombre y apellido -->
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    <i class="fas fa-user"></i>
+                                </span>
+                            </div>
+                            {% elif field.name == 'DocumentoDPI' or field.name == 'DocumentoDPI' %} 
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                  <i class="fas fa-id-card"></i>
+                                </span>
+                            </div>
+                        {% elif field.name == 'DPI' %} <!-- Campo de DPI -->
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    <i class="fas fa-id-card"></i>
+                                </span>
+                            </div>
+                        {% elif field.name == 'FechaNacimientoAlumno' %} <!-- Campo de fecha de nacimiento -->
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    <i class="fas fa-calendar-alt"></i>
+                                </span>
+                            </div>
+                        {% elif field.name == 'DireccionAlumno' %} <!-- Campo de dirección -->
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </span>
+                            </div>
+                        {% elif field.name == 'Departamento' or field.name == 'Municipio' %} <!-- Campos de departamento y municipio -->
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    <i class="fas fa-map-pin"></i>
+                                </span>
+                            </div>
+                        {% elif field.name == 'Grado' %} <!-- Campo de grado -->
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    <i class="fas fa-graduation-cap"></i>
+                                </span>
+                            </div>
+                        {% elif field.name == 'Seccion' %} <!-- Campo de sección -->
+                              <div class="input-group-prepend">
+                                  <span class="input-group-text">
+                                  <i class="fas fa-users"></i> 
+                                  </span>
+                              </div>
+      
+                        {% elif field.name == 'TipoSanguineo' %} <!-- Campo de tipo de sangre -->
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">
+                                    <i class="fas fa-tint"></i>
+                                </span>
+                            </div>
+                        {% else %} <!-- Otros campos sin icono -->
+                            <!-- Agregar aquí el código para otros campos sin icono, si es necesario -->
+                        {% endif %}
+                        {{ field }}
+                    </div>
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-success">
+                <i class="fas fa-save"></i> Guardar
+            </button>
+            <a href="{% url 'alumno_listar' %}" class="btn btn-secondary">
+                <i class="fas fa-times"></i> Cancelar
+            </a>
         </form>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.js"></script>
+          <!-- Agrega las siguientes líneas en tu <head> o al final del <body> -->
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- DataTables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
+    <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+    
+        
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
         <script>
-          document.querySelector('form').addEventListener('submit', function(event) {
-            // Realiza las validaciones y guarda el formulario
-    
-            // Simulando el guardado exitoso del formulario
-            var formularioGuardadoExitosamente = true;
-    
-            if (formularioGuardadoExitosamente) {
-              event.preventDefault();
-    
-              var successMessage = "El Alumno se ha guardado correctamente.";
-              Swal.fire({
-                icon: 'success',
-                title: 'Éxito',
-                text: successMessage,
-              }).then((result) => {
-                if (result.isConfirmed) {
-                  // Redirige a la página de listado de alumnos
-                  window.location.href = "{% url 'alumno_listar' %}";
-                }
-              });
+          $("#id_Departamento").change(function () {
+          var url = $("#AlumnoForm").attr("data-municipios-url");  // get the url of the `load_cities` view
+          var Departamento_id = $(this).val(); 
+          $.ajax({                       // initialize an AJAX request
+            url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+            data: {
+              'Departamento': Departamento_id     // add the country id to the GET parameters
+            },
+            success: function (data) {   // `data` is the return of the `load_cities` view function
+              $("#id_Municipio").html(data);  // replace the contents of the city input with the data that came from the server
             }
           });
+        });
+      </script>
+      <script>
+        $(document).ready(function() {
+            // Configurar la tabla con DataTables
+            $('#alumno').DataTable({
+                paging: true, // Habilita la paginación
+                lengthMenu: [10, 25, 50, -1], // Opciones de longitud de página
+                language: {
+                    url: "//cdn.datatables.net/plug-ins/1.12.1/i18n/es-ES.json"
+                }
+            });
+        });
         </script>
       </body>
     </div>
     </div>
-    {% endblock pagina_contenido %}
+    {% endblock pagina_contenido%}
     </html>

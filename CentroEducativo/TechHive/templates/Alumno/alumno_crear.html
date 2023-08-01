@@ -333,91 +333,146 @@
     <!-- Card Body -->
     <div class="card-body">
 <div class="card-body">
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <title>Agregar Alumno</title>
-      </head>
-      <body>
-        <form method="post" id="AlumnoForm" data-municipios-url="{% url 'ajax_load_municipios' %}" novalidate>
-          {% csrf_token %}
-          {{ form.as_p }}
-          <button type="submit" value="submit" class="btn btn-success">
-            <i class="fas fa-save"></i> Guardar
-          </button>
-          <a href="{% url 'alumno_listar' %}" class="btn btn-secondary">
-            <i class="fas fa-times"></i> Cancelar
-          </a>
-        </form>
+<!DOCTYPE html>
+<html>
+  <head>
+    <!-- Agregar los siguientes enlaces en el bloque <head> de tu base/base.html -->
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
+
+    <title>Agregar Alumno</title>
+  </head>
+  <body>
+    <form method="post" id="AlumnoForm" data-municipios-url="{% url 'ajax_load_municipios' %}" novalidate>
+      {% csrf_token %}
+      {% if form.errors %}
+          <div class="alert alert-danger" role="alert">
+              <strong>Error de validación:</strong>
+              <ul>
+                  {% for field in form %}
+                      {% for error in field.errors %}
+                          <li>{{ field.label }}: {{ error }}</li>
+                      {% endfor %}
+                  {% endfor %}
+              </ul>
+          </div>
+      {% endif %}
+      {% for field in form %}
+          <div class="form-group">
+              <label for="{{ field.auto_id }}">{{ field.label }}</label>
+              <div class="input-group">
+                  {% if field.name == 'NombresAlumno' or field.name == 'ApellidosAlumno' %} <!-- Campos de nombre y apellido -->
+                      <div class="input-group-prepend">
+                          <span class="input-group-text">
+                              <i class="fas fa-user"></i>
+                          </span>
+                      </div>
+                      {% elif field.name == 'DocumentoDPI' or field.name == 'DocumentoDPI' %} 
+                      <div class="input-group-prepend">
+                          <span class="input-group-text">
+                            <i class="fas fa-id-card"></i>
+                          </span>
+                      </div>
+                  {% elif field.name == 'DPI' %} <!-- Campo de DPI -->
+                      <div class="input-group-prepend">
+                          <span class="input-group-text">
+                              <i class="fas fa-id-card"></i>
+                          </span>
+                      </div>
+                  {% elif field.name == 'FechaNacimientoAlumno' %} <!-- Campo de fecha de nacimiento -->
+                      <div class="input-group-prepend">
+                          <span class="input-group-text">
+                              <i class="fas fa-calendar-alt"></i>
+                          </span>
+                      </div>
+                  {% elif field.name == 'DireccionAlumno' %} <!-- Campo de dirección -->
+                      <div class="input-group-prepend">
+                          <span class="input-group-text">
+                              <i class="fas fa-map-marker-alt"></i>
+                          </span>
+                      </div>
+                  {% elif field.name == 'Departamento' or field.name == 'Municipio' %} <!-- Campos de departamento y municipio -->
+                      <div class="input-group-prepend">
+                          <span class="input-group-text">
+                              <i class="fas fa-map-pin"></i>
+                          </span>
+                      </div>
+                  {% elif field.name == 'Grado' %} <!-- Campo de grado -->
+                      <div class="input-group-prepend">
+                          <span class="input-group-text">
+                              <i class="fas fa-graduation-cap"></i>
+                          </span>
+                      </div>
+                  {% elif field.name == 'Seccion' %} <!-- Campo de sección -->
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">
+                            <i class="fas fa-users"></i> 
+                            </span>
+                        </div>
+
+                  {% elif field.name == 'TipoSanguineo' %} <!-- Campo de tipo de sangre -->
+                      <div class="input-group-prepend">
+                          <span class="input-group-text">
+                              <i class="fas fa-tint"></i>
+                          </span>
+                      </div>
+                  {% else %} <!-- Otros campos sin icono -->
+                      <!-- Agregar aquí el código para otros campos sin icono, si es necesario -->
+                  {% endif %}
+                  {{ field }}
+              </div>
+          </div>
+      {% endfor %}
+      <button type="submit" class="btn btn-success">
+          <i class="fas fa-save"></i> Guardar
+      </button>
+      <a href="{% url 'alumno_listar' %}" class="btn btn-secondary">
+          <i class="fas fa-times"></i> Cancelar
+      </a>
+  </form>
+  
+  
+      <!-- Agrega las siguientes líneas en tu <head> o al final del <body> -->
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- DataTables -->
+<link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
+<script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
     
-        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.js"></script>
-        <script>
-          $("#AlumnoForm").submit(function (e) {
-            e.preventDefault(); // Prevent the form from submitting normally
-    
-            var form = $(this);
-            var url = form.attr("action");
-            var formData = form.serialize();
-    
-            $.ajax({
-              type: "POST",
-              url: url,
-              data: formData,
-              success: function (response) {
-                if (response.success) {
-                  // Show success message using SweetAlert2
-                  Swal.fire({
-                    icon: "success",
-                    title: "Registro guardado correctamente",
-                    showConfirmButton: false,
-                    timer: 1500,
-                  });
-                } else {
-                  // Show an error message using SweetAlert2
-                  Swal.fire({
-                    icon: "error",
-                    title: "Error al guardar el registro",
-                    text: "Por favor, intenta nuevamente",
-                  });
-                }
-    
-                // Call the existing change event function for #id_Departamento
-                var Departamento_id = $("#id_Departamento").val();
-                loadMunicipios(Departamento_id);
-              },
-              error: function (xhr, errmsg, err) {
-                // Handle error if the form submission fails
-                console.log(xhr.status + ": " + xhr.responseText);
-                // Show an error message using SweetAlert2
-                Swal.fire({
-                  icon: "error",
-                  title: "Error al guardar el registro",
-                  text: "Por favor, intenta nuevamente",
-                });
-              },
-            });
-          });
-    
-          function loadMunicipios(Departamento_id) {
-            var url = $("#AlumnoForm").attr("data-municipios-url");
-            $.ajax({
-              url: url,
-              data: {
-                Departamento: Departamento_id
-              },
-              success: function (data) {
-                $("#id_Municipio").html(data);
-              }
-            });
-          }
-    
-          // Call the existing change event function for #id_Departamento on page load
-          var initialDepartamentoId = $("#id_Departamento").val();
-          loadMunicipios(initialDepartamentoId);
-        </script>
-    </div>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script>
+  $("#id_Departamento").change(function () {
+  var url = $("#AlumnoForm").attr("data-municipios-url");  // get the url of the `load_cities` view
+  var Departamento_id = $(this).val(); 
+  $.ajax({                       // initialize an AJAX request
+    url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+    data: {
+      'Departamento': Departamento_id     // add the country id to the GET parameters
+    },
+    success: function (data) {   // `data` is the return of the `load_cities` view function
+      $("#id_Municipio").html(data);  // replace the contents of the city input with the data that came from the server
+    }
+  });
+});
+</script>
+  
+    <!-- Agregar el siguiente script en el bloque <head> o antes de cerrar el bloque <body> de tu plantilla -->
+<script>
+  $(document).ready(function() {
+      $('.datepicker').datepicker({
+          dateFormat: 'yy-mm-dd',
+          changeYear: true,
+          changeMonth: true,
+          yearRange: '-18:+5', // Rango de años permitidos
+          showButtonPanel: true,
+      });
+  });
+</script>
+
+  </body>
+</div>
 </div>
 {% endblock pagina_contenido%}
-</body>
 </html>

@@ -1,4 +1,5 @@
 from imaplib import _Authenticator
+from django.core.handlers.wsgi import WSGIRequest
 from django.contrib.auth import authenticate, login
 from django.views.generic import FormView
 from django.shortcuts import render
@@ -123,13 +124,12 @@ def login_view(request):
 
 
 
-
-
 #View Municipios
 def load_municipios(request):
-    Departamento_id = request.GET.get('Departamento')
-    municipios = Municipio.objects.filter(Departamento_id=Departamento_id).order_by('Departamento')
+    departamento_id = request.GET.get('Departamento')
+    municipios = Municipio.objects.filter(departamento_id=departamento_id).order_by('nombreMunicipio')
     return render(request, 'Municipios/municipios_dropdown_list.html', {'municipios':municipios})
+
 
 
  #inicios segun rol   
@@ -223,17 +223,6 @@ class AlumnoCreateView(CreateView):
     template_name = 'Alumno/alumno_crear.html'
     success_url = reverse_lazy('alumno_listar')
 
-    def form_valid(self, form):
-        response = super().form_valid(form)
-        if self.request.is_ajax():
-            return JsonResponse({'success': True})
-        return response
-
-    def form_invalid(self, form):
-        response = super().form_invalid(form)
-        if self.request.is_ajax():
-            return JsonResponse({'success': False})
-        return response
 
 class AlumnoDetailView(DetailView):
     model = Alumno
