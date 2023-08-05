@@ -1,10 +1,12 @@
 import re
 from typing import Required
 from django.db import models
+from django.db.models.signals import pre_save
 from django import forms
 from django.core import validators
 from django.contrib.auth.models import AbstractBaseUser
 from django.core.validators import RegexValidator
+from django.dispatch import receiver
 ValidacionNumeros = RegexValidator(r'^[a-zA-ZñÑ áéíóúÁÉÍÓÚ ]*$',"No se puede ingresar números a este campo.")
 ValidacionLetras = RegexValidator(r'^[0-9 ]*$',"No se puede ingresar letras a este campo.")
 ValidacionTelefono = RegexValidator(r'^[[2,3,7,8,9]{1}[0-9]{3}[0-9]{4}]*$',
@@ -275,21 +277,20 @@ class TutoresAlumnos(models.Model):
 
 
     
-class Pagos(models.Model):
-    idPago=models.AutoField(primary_key=True)
+class Pago(models.Model):
     Tutor= models.ForeignKey(Tutor, on_delete=models.CASCADE)
     Alumno = models.ForeignKey(Alumno, on_delete=models.CASCADE)
-    FechaPago = models.DateField()
+    FechaHoraPago = models.DateTimeField(auto_now_add=True)
     TipoPago = models.ForeignKey(TipoPago, on_delete=models.CASCADE)
     Meses= models.ForeignKey(Meses, on_delete=models.CASCADE)
-    HoraPago = models.TimeField()  
-    
+
     def __str__(self):
-        return f"{self.FechaPago}{self.Meses}"
+        return f" Pago: {self.id} - Tutor: {self.Tutor} Alumno: {self.Alumno}, Fecha y hora: {self.FechaHoraPago} Tipo Pago: {self.TipoPago} Mes: {self.Meses}"
+
     
     
 class Matricula(models.Model):
-    Pagos = models.ForeignKey(Pagos, on_delete=models.CASCADE)
+    Pagos = models.ForeignKey(Pago, on_delete=models.CASCADE)
     Usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
     FechaMatricula = models.DateField()
 
@@ -305,11 +306,11 @@ class CentroEducativo(models.Model):
     Telefono=models.IntegerField()
 
     def __str__(self):
-        return f"{self.NombreCentro}{self.Localidad}{self.Sucursal}{self.Telefono}"
+        return f"{self.NombreCentro}, {self.CodigoCentro} ,{self.Localidad}, {self.Sucursal}, {self.Telefono}"
 
 class ParametrosSAR(models.Model):
     CAI = models.CharField(max_length=100)
-    RTN = models.IntegerField()
+    RTN = models.CharField(max_length=14,help_text='No, debe contenes letras, digitos: 14 ')
     RangoInicial = models.IntegerField()
     RangoFinal = models.IntegerField()
     FechaEmision = models.DateField()
@@ -317,25 +318,27 @@ class ParametrosSAR(models.Model):
     Correlativo=models.CharField(max_length=100)
     
     def __str__(self):
-        return self.CAI
+        return f"CAI: {self.CAI} RTN: {self.RTN} Rango Inicial: {self.RangoInicial} Rango Final: {self.RangoFinal}"
 
-class Facturacion(models.Model):
-    NumeroFactura = models.CharField(max_length=20)
-    Fecha = models.DateField()
+
+class Factura(models.Model):
+    numero_factura = models.IntegerField(unique=True)
+    fecha_emision = models.DateField(auto_now_add=True)
     ParametrosSAR = models.ForeignKey(ParametrosSAR, on_delete=models.CASCADE)
-    CentroEducativo = models.CharField(max_length=100)
-    Pagos = models.ForeignKey(Pagos, on_delete=models.CASCADE)
-    ImporteExonerado = models.DecimalField(max_digits=6, decimal_places=2)
-    ImporteExcento = models.DecimalField(max_digits=6, decimal_places=2)
-    ImporteGravado15 = models.DecimalField(max_digits=6, decimal_places=2)
-    ImporteGravado18 = models.DecimalField(max_digits=6, decimal_places=2)
-    ImpuestoSobreVenta15 = models.DecimalField(max_digits=6, decimal_places=2)
-    ImpuestoSobreVenta18 = models.DecimalField(max_digits=6, decimal_places=2)
-    Total = models.DecimalField(max_digits=6, decimal_places=2)
-    
+    CentroEducativo = models.ForeignKey(CentroEducativo, on_delete=models.CASCADE)
+    pago = models.ForeignKey(Pago, on_delete=models.CASCADE)
+
     def __str__(self):
-        return f"{self.CentroEducativo} {self.ParametrosSAR} {self.NumeroFactura} {self.Pagos} {self.ImporteExonerado} {self.ImporteExcento} {self.ImporteGravado15} {self.ImporteGravado18} {self.ImpuestoSobreVenta15} {self.ImpuestoSobreVenta18} {self.Total}"
-    
+        return f"Sucursal: {self.CentroEducativo} - Factura N° {self.numero_factura} - Fecha de Emisión: {self.fecha_emision} - {self.ParametrosSAR} - Pago ID: {self.pago.id}"
+
+@receiver(pre_save, sender=Factura)
+def asignar_numero_factura(sender, instance, **kwargs):
+    if not instance.numero_factura:
+        ultimo_numero_factura = Factura.objects.aggregate(models.Max('numero_factura'))['numero_factura__max']
+        if ultimo_numero_factura is not None:
+            instance.numero_factura = ultimo_numero_factura + 1
+        else:
+            instance.numero_factura = 1000000001
     
 class Reportes(models.Model):
     TipoReporte = models.ForeignKey(TipoReporte, on_delete=models.CASCADE)

@@ -3,20 +3,42 @@ from django.core.handlers.wsgi import WSGIRequest
 from django.contrib.auth import authenticate, login
 from django.views.generic import FormView
 from django.shortcuts import render
+from imaplib import _Authenticator
+import io
+
+from xhtml2pdf import pisa
+from django.core.handlers.wsgi import WSGIRequest
+from django.contrib.auth import authenticate, login
+from django.template.loader import render_to_string
+from django.views.generic import FormView
+from django.shortcuts import get_object_or_404, render
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView,TemplateView
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Alumno,Empleado,Catedratico, ExpedienteEscolar, Grado, Municipio,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Departamento, Pagos, ParametrosSAR, Pagos, Meses, CategoriaEmpleado, DocumentoDPI, Facturacion, Seccion, Actitud
-from .forms import AlumnoForm,EmpleadoForm,CatedraticoForm, ExpedienteEscolarForm, GradoForm, TutorForm,AsignaturaForm,MatriculaForm,ReportesForm,ExpedienteMedicoForm, HorariosForm, NivelesForm, ParcialesForm, NotasForm, DepartamentoForm, MunicipioForm, PagosForm, MensualidadForm, ParametrosSARForm, CategoriaForm, DocumentoForm, UserCreationForm, UserEditForm, FacturacionForm, SeccionForm, ActitudForm
+from .models import Alumno, CentroEducativo,Empleado,Catedratico, ExpedienteEscolar, Factura, Grado, Municipio, Pago,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Departamento, ParametrosSAR, Meses, CategoriaEmpleado, DocumentoDPI
+from .forms import AlumnoForm,EmpleadoForm,CatedraticoForm, ExpedienteEscolarForm,GradoForm, PagoForm, TutorForm,AsignaturaForm,MatriculaForm,ReportesForm,ExpedienteMedicoForm, HorariosForm, NivelesForm, ParcialesForm, NotasForm, DepartamentoForm, MunicipioForm,  MensualidadForm, ParametrosSARForm, CategoriaForm, DocumentoForm, UserCreationForm, UserEditForm
 
-from .models import TipoReporte, TipoSanguineo, Alumno,Empleado,Catedratico,TipoPago, ExpedienteEscolar, Grado, Municipio,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Departamento, Pagos, ParametrosSAR, Pagos, Meses, CategoriaEmpleado, DocumentoDPI, Facturacion, Seccion, Actitud
-from .forms import TipoReporteForm,TipoSanguineoForm, AlumnoForm,EmpleadoForm,CatedraticoForm, TipoPagoForm,ExpedienteEscolarForm, GradoForm,TutorForm,AsignaturaForm,MatriculaForm,ReportesForm,ExpedienteMedicoForm, HorariosForm, NivelesForm, ParcialesForm, NotasForm, DepartamentoForm, MunicipioForm, PagosForm, MensualidadForm, ParametrosSARForm, CategoriaForm, DocumentoForm, FacturacionForm, SeccionForm, ActitudForm
+from .models import TipoReporte, TipoSanguineo, Alumno,Empleado,Catedratico,TipoPago, ExpedienteEscolar, Grado, Municipio,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Departamento, ParametrosSAR, Meses, CategoriaEmpleado, DocumentoDPI
+from .forms import TipoReporteForm,TipoSanguineoForm, AlumnoForm,EmpleadoForm,CatedraticoForm, TipoPagoForm,ExpedienteEscolarForm, GradoForm,TutorForm,AsignaturaForm,MatriculaForm,ReportesForm,ExpedienteMedicoForm, HorariosForm, NivelesForm, ParcialesForm, NotasForm, DepartamentoForm, MunicipioForm,  MensualidadForm, ParametrosSARForm, CategoriaForm, DocumentoForm
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from .models import Usuario
+from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView,TemplateView
+from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .models import Alumno,Empleado,Catedratico, ExpedienteEscolar, Grado, Municipio,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Departamento,  ParametrosSAR,  Meses, CategoriaEmpleado, DocumentoDPI,  Seccion, Actitud
+from .forms import AlumnoForm,EmpleadoForm,CatedraticoForm, ExpedienteEscolarForm, GradoForm, TutorForm,AsignaturaForm,MatriculaForm,ReportesForm,ExpedienteMedicoForm, HorariosForm, NivelesForm, ParcialesForm, NotasForm, DepartamentoForm, MunicipioForm, MensualidadForm, ParametrosSARForm, CategoriaForm, DocumentoForm, UserCreationForm, UserEditForm,  SeccionForm, ActitudForm
 
+from .models import TipoReporte, TipoSanguineo, Alumno,Empleado,Catedratico,TipoPago, ExpedienteEscolar, Grado, Municipio,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Departamento,  ParametrosSAR,  Meses, CategoriaEmpleado, DocumentoDPI,  Seccion, Actitud
+from .forms import TipoReporteForm,TipoSanguineoForm, AlumnoForm,EmpleadoForm,CatedraticoForm, TipoPagoForm,ExpedienteEscolarForm, GradoForm,TutorForm,AsignaturaForm,MatriculaForm,ReportesForm,ExpedienteMedicoForm, HorariosForm, NivelesForm, ParcialesForm, NotasForm, DepartamentoForm, MunicipioForm,  MensualidadForm, ParametrosSARForm, CategoriaForm, DocumentoForm,  SeccionForm, ActitudForm
+from django.contrib import messages
+from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.contrib.auth import authenticate, login
+from .models import Usuario
+from xhtml2pdf import pisa
 from django.contrib import messages
 
 #login
@@ -121,6 +143,78 @@ def login_view(request):
             return redirect('login')  # Redirigir al formulario de inicio de sesión si las credenciales son incorrectas
     
     return render(request, 'base/login.html')
+
+
+
+def crear_pago(request):
+   
+    if request.method == 'POST':
+        form = PagoForm(request.POST)
+        if form.is_valid():
+            pago = form.save()
+            parametros_sar_id = 1  # Reemplaza con el ID correcto
+            parametros_sar = ParametrosSAR.objects.get(id=parametros_sar_id)
+    
+            centro_educativo_id = 1  # Reemplaza con el ID correcto
+            centro_educativo = CentroEducativo.objects.get(id=centro_educativo_id)
+
+                # Crear la factura y asignar los valores necesarios
+            factura = Factura( ParametrosSAR=parametros_sar, CentroEducativo=centro_educativo, pago=pago)
+            # Aquí puedes crear automáticamente la factura relacionada
+        return redirect('lista_pagos')
+    else:
+        form = PagoForm()
+    return render(request, 'crear_pago.html', {'form': form})
+
+
+def generar_factura(request, pago_id):
+    pago = get_object_or_404(Pago, pk=pago_id)
+    
+    # Aquí obtienes los valores necesarios, por ejemplo:
+    parametros_sar_id = 1  # Reemplaza con el ID correcto
+    parametros_sar = ParametrosSAR.objects.get(id=parametros_sar_id)
+    
+    centro_educativo_id = 1  # Reemplaza con el ID correcto
+    centro_educativo = CentroEducativo.objects.get(id=centro_educativo_id)
+
+    # Crear la factura y asignar los valores necesarios
+    factura = Factura( ParametrosSAR=parametros_sar, CentroEducativo=centro_educativo, pago=pago)
+    
+    factura.save()
+
+    context = {'factura': factura}
+    template = 'generar_factura.html'
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="factura_{factura.numero_factura}.pdf"'
+    
+    with io.BytesIO() as buffer:
+        pisa.CreatePDF(render_to_string(template, context), dest=buffer)
+        pdf_data = buffer.getvalue()
+    
+    response.write(pdf_data)
+    return response
+
+
+
+def detalle_factura(request, factura_id):
+    
+    factura = get_object_or_404(Factura, pk=factura_id)
+    return render(request, 'detalle_factura.html', {'factura': factura})
+
+
+def lista_pagos(request):
+    pagos = Pago.objects.all()
+    return render(request, 'lista_pagos.html', {'pagos': pagos})
+
+def lista_facturas(request):
+    facturas = Factura.objects.all()
+    return render(request, 'lista_facturas.html', {'facturas': facturas})
+#View Municipios
+def load_municipios(request):
+    departamento_id = request.GET.get('Departamento')
+    municipios = Municipio.objects.filter(departamento_id=departamento_id).order_by('nombreMunicipio')
+    return render(request, 'Municipios/municipios_dropdown_list.html', {'municipios':municipios})
+
 
 
 
@@ -685,32 +779,6 @@ class MuniDetailView(DetailView):
     model = Municipio
     template_name = 'Municipios/municipio_detalle.html'
 
-class PagosListView(ListView):
-    model = Pagos
-    template_name = 'Pagos/pago_listar.html'
-    context_object_name = 'pagos'
-
-class PagosCreateView(CreateView):
-    model = Pagos
-    form_class = PagosForm
-    template_name = 'Pagos/pago_crear.html'
-    success_url = reverse_lazy('pago_listar')
-
-class PagosDetailView(DetailView):
-    model = Pagos
-    template_name = 'Pagos/pago_detalle.html'
-
-class PagosUpdateView(UpdateView):
-    model = Pagos
-    form_class = PagosForm
-    template_name = 'Pagos/pago_editar.html'
-    success_url = reverse_lazy('pago_listar')
-
-class PagosDeleteView(DeleteView):
-    model = Pagos
-    template_name = 'Pagos/pago_eliminar.html'
-    success_url = reverse_lazy('pago_listar')
-
 
 class MensualidadListView(ListView):
     model = Meses
@@ -897,39 +965,8 @@ class TipoSanguineoDetailView(DetailView):
     template_name = 'TipoSanguineo/tiposanguineo_detalle.html'
 
 
-class FacturacionListView(ListView):
-    model = Facturacion
-    template_name = 'Facturacion/facturacion_listar.html'  
-    context_object_name = 'facturas'
-    login_url = 'base/login' 
 
-class FacturacionCreateView(CreateView):
-    model = Facturacion
-    form_class = FacturacionForm
-    template_name = 'Facturacion/facturacion_crear.html'  
-    success_url = reverse_lazy('facturacion_listar')  
 
-class FacturacionDetailView(DetailView):
-    model = Facturacion
-    template_name = 'Facturacion/facturacion_detalle.html'  
-    context_object_name = 'factura'  
-
-class FacturacionUpdateView(UpdateView):
-    model = Facturacion
-    form_class = FacturacionForm
-    template_name = 'Facturacion/facturacion_editar.html' 
-    context_object_name = 'factura'  
-
-    def get_success_url(self):
-        return reverse_lazy('facturacion_detalle', kwargs={'pk': self.object.pk})  
-    
-class FacturacionDeleteView(DeleteView):
-    model = Facturacion
-    template_name = 'Facturacion/facturacion_eliminar.html'  
-    context_object_name = 'factura'  
-    success_url = reverse_lazy('facturacion_listar')
-
-#views Sección
 
 class SeccionListView(ListView):
     model = Seccion

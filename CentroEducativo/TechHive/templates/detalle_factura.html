@@ -1,0 +1,18 @@
+{% extends 'base/base.html' %}
+
+{% block pagina_contenido %}
+
+  <h2>Detalle de Factura</h2>
+  <p><strong>Número de Factura:</strong> {{ factura.numero_factura }}</p>
+  <p><strong>Fecha de Emisión:</strong> {{ factura.fecha_emision }}</p>
+  <p><strong>Parámetros SAR:</strong> {{ factura.ParametrosSAR }}</p>
+  <p><strong>Centro Educativo:</strong> {{ factura.CentroEducativo }}</p>
+  <p><strong>Pago:</strong> {{ factura.pago }}</p>
+
+  <!-- Agregar más detalles de la factura según tu modelo -->
+  
+  <a href="{% url 'lista_facturas' %}" class="btn btn-primary">Volver a la lista de facturas</a>
+
+
+{% endblock pagina_contenido %}
+}

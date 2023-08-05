@@ -1,13 +1,25 @@
 from ast import pattern
 from datetime import datetime
 
+from ast import pattern
+from datetime import datetime
+
+import re
+from django import forms
+from .models import Alumno, DocumentoDPI,Empleado,Catedratico, Factura, Pago,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Municipio, TipoPago,Seccion
+from typing import Required, Self
+	
+from django.core.validators import RegexValidator
+from .models import Grado,ParametrosSAR,Meses,TipoReporte,Departamento,TipoPago,CategoriaEmpleado,ExpedienteEscolar,ExpedienteMedico,TipoSanguineo
+
+
 import re
 from django import forms
 from .models import Alumno, DocumentoDPI,Empleado,Catedratico,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Municipio, TipoPago, Seccion, Actitud
 from typing import Required, Self
 	
 from django.core.validators import RegexValidator
-from .models import Grado,Facturacion,ParametrosSAR,Meses,TipoReporte,Departamento,TipoPago,CategoriaEmpleado,ExpedienteEscolar,ExpedienteMedico,TipoSanguineo,Pagos
+from .models import Grado,ParametrosSAR,Meses,TipoReporte,Departamento,TipoPago,CategoriaEmpleado,ExpedienteEscolar,ExpedienteMedico,TipoSanguineo
 
 
 from django.core.exceptions import ValidationError
@@ -1279,36 +1291,27 @@ class MunicipioForm(forms.ModelForm):
         no_numeros_validator(nombre_municipio)
         no_tres_letras_iguales_validator(nombre_municipio)
         return nombre_municipio.capitalize()
-
-
-class PagosForm(forms.ModelForm):
+class PagoForm(forms.ModelForm):
     class Meta:
-        model = Pagos
-        fields = ['Tutor', 'Alumno', 'FechaPago','TipoPago', 'Meses', 'HoraPago']
+        model = Pago
+        fields = ['Tutor', 'Alumno', 'TipoPago', 'Meses']
         labels = {
-            'Tutor': 'Tutor',
-            'Alumno': 'Alumno',
-            'FechaPago': 'Fecha de pago',
-            'TipoPago': 'Tipo de pago, precio',
-            'Meses': 'Mes a pagar',
-            'HoraPago': 'Hora de pago',
+            'Tutor': 'Tutor:',
+            'Alumno': 'Alumno:',
+            'TipoPago': 'Movimiento a pagar:',
+            'Meses': 'Mes a pagar:',
         }
         widgets = {
             'Tutor': forms.Select(
                 attrs={'class': 'form-control'}),
             'Alumno': forms.Select(
                 attrs={'class': 'form-control'}),
-            'FechaPago': forms.DateInput(
-                attrs={'class': 'form-control',
-                       'placeholder': 'YYYY-MM-DD', 
-                       'type': 'date'}),
             'TipoPago': forms.Select(
                 attrs={'class': 'form-control'}),
             'Meses': forms.Select(
-                attrs={'class': 'form-control'}),
-            'HoraPago': forms.TimeInput(
-                attrs={'class': 'form-control'}),
+                attrs={'class': 'form-control'}),    
         }
+
 class MensualidadForm(forms.ModelForm):
     class Meta:
         model = Meses
@@ -1470,40 +1473,35 @@ class TipoReporteForm(forms.ModelForm):
         no_numeros_validator(categoria_empleado)
         no_tres_letras_iguales_validator(categoria_empleado)
         return categoria_empleado.capitalize()
-    
-class FacturacionForm(forms.ModelForm):
+class FacturaForm(forms.ModelForm):
     class Meta:
-        model = Facturacion
-        fields = ['NumeroFactura', 'Fecha', 'ParametrosSAR', 'CentroEducativo', 'Pagos', 'ImporteExonerado', 'ImporteExcento', 'ImporteGravado15', 'ImporteGravado18', 'ImpuestoSobreVenta15', 'ImpuestoSobreVenta18', 'Total']
+        model= Factura
+        fields=['numero_factura', 'ParametrosSAR', 'CentroEducativo', 'pago']
+
+
+
+
+
+class PagoForm(forms.ModelForm):
+    class Meta:
+        model = Pago
+        fields = ['Tutor', 'Alumno', 'TipoPago', 'Meses']
         labels = {
-            'NumeroFactura': 'Número de Factura',
-            'Fecha': 'Fecha',
-            'ParametrosSAR': 'Parámetros SAR',
-            'CentroEducativo': 'Nombre del Centro Educativo',
-            'Pagos': 'Pagos',
-            'ImporteExonerado': 'Importe Exonerado',
-            'ImporteExcento': 'Importe Excento',
-            'ImporteGravado15': 'Importe Gravado 15%',
-            'ImporteGravado18': 'Importe Gravado 18%',
-            'ImpuestoSobreVenta15': 'Impuesto sobre Venta 15%',
-            'ImpuestoSobreVenta18': 'Impuesto sobre Venta 18%',
-            'Total': 'Total',
+            'Tutor': 'Tutor:',
+            'Alumno': 'Alumno:',
+            'TipoPago': 'Movimiento a pagar:',
+            'Meses': 'Mes a pagar:',
         }
         widgets = {
-            'NumeroFactura': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Número de Factura'}),
-            'Fecha': forms.DateInput(attrs={'class': 'form-control', 'placeholder': 'dd/mm/aaaa'}),
-            'ParametrosSAR': forms.Select(attrs={'class': 'form-control'}),
-            'CentroEducativo': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nombre del Centro Educativo'}),
-            'Pagos': forms.Select(attrs={'class': 'form-control'}),
-            'ImporteExonerado': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Importe Exonerado'}),
-            'ImporteExcento': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Importe Excento'}),
-            'ImporteGravado15': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Importe Gravado 15%'}),
-            'ImporteGravado18': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Importe Gravado 18%'}),
-            'ImpuestoSobreVenta15': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Impuesto sobre Venta 15%'}),
-            'ImpuestoSobreVenta18': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Impuesto sobre Venta 18%'}),
-            'Total': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Total'}),
+            'Tutor': forms.Select(
+                attrs={'class': 'form-control'}),
+            'Alumno': forms.Select(
+                attrs={'class': 'form-control'}),
+            'TipoPago': forms.Select(
+                attrs={'class': 'form-control'}),
+            'Meses': forms.Select(
+                attrs={'class': 'form-control'}),    
         }
-
 class SeccionForm(forms.ModelForm):
     class Meta:
         model = Seccion

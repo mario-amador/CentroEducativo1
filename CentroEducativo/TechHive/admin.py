@@ -21,8 +21,7 @@ from .models import (
     TutoresAlumnos,
     Usuario,
     Matricula,
-    Pagos,
-    Facturacion,
+
     ParametrosSAR,
     Reportes,
     ExpedienteEscolar,
@@ -52,8 +51,6 @@ admin.site.register(Asignatura)
 admin.site.register(TutoresAlumnos)
 admin.site.register(Usuario)
 admin.site.register(Matricula)
-admin.site.register(Pagos)
-admin.site.register(Facturacion)
 admin.site.register(ParametrosSAR)
 admin.site.register(Reportes)
 admin.site.register(ExpedienteEscolar)

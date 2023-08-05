@@ -1,0 +1,35 @@
+<head>
+    <title>Factura N° {{ factura.numero_factura }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <p>Empresa: {{ factura.CentroEducativo }}</p>
+    <p>Factura N°: {{ factura.numero_factura }}</p>
+    <p>Parametros SAR: {{ factura.ParametrosSAR}}</p>
+    <p>Fecha de Emisión: {{ factura.fecha_emision }}</p>
+    <table>
+        <tr>
+            <th>Pago</th>
+        </tr>
+        <tr>
+            <td>{{ factura.pago}}</td>
+        </tr>
+    </table>
+</body>
+</html>
