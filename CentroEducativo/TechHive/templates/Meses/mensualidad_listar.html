@@ -345,8 +345,10 @@
                     <tr>
                         <td>{{ meses.id}}</td>
                         <td>{{ meses.Meses }}</td>
-                        <th>
-                           </a>
+                        <td>
+                            <a href="{% url 'mensualidad_detalle' meses.id %}"class="btn btn-link text-success">
+                                <i class="fas fa-eye"></i>
+                            </a>
                             <a href="{% url 'mensualidad_editar' meses.id %}"class="btn btn-link text-success">
                                 <i class="fas fa-edit"></i>
                             </a>

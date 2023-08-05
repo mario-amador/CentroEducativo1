@@ -314,7 +314,7 @@
     <div class="card shadow mb-4">
         <!-- Card Header - Dropdown -->
         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-            <h6 class="m-0 font-weight-bold text-primary">Listado de Tipos Sanguineos</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Listado de Actitudes</h6>
             <div class="dropdown no-arrow">
                 <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
                     aria-haspopup="true" aria-expanded="false">
@@ -323,43 +323,44 @@
                 <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
                     aria-labelledby="dropdownMenuLink">
                     <div class="dropdown-header">ACCIONES:</div>
-                    <a class="dropdown-item" href="{% url 'tiposanguineo_crear' %}">Nuevo Tipo Sanguineo</a>
+                    <a class="dropdown-item" href="{% url 'actitud_crear' %}">Nueva Actitud</a>
                     <a class="dropdown-item" href="{%  url 'bienvenida_administrador' %}">Principal</a>
                 </div>
             </div>
         </div>
         <!-- Card Body -->
         <div class="card-body">
-            {% if not tiposanguineo %}
+            {% if not actitud %}
           {% endif %}
-          <table id="tiposanguineo" class="table table-striped" style="width:100%">
+          <table id="actitud" class="table table-striped" style="width:100%">
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Tipo Reporte</th>
+                        <th>Actitud</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    {% for tiposanguineo in tiposanguineos %}
+                    {% for actitud in actitudes %}
                     <tr>
-                        <td>{{ tiposanguineo.id}}</td>
-                        <td>{{ tiposanguineo.TipoSanguineo }}</td>
+                        <td>{{ actitud.id}}</td>
+                        <td>{{ actitud.Actitud }}</td>
+
                         <td>
-                            <a href="{% url 'tiposanguineo_detalle' tiposanguineo.id %}"class="btn btn-link text-success">
+                            <a href="{% url 'actitud_detalle' actitud.id %}"class="btn btn-link text-success">
                                 <i class="fas fa-eye"></i>
                             </a>
-                            <a href="{% url 'tiposanguineo_editar' tiposanguineo.id %}"class="btn btn-link text-success">
+                            <a href="{% url 'actitud_editar' actitud.id %}"class="btn btn-link text-success">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <a href="{% url 'tiporeporte_editar' tiposanguineo.id %}"class="btn btn-link text-danger">
+                            <a href="{% url 'actitud_eliminar' actitud.id %}"class="btn btn-link text-danger">
                                 <i class="fas fa-trash"></i>
                             </a>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="5">No hay Tipos Sanguineos registrados.</td>
+                        <td colspan="5">No hay Actitudes registrada.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -371,7 +372,7 @@
 
             <script type="text/javascript">
             $(document).ready(function() {
-                $('#tiposanguineo').DataTable();
+                $('#actitudes').DataTable();
             });
             </script>
 

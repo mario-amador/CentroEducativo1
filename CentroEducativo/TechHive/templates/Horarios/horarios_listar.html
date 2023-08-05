@@ -271,6 +271,9 @@
                         <td>{{ horario.HoraSalida}}</td>
                     
                         <td>
+                            <a href="{% url 'horarios_detalle' horario.id %}"class="btn btn-link text-success">
+                                <i class="fas fa-eye"></i>
+                            </a>
                             <a href="{% url 'horarios_editar' horario.id %}"class="btn btn-link text-success">
                                 <i class="fas fa-edit"></i>
                             </a>

@@ -6,11 +6,11 @@ from django.shortcuts import render
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView,TemplateView
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Alumno,Empleado,Catedratico, ExpedienteEscolar, Grado, Municipio,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Departamento, Pagos, ParametrosSAR, Pagos, Meses, CategoriaEmpleado, DocumentoDPI, Facturacion
-from .forms import AlumnoForm,EmpleadoForm,CatedraticoForm, ExpedienteEscolarForm, GradoForm, TutorForm,AsignaturaForm,MatriculaForm,ReportesForm,ExpedienteMedicoForm, HorariosForm, NivelesForm, ParcialesForm, NotasForm, DepartamentoForm, MunicipioForm, PagosForm, MensualidadForm, ParametrosSARForm, CategoriaForm, DocumentoForm, UserCreationForm, UserEditForm, FacturacionForm
+from .models import Alumno,Empleado,Catedratico, ExpedienteEscolar, Grado, Municipio,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Departamento, Pagos, ParametrosSAR, Pagos, Meses, CategoriaEmpleado, DocumentoDPI, Facturacion, Seccion, Actitud
+from .forms import AlumnoForm,EmpleadoForm,CatedraticoForm, ExpedienteEscolarForm, GradoForm, TutorForm,AsignaturaForm,MatriculaForm,ReportesForm,ExpedienteMedicoForm, HorariosForm, NivelesForm, ParcialesForm, NotasForm, DepartamentoForm, MunicipioForm, PagosForm, MensualidadForm, ParametrosSARForm, CategoriaForm, DocumentoForm, UserCreationForm, UserEditForm, FacturacionForm, SeccionForm, ActitudForm
 
-from .models import TipoReporte, TipoSanguineo, Alumno,Empleado,Catedratico,TipoPago, ExpedienteEscolar, Grado, Municipio,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Departamento, Pagos, ParametrosSAR, Pagos, Meses, CategoriaEmpleado, DocumentoDPI, Facturacion
-from .forms import TipoReporteForm,TipoSanguineoForm, AlumnoForm,EmpleadoForm,CatedraticoForm, TipoPagoForm,ExpedienteEscolarForm, GradoForm,TutorForm,AsignaturaForm,MatriculaForm,ReportesForm,ExpedienteMedicoForm, HorariosForm, NivelesForm, ParcialesForm, NotasForm, DepartamentoForm, MunicipioForm, PagosForm, MensualidadForm, ParametrosSARForm, CategoriaForm, DocumentoForm, FacturacionForm
+from .models import TipoReporte, TipoSanguineo, Alumno,Empleado,Catedratico,TipoPago, ExpedienteEscolar, Grado, Municipio,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Departamento, Pagos, ParametrosSAR, Pagos, Meses, CategoriaEmpleado, DocumentoDPI, Facturacion, Seccion, Actitud
+from .forms import TipoReporteForm,TipoSanguineoForm, AlumnoForm,EmpleadoForm,CatedraticoForm, TipoPagoForm,ExpedienteEscolarForm, GradoForm,TutorForm,AsignaturaForm,MatriculaForm,ReportesForm,ExpedienteMedicoForm, HorariosForm, NivelesForm, ParcialesForm, NotasForm, DepartamentoForm, MunicipioForm, PagosForm, MensualidadForm, ParametrosSARForm, CategoriaForm, DocumentoForm, FacturacionForm, SeccionForm, ActitudForm
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -656,6 +656,10 @@ class DepaDeleteView(DeleteView):
     template_name = 'Departamento/departamento_eliminar.html'
     success_url = reverse_lazy('departamento_listar')
 
+class DepaDetailView(DetailView):
+    model = Departamento
+    template_name = 'Departamento/departamento_detalle.html'
+
 class MuniListView(ListView):
     model = Municipio
     template_name = 'Municipios/municipio_listar.html'
@@ -675,6 +679,11 @@ class MuniDeleteView(DeleteView):
     model = Municipio
     template_name = 'Municipios/municipio_eliminar.html'
     success_url = reverse_lazy('municipio_listar')
+
+
+class MuniDetailView(DetailView):
+    model = Municipio
+    template_name = 'Municipios/municipio_detalle.html'
 
 class PagosListView(ListView):
     model = Pagos
@@ -721,6 +730,10 @@ class MensualidadDeleteView(DeleteView):
     model = Meses
     template_name = 'Meses/mensualidad_eliminar.html'
     success_url = reverse_lazy('mensualidad_listar')
+
+class MensualidadDetailView(DetailView):
+    model = Meses
+    template_name = 'Meses/mensualidad_detalle.html'
 
 
 class ParametrosListView(ListView):
@@ -769,6 +782,10 @@ class CateDeleteView(DeleteView):
     template_name = 'Categorias/categoria_eliminar.html'
     success_url = reverse_lazy('categoria_listar')
 
+class CateDetailView(DetailView):
+    model = CategoriaEmpleado
+    template_name = 'Categorias/categoria_detalle.html'
+
 #Views documentos
 
 class DocListView(ListView):
@@ -789,6 +806,10 @@ class DocDeleteView(DeleteView):
     model = DocumentoDPI
     template_name = 'Documentos/documento_eliminar.html'
     success_url = reverse_lazy('documento_listar')
+
+class DocDetailView(DetailView):
+    model = DocumentoDPI
+    template_name = 'Documentos/documento_detalle.html'
 
 #Views TiposPagos
 
@@ -814,6 +835,10 @@ class TipoPagoDeleteView(DeleteView):
     template_name = 'TipoPago/tipopago_eliminar.html'
     success_url = reverse_lazy('tipopago_listar')
 
+class TipoPagoDetailView(DetailView):
+    model = TipoPago
+    template_name = 'TipoPago/tipopago_detalle.html'
+
 #Views TiposReportes
 
 class TipoReporteListView(ListView):
@@ -838,6 +863,10 @@ class TipoReporteDeleteView(DeleteView):
     template_name = 'TipoReporte/tiporeporte_eliminar.html'
     success_url = reverse_lazy('tiporeporte_listar')
 
+class TipoReporteDetailView(DetailView):
+    model = TipoReporte
+    template_name = 'TipoReporte/tiporeporte_detalle.html'
+
 #Views TiposReportes
 
 class TipoSanguineoListView(ListView):
@@ -861,6 +890,11 @@ class TipoSanguineoDeleteView(DeleteView):
     model = TipoSanguineo
     template_name = 'TipoSanguineo/tiposanguineo_eliminar.html'
     success_url = reverse_lazy('tiposanguineo_listar')
+
+
+class TipoSanguineoDetailView(DetailView):
+    model = TipoSanguineo
+    template_name = 'TipoSanguineo/tiposanguineo_detalle.html'
 
 
 class FacturacionListView(ListView):
@@ -894,3 +928,59 @@ class FacturacionDeleteView(DeleteView):
     template_name = 'Facturacion/facturacion_eliminar.html'  
     context_object_name = 'factura'  
     success_url = reverse_lazy('facturacion_listar')
+
+#views Sección
+
+class SeccionListView(ListView):
+    model = Seccion
+    template_name = 'Seccion/seccion_listar.html'
+    context_object_name = 'secciones'
+
+class SeccionCreateView(CreateView):
+    model = Seccion
+    form_class = SeccionForm
+    template_name = 'Seccion/seccion_crear.html'
+    success_url = reverse_lazy('seccion_listar')
+
+class SeccionDetailView(DetailView):
+    model = Seccion
+    template_name = 'Seccion/seccion_detalle.html'
+
+class SeccionUpdateView(UpdateView):
+    model = Seccion
+    form_class = SeccionForm
+    template_name = 'Seccion/seccion_editar.html'
+    success_url = reverse_lazy('seccion_listar')
+
+class SeccionDeleteView(DeleteView):
+    model = Seccion
+    template_name = 'Seccion/seccion_eliminar.html'
+    success_url = reverse_lazy('seccion_listar')
+
+#views Actitud
+
+class ActitudListView(ListView):
+    model = Actitud
+    template_name = 'Actitud/actitud_listar.html'
+    context_object_name = 'actitudes'
+
+class ActitudCreateView(CreateView):
+    model = Actitud
+    form_class = ActitudForm
+    template_name = 'Actitud/actitud_crear.html'
+    success_url = reverse_lazy('actitud_listar')
+
+class ActitudDetailView(DetailView):
+    model = Actitud
+    template_name = 'Actitud/actitud_detalle.html'
+
+class ActitudUpdateView(UpdateView):
+    model = Actitud
+    form_class = ActitudForm
+    template_name = 'Actitud/actitud_editar.html'
+    success_url = reverse_lazy('actitud_listar')
+
+class ActitudDeleteView(DeleteView):
+    model = Actitud
+    template_name = 'Actitud/actitud_eliminar.html'
+    success_url = reverse_lazy('actitud_listar')

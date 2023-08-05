@@ -341,23 +341,25 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for tiporeporte in reportes %}
+                    {% for tiporeporte in tiposreportes %}
                     <tr>
                         <td>{{ tiporeporte.id}}</td>
                         <td>{{ tiporeporte.TipoReporte }}</td>
-                        <th>
-                           </a>
-                            <a href="{% url 'tiporeporte_editar' tiporeporte.idMunicipio %}"class="btn btn-link text-success">
+                        <td>
+                            <a href="{% url 'tiporeporte_detalle' tiporeporte.id %}"class="btn btn-link text-success">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="{% url 'tiporeporte_editar' tiporeporte.id %}"class="btn btn-link text-success">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <a href="{% url 'tiporeporte_editar' tiporeporte.idMunicipio %}"class="btn btn-link text-danger">
+                            <a href="{% url 'tiporeporte_eliminar' tiporeporte.id %}"class="btn btn-link text-danger">
                                 <i class="fas fa-trash"></i>
                             </a>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="5">No hay municipios registrados.</td>
+                        <td colspan="5">No hay Tipos de Reporte registrados.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -369,7 +371,7 @@
 
             <script type="text/javascript">
             $(document).ready(function() {
-                $('#reportes').DataTable();
+                $('#tiposreportes').DataTable();
             });
             </script>
 

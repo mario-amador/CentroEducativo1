@@ -345,8 +345,10 @@
                     <tr>
                         <td>{{ categoriaempleado.id}}</td>
                         <td>{{ categoriaempleado.CategoriaEmpleado }}</td>
-                        <th>
-                           </a>
+                        <td>
+                            <a href="{% url 'categoria_detalle' categoriaempleado.id %}"class="btn btn-link text-success">
+                                <i class="fas fa-eye"></i>
+                            </a>
                             <a href="{% url 'categoria_editar' categoriaempleado.id %}"class="btn btn-link text-success">
                                 <i class="fas fa-edit"></i>
                             </a>

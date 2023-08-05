@@ -348,8 +348,10 @@
                         <td>{{ tipopago.TipoPago}}</td>
                         <td>{{ tipopago.PrecioPago}}</td>
 
-                        <th>
-                           </a>
+                        <td>
+                            <a href="{% url 'tipopago_detalle' tipopago.id %}"class="btn btn-link text-success">
+                                <i class="fas fa-eye"></i>
+                            </a>
                             <a href="{% url 'tipopago_editar' tipopago.id %}"class="btn btn-link text-success">
                                 <i class="fas fa-edit"></i>
                             </a>

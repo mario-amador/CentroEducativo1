@@ -310,72 +310,67 @@
 <!-- End of Topbar -->
 {% endblock barra_arriba %}
 {% block pagina_contenido %}
-    <!-- Dropdown Card Example -->
-    <div class="card shadow mb-4">
-        <!-- Card Header - Dropdown -->
-        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-            <h6 class="m-0 font-weight-bold text-primary">Listado de Tipos Sanguineos</h6>
-            <div class="dropdown no-arrow">
-                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="false">
-                    <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-                </a>
-                <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                    aria-labelledby="dropdownMenuLink">
-                    <div class="dropdown-header">ACCIONES:</div>
-                    <a class="dropdown-item" href="{% url 'tiposanguineo_crear' %}">Nuevo Tipo Sanguineo</a>
-                    <a class="dropdown-item" href="{%  url 'bienvenida_administrador' %}">Principal</a>
-                </div>
+ <!-- Dropdown Card Example -->
+ <div class="card shadow mb-4">
+    <!-- Card Header - Dropdown -->
+    <div
+        class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary">Editar Sección<h6>
+        <div class="dropdown no-arrow">
+            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+            </a>
+            <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                aria-labelledby="dropdownMenuLink">
+                <div class="dropdown-header">ACCIONES:</div>
+                <a class="dropdown-item" href="{%  url 'seccion_listar' %}">Lista de Secciones</a>
             </div>
         </div>
-        <!-- Card Body -->
-        <div class="card-body">
-            {% if not tiposanguineo %}
-          {% endif %}
-          <table id="tiposanguineo" class="table table-striped" style="width:100%">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Tipo Reporte</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for tiposanguineo in tiposanguineos %}
-                    <tr>
-                        <td>{{ tiposanguineo.id}}</td>
-                        <td>{{ tiposanguineo.TipoSanguineo }}</td>
-                        <td>
-                            <a href="{% url 'tiposanguineo_detalle' tiposanguineo.id %}"class="btn btn-link text-success">
-                                <i class="fas fa-eye"></i>
-                            </a>
-                            <a href="{% url 'tiposanguineo_editar' tiposanguineo.id %}"class="btn btn-link text-success">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            <a href="{% url 'tiporeporte_editar' tiposanguineo.id %}"class="btn btn-link text-danger">
-                                <i class="fas fa-trash"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    {% empty %}
-                    <tr>
-                        <td colspan="5">No hay Tipos Sanguineos registrados.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-         </table>
-            
-            {% endblock pagina_contenido %}
-
-            {% block js_pages %}
-
-            <script type="text/javascript">
-            $(document).ready(function() {
-                $('#tiposanguineo').DataTable();
-            });
-            </script>
-
-{% endblock js_pages %}
-
     </div>
+    <!-- Card Body -->
+    <div class="card-body">
+<div class="card-body">
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Editar Seccion</title>
+      </head>
+      <body>
+        <form method="post">
+            {% csrf_token %}
+            {% if form.errors %}
+              <div class="alert alert-danger" role="alert">
+                <strong>Error de validación:</strong>
+                <ul>
+                  {% for field in form %}
+                    {% for error in field.errors %}
+                      <li>{{ field.label }}: {{ error }}</li>
+                    {% endfor %}
+                  {% endfor %}
+                </ul>
+              </div>
+            {% endif %}
+            {% for field in form %}
+              <div class="form-group">
+                <label for="{{ field.auto_id }}">{{ field.label }}</label>
+                {{ field }}
+              </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-success">
+              <i class="fas fa-save"></i> Guardar
+            </button>
+            <a href="{% url 'seccion_listar' %}" class="btn btn-secondary">
+              <i class="fas fa-times"></i> Cancelar
+            </a>
+          </form>
+        </div>
+      </div>
+    </div>
+    <!-- Agrega aquí tus enlaces a scripts JS si los tienes -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.js"></script>
+  </body>
 </div>
+</div>
+{% endblock pagina_contenido %}
+</html>

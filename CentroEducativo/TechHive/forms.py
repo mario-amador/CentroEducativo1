@@ -3,7 +3,7 @@ from datetime import datetime
 
 import re
 from django import forms
-from .models import Alumno, DocumentoDPI,Empleado,Catedratico,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Municipio, TipoPago,Seccion
+from .models import Alumno, DocumentoDPI,Empleado,Catedratico,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Municipio, TipoPago, Seccion, Actitud
 from typing import Required, Self
 	
 from django.core.validators import RegexValidator
@@ -154,6 +154,47 @@ def no_tres_letras_iguales_validator(value):
     for i in range(len(value) - 2):
         if value[i] == value[i+1] == value[i+2]:
             raise forms.ValidationError('No se permiten tres letras iguales seguidas.')
+        
+def notasacumulativo_longitud_validator(value):
+    str_value = str(value)
+    
+    if '.' in str_value:
+        num_entero, num_decimal = str_value.split('.')
+        
+        if len(num_entero) > 2 or len(num_decimal) > 2:
+            raise ValidationError('La nota debe tener hasta 2 dígitos antes del punto y hasta 2 dígitos después del punto.')
+    else:
+        if len(str_value) > 2:
+            raise ValidationError('La nota debe tener hasta 2 dígitos.')
+    
+def notasexamen_longitud_validator(value):
+    
+    num_entero, _, num_decimal = value.partition('.')
+    
+    if len(num_entero) > 2 or len(num_decimal) > 2:
+        raise forms.ValidationError('La nota debe tener hasta 2 dígitos antes del punto y hasta 2 dígitos después del punto.')
+    
+    notaexamen = float(value)
+    if notaexamen > 30:
+        raise forms.ValidationError('La nota no puede ser mayor a 30.')
+
+def notas_longitud_validator(value):
+    if not (4 <= len(str(value).split('.')[0]) <= 5) or len(str(value).split('.')[1]) > 2:
+        raise forms.ValidationError('La nota debe tener entre 4 y 5 dígitos antes del punto y hasta 2 dígitos después del punto.')
+    
+    if value > notas_longitud_validator('70'):
+        raise forms.ValidationError('La nota no puede ser mayor a 70.')
+    
+def notasfinales_longitud_validator(value):
+    
+    num_entero, _, num_decimal = value.partition('.')
+    
+    if 4 >= len(num_entero) <= 5 and len(num_decimal) <= 2:
+        notafinal = float(value)
+        if notafinal <= 100:
+            raise forms.ValidationError('La nota no puede ser mayor a 100.')
+    else:
+        raise forms.ValidationError('La nota debe tener entre 4 y 5 dígitos antes del punto y hasta 2 dígitos después del punto.')
 
 
 from django import forms
@@ -591,9 +632,7 @@ class AsignaturaForm(forms.ModelForm):
         }
         widgets = {
             'Asignatura': forms.TextInput(
-                attrs={'class': 'form-control',
-                       
-                       'pattern':'[a-zA-Z].{4,25}',}),
+                attrs={'class': 'form-control'}),
             'Catedratico': forms.Select(
                 attrs={'class': 'form-control'}),
             'NivelEducativo': forms.Select(
@@ -629,6 +668,11 @@ class MatriculaForm(forms.ModelForm):
                         'type': 'date'}),
         }
 
+    def clean_FechaMatricula(self):
+        fecha_matricula = self.cleaned_data.get('FechaMatricula')
+        fecha_rango_validator(fecha_matricula)
+        return fecha_matricula
+
 class ReportesForm(forms.ModelForm):
     class Meta:
         model = Reportes
@@ -645,8 +689,7 @@ class ReportesForm(forms.ModelForm):
             'Alumno': forms.Select(
                 attrs={'class': 'form-control'}),
             'DescripcionReporte': forms.TextInput(
-                attrs={'class': 'form-control',
-                       'pattern':'[a-zA-Z].{5,150}'}),
+                attrs={'class': 'form-control'}),
             'FechaReporte': forms.DateInput(
                 attrs={'class': 'form-control',
                        'placeholder': 'YYYY-MM-DD', 
@@ -666,15 +709,6 @@ class ReportesForm(forms.ModelForm):
         no_numeros_validator(descripcion_reporte)
         no_tres_letras_iguales_validator(descripcion_reporte)
         return descripcion_reporte.capitalize()
-    
-    def clean_TipoReporte(self):
-        tipo_reporte = self.cleaned_data.get('TipoReporte')
-        solo_letras_validator(tipo_reporte)
-        no_campos_vacios_validator(tipo_reporte)
-        no_dos_espacios_validator(tipo_reporte)
-        no_numeros_validator(tipo_reporte)
-        no_tres_letras_iguales_validator(tipo_reporte)
-        return tipo_reporte.capitalize()
     
 class ExpedienteMedicoForm(forms.ModelForm):
     class Meta:
@@ -702,33 +736,25 @@ class ExpedienteMedicoForm(forms.ModelForm):
             'Tutor': forms.Select(
                 attrs={'class': 'form-control'}),
             'EnfermedadCronica1': forms.TextInput(
-                attrs={'class': 'form-control',
-                       'pattern':'[a-zA-Z].{2,20}',}),
+                attrs={'class': 'form-control'}),
             'EnfermedadCronica2': forms.TextInput(
-                attrs={'class': 'form-control',
-                       'pattern':'[a-zA-Z].{2,20}',}),
+                attrs={'class': 'form-control'}),
             'EnfermedadCronica3': forms.TextInput(
-                attrs={'class': 'form-control',
-                       'pattern':'[a-zA-Z].{2,20}',}),
+                attrs={'class': 'form-control'}),
             'MedicamentoUsoDiario1': forms.TextInput(
-                attrs={'class': 'form-control',
-                       'pattern':'[a-zA-Z].{2,20}',}),
+                attrs={'class': 'form-control'}),
             'MedicamentoUsoDiario2': forms.TextInput(
-                attrs={'class': 'form-control',
-                       'pattern':'[a-zA-Z].{2,20}',}),
+                attrs={'class': 'form-control'}),
             'Alergia1': forms.TextInput(
-                attrs={'class': 'form-control',
-                       'pattern':'[a-zA-Z].{2,20}',}),
+                attrs={'class': 'form-control'}),
             'Alergia2': forms.TextInput(
-                attrs={'class': 'form-control',
-                       'pattern':'[a-zA-Z].{2,20}',}),
+                attrs={'class': 'form-control'}),
             'Alergia3': forms.TextInput(
-                attrs={'class': 'form-control',
-                       'pattern':'[a-zA-Z].{2,20}',}),
+                attrs={'class': 'form-control'}),
         }
 
     def clean_EnfermedadCronica1(self):
-        enfermedad_cronica1 = self.cleaned_data.get('EnfermedadCronica3')
+        enfermedad_cronica1 = self.cleaned_data.get('EnfermedadCronica1')
         solo_letras_validator(enfermedad_cronica1)
         no_campos_vacios_validator(enfermedad_cronica1)
         no_dos_espacios_validator(enfermedad_cronica1)
@@ -737,7 +763,7 @@ class ExpedienteMedicoForm(forms.ModelForm):
         return enfermedad_cronica1.capitalize()
     
     def clean_EnfermedadCronica2(self):
-        enfermedad_cronica2 = self.cleaned_data.get('EnfermedadCronica3')
+        enfermedad_cronica2 = self.cleaned_data.get('EnfermedadCronica2')
         solo_letras_validator(enfermedad_cronica2)
         no_campos_vacios_validator(enfermedad_cronica2)
         no_dos_espacios_validator(enfermedad_cronica2)
@@ -810,8 +836,7 @@ class HorariosForm(forms.ModelForm):
         }
         widgets = {
             'Horario': forms.TextInput(
-                attrs={'class': 'form-control',
-                       'pattern':'[a-zA-Z].{4,15}',}),
+                attrs={'class': 'form-control'}),
             'HoraEntrada': forms.TimeInput(
                 attrs={'class': 'form-control'}),
             'HoraSalida': forms.TimeInput(
@@ -828,8 +853,7 @@ class NivelesForm(forms.ModelForm):
         }
         widgets = {
             'NivelEducativo': forms.TextInput(
-                attrs={'class': 'form-control',
-                       'pattern':'[a-zA-Z].{4,20}',}),
+                attrs={'class': 'form-control'}),
             'Horario': forms.Select(
                 attrs={'class': 'form-control'}),
         }
@@ -856,8 +880,7 @@ class ParcialesForm(forms.ModelForm):
         }
         widgets = {
             'ParcialAcademico': forms.TextInput(
-                attrs={'class': 'form-control',
-                       'pattern':'[a-zA-Z].{4,20}',}),
+                attrs={'class': 'form-control'}),
             'FechaInicio': forms.DateInput(
                 attrs={'class': 'form-control',
                        'placeholder': 'YYYY-MM-DD', 
@@ -871,6 +894,30 @@ class ParcialesForm(forms.ModelForm):
                        'placeholder': 'YYYY', 
                        'type': 'date'}),
         }
+
+    def clean_ParcialAcademico(self):
+        parcial_academico = self.cleaned_data.get('ParcialAcademico')
+        solo_letras_validator(parcial_academico)
+        no_campos_vacios_validator(parcial_academico)
+        no_dos_espacios_validator(parcial_academico)
+        no_numeros_validator(parcial_academico)
+        no_tres_letras_iguales_validator(parcial_academico)
+        return parcial_academico.capitalize()
+    
+    def clean_FechaInicio(self):
+        fecha_inicio = self.cleaned_data.get('FechaInicio')
+        fecha_rango_validator(fecha_inicio)
+        return fecha_inicio
+    
+    def clean_FechaFinal(self):
+        fecha_final = self.cleaned_data.get('FechaFinal')
+        fecha_rango_validator(fecha_final)
+        return fecha_final
+
+    def clean_Año(self):
+        año = self.cleaned_data.get('Año')
+        fecha_rango_validator(año)
+        return año
 
 class NotasForm(forms.ModelForm):
     class Meta:
@@ -895,27 +942,33 @@ class NotasForm(forms.ModelForm):
                 attrs={'class': 'form-control'}),
             'NotaAcumulativo': forms.NumberInput(
                 attrs={'class': 'form-control',
-                       'min': '00,00',
-                       'max':'70,00',
-                       'step':'.1'}),
+                       'step':'.10'}),
             'NotaExamen': forms.NumberInput(
                 attrs={'class': 'form-control',
-                       'min': '00,00',
-                       'max':'30,00',
-                       'step':'.1'}),
+                       'step':'.10'}),
             'NotaFinal':forms.NumberInput(
                 attrs={'class': 'form-control',
-                       'min': '00,00',
-                       'max':'100,00',
-                       'step':'.1'}),
+                       'step':'.10'}),
             'PromedioClase':forms.NumberInput(
                 attrs={'class': 'form-control',
-                       'min': '00,00',
-                       'max':'100,00',
-                       'step':'.1'}),
+                       'step':'.10'}),
               
-
            }
+        
+    def clean_NotaAcumulativo(self):
+        nota_acumulativo = self.cleaned_data.get('NotaAcumulativo')
+        notasacumulativo_longitud_validator(nota_acumulativo)
+        return nota_acumulativo
+    
+    def clean_NotaExamen(self):
+        nota_examen = self.cleaned_data.get('NotaExamen')
+        notasexamen_longitud_validator(nota_examen)
+        return nota_examen
+    
+    def clean_NotaFinal(self):
+        nota_final = self.cleaned_data.get('NotaFinal')
+        notasfinales_longitud_validator(nota_final)
+        return nota_final
 
 class LoginForm(forms.Form):
     username = forms.CharField(label='Usuario', max_length=100)
@@ -1150,12 +1203,22 @@ class ExpedienteEscolarForm(forms.ModelForm):
             'Alumno': forms.Select(
                 attrs={'class': 'form-control'}),
             'InstitutoAnterior': forms.TextInput(
-                attrs={'class': 'form-control',
-                       'pattern':'[a-zA-Z].{3,20}'}),
-            'PromedioAnualAnterior': forms.IntegerField(),
+                attrs={'class': 'form-control'}),
+            'PromedioAnualAnterior': forms.TextInput(
+                attrs={'class': 'form-control'}),
             'Tutor': forms.Select(
                 attrs={'class': 'form-control'}),
         }
+
+    def clean_InstitutoAnterior(self):
+        instituto_anterior = self.cleaned_data.get('InstitutoAnterior')
+        solo_letras_validator(instituto_anterior)
+        no_campos_vacios_validator(instituto_anterior)
+        no_dos_espacios_validator(instituto_anterior)
+        no_numeros_validator(instituto_anterior)
+        no_tres_letras_iguales_validator(instituto_anterior)
+        return instituto_anterior.capitalize()
+    
 class DepartamentoForm(forms.ModelForm):
     class Meta:
         model = Departamento
@@ -1203,11 +1266,19 @@ class MunicipioForm(forms.ModelForm):
         }
         widgets = {
             'nombreMunicipio': forms.TextInput(
-                attrs={'class': 'form-control',
-                       'pattern':'[a-zA-Z].{4,20}',}),
+                attrs={'class': 'form-control'}),
             'departamento': forms.Select(
                 attrs={'class': 'form-control'}),
         }
+    
+    def clean_nombreMunicipio(self):
+        nombre_municipio = self.cleaned_data.get('nombreMunicipio')
+        solo_letras_validator(nombre_municipio)
+        no_campos_vacios_validator(nombre_municipio)
+        no_dos_espacios_validator(nombre_municipio)
+        no_numeros_validator(nombre_municipio)
+        no_tres_letras_iguales_validator(nombre_municipio)
+        return nombre_municipio.capitalize()
 
 
 class PagosForm(forms.ModelForm):
@@ -1325,6 +1396,15 @@ class DocumentoForm(forms.ModelForm):
                 attrs={'class': 'form-control'}),
             
         }
+    
+    def clean_DocumentoDPI(self):
+        documentodpi = self.cleaned_data.get('DocumentoDPI')
+        solo_letras_validator(documentodpi)
+        no_campos_vacios_validator(documentodpi)
+        no_dos_espacios_validator(documentodpi)
+        no_numeros_validator(documentodpi)
+        no_tres_letras_iguales_validator(documentodpi)
+        return documentodpi.capitalize()
 
 class TipoPagoForm(forms.ModelForm):
     class Meta:
@@ -1334,8 +1414,7 @@ class TipoPagoForm(forms.ModelForm):
                 'PrecioPago':'Precio del pago'}
         widgets={
             'TipoPago': forms.TextInput(
-                 attrs={'class': 'form-control',
-                        'pattern':'[a-zA-Z].{4,20}',}),
+                 attrs={'class': 'form-control'}),
             'PrecioPago': forms.NumberInput(
                  attrs={'class': 'form-control',
                         'step':'.1'}),
@@ -1424,3 +1503,50 @@ class FacturacionForm(forms.ModelForm):
             'ImpuestoSobreVenta18': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Impuesto sobre Venta 18%'}),
             'Total': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Total'}),
         }
+
+class SeccionForm(forms.ModelForm):
+    class Meta:
+        model = Seccion
+        fields = ['Seccion']
+        labels = {
+            'Seccion': 'Sección',
+        }
+        widgets = {
+            'Seccion': forms.TextInput(
+                attrs={'class': 'form-control'}),
+            
+        }
+
+    def clean_Seccion(self):
+        seccion = self.cleaned_data.get('Seccion')
+        solo_letras_validator(seccion)
+        no_campos_vacios_validator(seccion)
+        no_dos_espacios_validator(seccion)
+        no_numeros_validator(seccion)
+        no_tres_letras_iguales_validator(seccion)
+        return seccion.capitalize()
+
+class ActitudForm(forms.ModelForm):
+    class Meta:
+        model = Actitud
+        fields = ['Actitud']
+        labels = {
+            'Actitud': 'Actitud',
+        }
+        widgets = {
+            'Actitud': forms.TextInput(
+                attrs={'class': 'form-control'}),
+            
+        }
+
+    def clean_Actitud(self):
+        actitud = self.cleaned_data.get('Actitud')
+        solo_letras_validator(actitud)
+        no_campos_vacios_validator(actitud)
+        no_dos_espacios_validator(actitud)
+        no_numeros_validator(actitud)
+        no_tres_letras_iguales_validator(actitud)
+        return actitud.capitalize()
+
+
+

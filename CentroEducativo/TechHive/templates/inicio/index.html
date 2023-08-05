@@ -20,7 +20,7 @@
     </button>
     </a>
 
-    <a>
+    <a href="{% url 'expedienteescolar_crear' %}">
     <button class="card-header py-3  flex-row align-items-center justify-content-between bg-white"style="width: -200PX;">
         <h6 class="m-0 font-weight-bold text-primary">Expedientes escolares</h6>
     </button>
@@ -41,9 +41,14 @@
     <a href="{% url 'horarios_crear' %}">
     <button class="card-header py-3  flex-row align-items-center justify-content-between bg-white"style="width: -100PX;">
         <h6 class="m-0 font-weight-bold text-primary">Horarios</h6>
-        <a class="dropdown-item mr-4" ></a>
     </button>
     </a>
+
+    <a href="{% url 'actitud_crear' %}">
+    <button class="card-header py-3  flex-row align-items-center justify-content-between bg-white"style="width: -100PX;">
+        <h6 class="m-0 font-weight-bold text-primary">Actitud</h6>
+    </button>
+        </a>
     <hr></hr>
     
     
@@ -119,13 +124,13 @@
                 <i class="fas fa-user-plus fa-lg fa-fw mr-2 text-gray-400"></i>
                 Agregar nuevos
             </a>
-            <a class="dropdown-item mr-4" href="{% url 'grado_listar' %}">
+            <a class="dropdown-item mr-4" href="{% url 'seccion_crear' %}">
                 <i class="fas fa-users fa-lg fa-fw mr-2 text-gray-400"></i>
-                Listar grados-seccion
+                Agregar Sección
             </a>
         </div>
     </div>
- </div>  
+ </div>   
  <div class="card shadow mb-4">
     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
         <h6 class="m-0 font-weight-bold text-primary"> Notas</h6>
@@ -182,6 +187,21 @@
             <a class="dropdown-item mr-4" href="{% url 'tiposanguineo_listar' %}">
                 <i class="fas fa-users fa-lg fa-fw mr-2 text-gray-400"></i>
                 Listar Tipos Sanguineo
+            </a>
+        </div>
+    </div>
+ </div>
+ <div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary"> Tipo Reporte</h6>
+        <div class="dropdown no-arrow justify-content-end">
+            <a class="dropdown-item mr-4" href="{% url 'tiporeporte_crear' %}">
+                <i class="fas fa-user-plus fa-lg fa-fw mr-2 text-gray-400"></i>
+                Agregar Tipo Reporte
+            </a>
+            <a class="dropdown-item mr-4" href="{% url 'tiporeporte_listar' %}">
+                <i class="fas fa-users fa-lg fa-fw mr-2 text-gray-400"></i>
+                Listar Tipos Reporte
             </a>
         </div>
     </div>

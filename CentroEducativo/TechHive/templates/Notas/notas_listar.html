@@ -359,12 +359,14 @@
                         <td>{{ notaalumno.PromedioClase }}</td>
 
                         <td>
-                            <a href="{% url 'notas_crear'  %}"class="btn btn-link text-success">
+                            <a href="{% url 'notas_detalle'  %}"class="btn btn-link text-success">
                                 <i class="fas fa-eye"></i>
                             </a>
-                            <a href="{% url 'notas_crear'  %}"class="btn btn-link text-success">
+                            <a href="{% url 'notas_editar'  %}"class="btn btn-link text-success">
                                 <i class="fas fa-edit"></i>
                             </a>
+                            <a href="{% url 'notas_eliminar' %}"class="btn btn-link text-success">
+                                <i class="fas fa-trash"></i>
                             </a>
                         </td>
                     </tr>

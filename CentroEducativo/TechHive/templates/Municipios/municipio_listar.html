@@ -345,8 +345,10 @@
                     <tr>
                         <td>{{ municipio.idMunicipio}}</td>
                         <td>{{ municipio.nombreMunicipio }}</td>
-                        <th>
-                           </a>
+                        <td>
+                            <a href="{% url 'municipio_detalle' municipio.id %}"class="btn btn-link text-success">
+                                <i class="fas fa-eye"></i>
+                            </a>
                             <a href="{% url 'municipio_editar' municipio.id %}"class="btn btn-link text-success">
                                 <i class="fas fa-edit"></i>
                             </a>

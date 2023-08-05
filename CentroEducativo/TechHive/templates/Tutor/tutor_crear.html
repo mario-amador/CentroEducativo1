@@ -324,7 +324,7 @@
             <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
                 aria-labelledby="dropdownMenuLink">
                 <div class="dropdown-header">ACCIONES:</div>
-                <a class="dropdown-item" href="{%  url 'listar_catedraticos' %}">Lista de Tutores</a>
+                <a class="dropdown-item" href="{%  url 'tutor_listar' %}">Lista de Tutores</a>
             </div>
         </div>
     </div>
@@ -360,7 +360,7 @@
             <button type="submit" class="btn btn-success">
                 <i class="fas fa-save"></i> Guardar
             </button>
-            <a href="{% url 'listar_catedraticos' %}" class="btn btn-secondary">
+            <a href="{% url 'tutor_listar' %}" class="btn btn-secondary">
                 <i class="fas fa-times"></i> Cancelar
             </a>
         </form>

@@ -345,8 +345,10 @@
                     <tr>
                         <td>{{ documentodpi.id}}</td>
                         <td>{{ documentodpi.DocumentoDPI }}</td>
-                        <th>
-                           </a>
+                        <td>
+                            <a href="{% url 'documento_detalle' documentodpi.id %}"class="btn btn-link text-success">
+                                <i class="fas fa-eye"></i>
+                            </a>
                             <a href="{% url 'documento_editar' documentodpi.id %}"class="btn btn-link text-success">
                                 <i class="fas fa-edit"></i>
                             </a>
