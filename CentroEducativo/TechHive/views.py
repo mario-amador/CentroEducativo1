@@ -1,3 +1,4 @@
+import datetime
 from imaplib import _Authenticator
 from django.core.handlers.wsgi import WSGIRequest
 from django.contrib.auth import authenticate, login
@@ -162,11 +163,11 @@ def crear_pago(request):
             factura = Factura( ParametrosSAR=parametros_sar, CentroEducativo=centro_educativo, pago=pago)
             generar_factura(request, pago.id)
             
-        return JsonResponse({'pago_id': pago.id})
-        
+            return JsonResponse({'pago_id': pago.id})
+        return redirect('lista_pagos')
     else:
         form = PagoForm()
-    return render(request, 'crear_pago.html', {'form': form})
+    return render(request, 'crear_pago.html',{'form':form})
 
 
 

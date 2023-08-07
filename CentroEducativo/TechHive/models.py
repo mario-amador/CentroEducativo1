@@ -311,8 +311,8 @@ class CentroEducativo(models.Model):
 class ParametrosSAR(models.Model):
     CAI = models.CharField(max_length=100)
     RTN = models.CharField(max_length=14,help_text='No, debe contenes letras, digitos: 14 ')
-    RangoInicial = models.IntegerField()
-    RangoFinal = models.IntegerField()
+    RangoInicial = models.CharField(max_length=8)
+    RangoFinal = models.CharField(max_length=8)
     FechaEmision = models.DateField()
     FechaVencimiento = models.DateField()
     Correlativo=models.CharField(max_length=100)
@@ -322,24 +322,34 @@ class ParametrosSAR(models.Model):
 
 
 class Factura(models.Model):
-    numero_factura = models.IntegerField(unique=True)
+    numero_factura = models.CharField(unique=True, max_length=8)
     fecha_emision = models.DateField(auto_now_add=True)
     ParametrosSAR = models.ForeignKey(ParametrosSAR, on_delete=models.CASCADE)
     CentroEducativo = models.ForeignKey(CentroEducativo, on_delete=models.CASCADE)
     pago = models.ForeignKey(Pago, on_delete=models.CASCADE)
 
+    def save(self, *args, **kwargs):
+        if not self.numero_factura:
+            param_sar = self.ParametrosSAR
+            rango_inicial = str(param_sar.RangoInicial)
+            longitud_rango = len(rango_inicial)
+            
+            # Encuentra el último número de factura existente
+            ultima_factura = Factura.objects.order_by('-numero_factura').first()
+            if ultima_factura:
+                ultimo_numero = ultima_factura.numero_factura
+            else:
+                ultimo_numero = rango_inicial
+            
+            nuevo_numero = str(int(ultimo_numero) + 1).zfill(longitud_rango)
+            
+            self.numero_factura = nuevo_numero
+            
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"Sucursal: {self.CentroEducativo} - Factura N° {self.numero_factura} - Fecha de Emisión: {self.fecha_emision} - {self.ParametrosSAR} - Pago ID: {self.pago.id}"
 
-@receiver(pre_save, sender=Factura)
-def asignar_numero_factura(sender, instance, **kwargs):
-    if not instance.numero_factura:
-        ultimo_numero_factura = Factura.objects.aggregate(models.Max('numero_factura'))['numero_factura__max']
-        if ultimo_numero_factura is not None:
-            instance.numero_factura = ultimo_numero_factura + 1
-        else:
-            instance.numero_factura = 1000000001
-    
 class Reportes(models.Model):
     TipoReporte = models.ForeignKey(TipoReporte, on_delete=models.CASCADE)
     Alumno = models.ForeignKey(Alumno, on_delete=models.CASCADE)
