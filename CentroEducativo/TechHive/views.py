@@ -160,12 +160,28 @@ def crear_pago(request):
 
                 # Crear la factura y asignar los valores necesarios
             factura = Factura( ParametrosSAR=parametros_sar, CentroEducativo=centro_educativo, pago=pago)
-            # Aquí puedes crear automáticamente la factura relacionada
-        return redirect('lista_pagos')
+            generar_factura(request, pago.id)
+            
+        return JsonResponse({'pago_id': pago.id})
+        
     else:
         form = PagoForm()
     return render(request, 'crear_pago.html', {'form': form})
 
+
+
+
+
+
+def detalle_factura(request, factura_id):
+    
+    factura = get_object_or_404(Factura, pk=factura_id)
+    return render(request, 'detalle_factura.html', {'factura': factura})
+
+
+def lista_pagos(request):
+    pagos = Pago.objects.all()
+    return render(request, 'lista_pagos.html', {'pagos': pagos})
 
 def generar_factura(request, pago_id):
     pago = get_object_or_404(Pago, pk=pago_id)
@@ -193,18 +209,6 @@ def generar_factura(request, pago_id):
     
     response.write(pdf_data)
     return response
-
-
-
-def detalle_factura(request, factura_id):
-    
-    factura = get_object_or_404(Factura, pk=factura_id)
-    return render(request, 'detalle_factura.html', {'factura': factura})
-
-
-def lista_pagos(request):
-    pagos = Pago.objects.all()
-    return render(request, 'lista_pagos.html', {'pagos': pagos})
 
 def lista_facturas(request):
     facturas = Factura.objects.all()

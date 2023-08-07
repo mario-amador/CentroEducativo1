@@ -330,32 +330,51 @@
     </div>
     <!-- Card Body -->
     <div class="card-body">
-<div class="card-body">
-<html>
-  <head>
-    <title>Realizar pago</title>
-  </head>
-  <body>
-    {% if messages %}
-      <ul class="messages">
-        {% for message in messages %}
-          <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-        {% endfor %}
-      </ul>
-    {% endif %}
-    <form method="post">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <button type="submit" value="submit" class="btn btn-success">
-        <i class="fas fa-save"></i> Guardar</button>
-      <a href="{% url 'lista_pagos' %}" class="btn btn-secondary">
-        <i class="fas fa-times"></i> Cancelar</a>
-    </form>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.js"></script>
-        
-  </body>
-</div>
-</div>
+        <div class="card-body">
+            <html>
+            <head>
+                <title>Realizar pago</title>
+            </head>
+            <body>
+                {% if messages %}
+                <ul class="messages">
+                    {% for message in messages %}
+                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+                <form method="post" id="PagoForm"> <!-- Agregamos un ID al formulario -->
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" value="submit" class="btn btn-success">
+                        <i class="fas fa-save"></i> Guardar y Generar Factura</button>
+                    <a href="{% url 'lista_pagos' %}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Cancelar</a>
+                </form>
+                <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.js"></script>
+                <script>
+                    document.getElementById('PagoForm').addEventListener('submit', function (event) {
+                        // Evitar el envío normal del formulario
+                        event.preventDefault();
+                
+                        // Enviar el formulario de manera asíncrona
+                        fetch(this.action, {
+                            method: this.method,
+                            body: new FormData(this)
+                        }).then(response => response.json())
+                          .then(data => {
+                              // Redireccionar a la página de generación de factura con el ID del pago
+                              window.location.href = `/generar_factura/${data.pago_id}/`;
+                          })
+                          .catch(error => console.error('Error:', error));
+                    });
+                </script>
+                
+            </body>
+            </html>
+        </div>
+    </div>
+    
 {% endblock pagina_contenido %}
 </html>
 
