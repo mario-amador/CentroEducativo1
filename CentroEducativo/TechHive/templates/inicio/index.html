@@ -49,6 +49,12 @@
         <h6 class="m-0 font-weight-bold text-primary">Actitud</h6>
     </button>
         </a>
+
+    <a href="{% url 'centroeducativo_crear' %}">
+    <button class="card-header py-3  flex-row align-items-center justify-content-between bg-white"style="width: -100PX;">
+        <h6 class="m-0 font-weight-bold text-primary">Centro Educativo</h6>
+    </button>
+    </a>
     <hr></hr>
     
     
@@ -122,7 +128,7 @@
         <div class="dropdown no-arrow justify-content-end">
             <a class="dropdown-item mr-4" href="{% url 'grado_crear' %}">
                 <i class="fas fa-user-plus fa-lg fa-fw mr-2 text-gray-400"></i>
-                Agregar nuevos
+                Agregar Grados
             </a>
             <a class="dropdown-item mr-4" href="{% url 'seccion_crear' %}">
                 <i class="fas fa-users fa-lg fa-fw mr-2 text-gray-400"></i>
@@ -202,6 +208,21 @@
             <a class="dropdown-item mr-4" href="{% url 'tiporeporte_listar' %}">
                 <i class="fas fa-users fa-lg fa-fw mr-2 text-gray-400"></i>
                 Listar Tipos Reporte
+            </a>
+        </div>
+    </div>
+ </div>
+ <div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary"> TutoresAlumnos</h6>
+        <div class="dropdown no-arrow justify-content-end">
+            <a class="dropdown-item mr-4" href="{% url 'tutoresalumno_crear' %}">
+                <i class="fas fa-user-plus fa-lg fa-fw mr-2 text-gray-400"></i>
+                Agregar TutoresAlumnos
+            </a>
+            <a class="dropdown-item mr-4" href="{% url 'tutoresalumno_listar' %}">
+                <i class="fas fa-users fa-lg fa-fw mr-2 text-gray-400"></i>
+                Listar TutoresAlumnos
             </a>
         </div>
     </div>

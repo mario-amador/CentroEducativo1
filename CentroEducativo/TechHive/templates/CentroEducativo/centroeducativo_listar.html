@@ -308,188 +308,84 @@
 
 </nav>
 <!-- End of Topbar -->
-{% endblock barra_arriba %}{% block pagina_contenido %}
-<!-- Dropdown Card Example -->
-<div class="card shadow mb-4">
- <!-- Card Header - Dropdown -->
- <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-     <h6 class="m-0 font-weight-bold text-primary">Listado de Alumnos</h6>
-     <div class="dropdown no-arrow">
-         <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
-             aria-haspopup="true" aria-expanded="false">
-             <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-         </a>
-         <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-             aria-labelledby="dropdownMenuLink">
-             <div class="dropdown-header">ACCIONES:</div>
-             <a class="dropdown-item" href="{% url 'alumno_crear' %}">Nuevo Alumno</a>
-             <a class="dropdown-item" href="{%  url 'bienvenida_administrador' %}">Home</a>
-         </div>
-     </div>
- </div>
- <!-- Card Body -->
-     {% if not alumno %}
-     {% endif %}
-     {% block tabla_alumnos %}
-     <div class="card-body">
-       <!-- Código de la tabla DataTables aquí -->
-       <div class="table-container">
-         <table id="alumnoTable" class="table table-striped" style="width: 100px;">
+{% endblock barra_arriba %}
 
+{% block pagina_contenido %}
+    <!-- Dropdown Card Example -->
+    <div class="card shadow mb-4">
+        <!-- Card Header - Dropdown -->
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">Listado de Centros Educativos</h6>
+            <div class="dropdown no-arrow">
+                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                    aria-labelledby="dropdownMenuLink">
+                    <div class="dropdown-header">ACCIONES:</div>
+                    <a class="dropdown-item" href="{% url 'ventroeducativo_crear' %}">Nuevo Centro Educativo</a>
+                    <a class="dropdown-item" href="{%  url 'bienvenida_administrador' %}">Home</a>
+                </div>
+            </div>
+        </div>
+        <!-- Card Body -->
+        <div class="card-body">
+            {% if not centroeducativo %}
+          {% endif %}
+          <table id="centroeducativo" class="table table-striped" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre del Centro Educativo</th>
+                        <th>Código del Centro Educativo</th>
+                        <th>Titularidad del Centro Educativo</th>
+                        <th>Sucursal del Centro Educativo</th>
+                        <th>Teléfono del Centro Educativo</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for centroeducativo in centroeducativos  %}
+                    <tr>
+                        <td>{{ centroeducativo.id}}</td>
+                        <td>{{ centroeducativo.NombreCentro }}</td>
+                        <td>{{ centroeducativo.CodigoCentro }}</td>
+                        <td>{{ centroeducativo.Titularidad }}</td>
+                        <td>{{ centroeducativo.Sucursal }}</td>
+                        <td>{{ centroeducativo.Telefono }}</td>
 
-             <style>
-                 /* Estilos personalizados para el contenedor de la tabla */
-                 .table-container {
-                   width: 100%;
-                   max-width: 1200px; /* Cambia este valor según lo que mejor se ajuste a tu diseño */
-                   margin: 0 auto;
-                   overflow-x: auto;
-                 }
+                        <td>
+                            <a href="{% url 'centroeducativo_detalle' centroeducativo.id %}"class="btn btn-link text-success">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="{% url 'centroeducativo_editar' asignatura.id %}"class="btn btn-link text-success">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{% url 'centroeducativo_eliminar' centroeducativo.id %}"class="btn btn-link text-danger">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5">No hay Centros Educativos registradas.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+         </table>
+            
+            {% endblock pagina_contenido %}
 
-/* Estilos para las cabeceras (th) */
-#alumnoTable th {
- font-size: 14px;
- font-weight: bold;
-}
+            {% block js_pages %}
 
-/* Estilos para el contenido de las celdas (td) */
-#alumnoTable td {
- font-size: 12px;
-}
-</style> 
-         <thead>
-<link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/fixedcolumns/3.3.3/css/fixedColumns.dataTables.min.css">
-<link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.1.1/css/buttons.dataTables.min.css">
-           <tr>
-             <th>ID</th>
-             <th>Nombres</th>
-             <th>Apellidos</th>
-             <th>Tipo de Documento</th>
-             <th>Documento</th>
-             <th>Fecha de Nacimiento</th>
-             <th>Dirección</th>
-             <th>Departamento</th>
-             <th>Municipio</th>
-             <th>Grado</th>
-             <th>Sección</th>
-             <th>Tipo de Sangre</th>
-             <th>Acciones</th>
-           </tr>
-         </thead>
-         <tbody>
-           {% for alumno in alumnos  %}
-         <tr>
-             <td>{{ alumno.id}}</td>
-             <td>{{ alumno.NombresAlumno }}</td>
-             <td>{{ alumno.ApellidosAlumno}}</td>
-             <td>{{ alumno.DocumentoDPI }}</td>
-             <td>{{ alumno.DPI }}</td>
-             <td>{{ alumno.FechaNacimientoAlumno}}</td>
-             <td>{{ alumno.DireccionAlumno }}</td>
-             <td>{{ alumno.Departamento }}</td>
-             <td>{{ alumno.Municipio }}</td>
-             <td>{{ alumno.Grado}}</td>
-             <td>{{ alumno.Seccion}}</td>
-             <td>{{ alumno.TipoSanguineo }}</td>
-             <td>
-               <a href="{% url 'alumno_detalle' alumno.id %}" class="btn btn-link text-success">
-                 <i class="fas fa-eye"></i>
-               </a>
-               <a href="{% url 'alumno_editar' alumno.id %}" class="btn btn-link text-success">
-                 <i class="fas fa-edit"></i>
-               </a>
-               <a href="{% url 'alumno_eliminar' alumno.id %}" class="btn btn-link text-danger">
-                 <i class="fas fa-trash"></i>
-               </a>
-              </td>
-         </tr>
-           {% empty %}
-           <tr>
-             <td colspan="5">No hay alumnos registrados.</td>
-           </tr>
-           {% endfor %}
-                       <!-- Agrega esto antes del cierre del body -->
-         <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-         <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
-         <script src="https://cdn.datatables.net/fixedcolumns/3.3.3/js/dataTables.fixedColumns.min.js"></script>
-         <script src="https://cdn.datatables.net/buttons/2.1.1/js/dataTables.buttons.min.js"></script>
-         <script src="https://cdn.datatables.net/buttons/2.1.1/js/buttons.html5.min.js"></script>
-         <script src="https://cdn.datatables.net/buttons/2.1.1/js/buttons.print.min.js"></script>
-         <script src="https://cdn.datatables.net/buttons/2.1.1/js/buttons.colVis.min.js"></script>
-         <script src="https://cdn.datatables.net/plug-ins/1.12.1/i18n/es-ES.json"></script>
-         </tbody>
-       </table>
-     </div>
-     {% endblock tabla_alumnos %}
-   </div>
-   </div>
-   
-  
-   
-   <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-   <link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css">
-   <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
-   <script>
-     $(document).ready(function() {
-       // Recuperar configuración de columnas congeladas desde el almacenamiento local
-       var frozenColumns = localStorage.getItem('frozenColumns');
-       var table;
-   
-       if (frozenColumns) {
-         // Si hay configuración guardada, parsearla y aplicarla a la tabla
-         table = $('#alumnoTable').DataTable(JSON.parse(frozenColumns));
-       } else {
-         // Si no hay configuración guardada, crear la tabla con las opciones por defecto
-         table = $('#alumnoTable').DataTable({
-           paging: true,
-           scrollY: true,
-           scrollCollapse: true,
-           pagingType: 'full_numbers',
-           dom: 'Blfrtip',
-           buttons: [
-             'copy',
-             'csv',
-             'excel',
-             {
-               extend: 'pdfHtml5',
-               orientation: 'landscape',
-               exportOptions: {
-                 columns: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
-               },
-             },
-             'print',
-             'colvis',
-           ],
-           lengthMenu: [
-             [10, 25, 50, -1],
-             ['10 Filas', '25 Filas', '50 Filas', 'Mostrar todo']
-           ],
-           language: {
-             url: "//cdn.datatables.net/plug-ins/1.12.1/i18n/es-ES.json"
-           },
-           fixedColumns: {
-             leftColumns: 2 // Cambia el número de columnas que deseas congelar a la izquierda
-           }
-         });
-       }
-   
-       // Guardar configuración de columnas congeladas en el almacenamiento local cuando la tabla se destruye
-       $('#alumnoTable').on('destroy.dt', function(e, settings) {
-         localStorage.setItem('frozenColumns', JSON.stringify(settings));
-       });
-   
-       // Ajustar el tamaño de fuente después de inicializar la tabla
-       $('#alumnoTable th, #alumnoTable td').css('font-size', '13px');
-     });
-   </script>
-   
-   
-   
-   
-   
-   
-   
-   {% endblock pagina_contenido %}
+            <script type="text/javascript">
+            $(document).ready(function() {
+                $('#centroeducativos').DataTable();
+            });
+            </script>
+
+{% endblock js_pages %}
+
+    </div>
 </div>
-</html>

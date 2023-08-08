@@ -6,7 +6,7 @@ from datetime import datetime
 
 import re
 from django import forms
-from .models import Alumno, DocumentoDPI,Empleado,Catedratico, Factura, Pago,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Municipio, TipoPago,Seccion
+from .models import Alumno, DocumentoDPI,Empleado,Catedratico, Factura, Pago,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Municipio, TipoPago,Seccion, Actitud, CentroEducativo, TutoresAlumnos
 from typing import Required, Self
 	
 from django.core.validators import RegexValidator
@@ -15,7 +15,7 @@ from .models import Grado,ParametrosSAR,Meses,TipoReporte,Departamento,TipoPago,
 
 import re
 from django import forms
-from .models import Alumno, DocumentoDPI,Empleado,Catedratico,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Municipio, TipoPago, Seccion, Actitud
+from .models import Alumno, DocumentoDPI,Empleado,Catedratico,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Municipio, TipoPago, Seccion, Actitud, CentroEducativo, TutoresAlumnos
 from typing import Required, Self
 	
 from django.core.validators import RegexValidator
@@ -1354,7 +1354,8 @@ class ParametrosSARForm(forms.ModelForm):
                 attrs={'class': 'form-control'}),
             'RangoInicial': forms.TextInput(
                 attrs={'class': 'form-control'}),
-            'RangoFinal': forms.TextInput(),
+            'RangoFinal': forms.TextInput(
+                attrs={'class': 'form-control'}),
             'FechaEmision': forms.DateInput(
                 attrs={'class': 'form-control',
                        'placeholder': 'YYYY-MM-DD', 
@@ -1466,13 +1467,14 @@ class TipoReporteForm(forms.ModelForm):
         }
 
     def clean_TipoReporte(self):
-        categoria_empleado = self.cleaned_data.get('CategoriaEmpleado')
-        solo_letras_validator(categoria_empleado)
-        no_campos_vacios_validator(categoria_empleado)
-        no_dos_espacios_validator(categoria_empleado)
-        no_numeros_validator(categoria_empleado)
-        no_tres_letras_iguales_validator(categoria_empleado)
-        return categoria_empleado.capitalize()
+        tipo_reporte = self.cleaned_data.get('TipoReporte')
+        solo_letras_validator(tipo_reporte)
+        no_campos_vacios_validator(tipo_reporte)
+        no_dos_espacios_validator(tipo_reporte)
+        no_numeros_validator(tipo_reporte)
+        no_tres_letras_iguales_validator(tipo_reporte)
+        return tipo_reporte.capitalize()
+    
 class FacturaForm(forms.ModelForm):
     class Meta:
         model= Factura
@@ -1545,6 +1547,75 @@ class ActitudForm(forms.ModelForm):
         no_numeros_validator(actitud)
         no_tres_letras_iguales_validator(actitud)
         return actitud.capitalize()
+
+class CentroEducativoForm(forms.ModelForm):
+    class Meta:
+        model = CentroEducativo
+        fields = ['NombreCentro', 'CodigoCentro', 'Titularidad', 'Localidad', 'Sucursal', 'Telefono']
+        labels = {
+            'NombreCentro': 'Nombre del Centro Educativo',
+            'CodigoCentro': 'Código del Centro Educativo',
+            'Titularidad': 'Titularidad del Centro Educativo',
+            'Localidad': 'Localidad del Centro Educativo',
+            'Sucursal': 'Sucursal del Centro Educativo',
+            'Telefono': 'Teléfono del Centro Educativo',
+        }
+        widgets = {
+            'NombreCentro': forms.TextInput(
+                attrs={'class': 'form-control'}),
+            'CodigoCentro': forms.TextInput(
+                attrs={'class': 'form-control'}),
+            'Titularidad': forms.TextInput(
+                attrs={'class': 'form-control'}),
+            'Localidad': forms.Select(
+                attrs={'class': 'form-control'}),
+            'Sucursal': forms.TextInput(
+                attrs={'class': 'form-control'}),
+            'Telefono': forms.TextInput(
+                attrs={'class': 'form-control',
+                    'placeholder': '########'}),
+        }
+
+    def clean_NombreCentro(self):
+        nombre_centro = self.cleaned_data.get('NombreCentro')
+        solo_letras_validator(nombre_centro)
+        no_campos_vacios_validator(nombre_centro)
+        no_dos_espacios_validator(nombre_centro)
+        no_numeros_validator(nombre_centro)
+        no_tres_letras_iguales_validator(nombre_centro)
+        return nombre_centro.capitalize()
+    
+    def clean_Titularidad(self):
+        titularidad = self.cleaned_data.get('Titularidad')
+        solo_letras_validator(titularidad)
+        no_campos_vacios_validator(titularidad)
+        no_dos_espacios_validator(titularidad)
+        no_numeros_validator(titularidad)
+        no_tres_letras_iguales_validator(titularidad)
+        return titularidad.capitalize()
+    
+    def clean_Telefono(self):
+        telefono = self.cleaned_data.get('Telefono')
+        telefono_validator(telefono)
+        return telefono
+
+class TutoresAlumnosForm(forms.ModelForm):
+    class Meta:
+        model = TutoresAlumnos
+        fields = ['Tutor', 'Alumno']
+        labels = {
+            'Tutor': 'Nombre del Tutor',
+            'Alumno': 'Nombre del Alumno',
+        }
+        widgets = {
+            'Tutor': forms.Select(
+                attrs={'class': 'form-control'}),
+            'Alumno': forms.Select(
+                attrs={'class': 'form-control'}),
+        }
+
+
+
 
 
 

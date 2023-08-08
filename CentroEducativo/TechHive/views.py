@@ -29,11 +29,11 @@ from .models import Usuario
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView,TemplateView
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Alumno,Empleado,Catedratico, ExpedienteEscolar, Grado, Municipio,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Departamento,  ParametrosSAR,  Meses, CategoriaEmpleado, DocumentoDPI,  Seccion, Actitud
-from .forms import AlumnoForm,EmpleadoForm,CatedraticoForm, ExpedienteEscolarForm, GradoForm, TutorForm,AsignaturaForm,MatriculaForm,ReportesForm,ExpedienteMedicoForm, HorariosForm, NivelesForm, ParcialesForm, NotasForm, DepartamentoForm, MunicipioForm, MensualidadForm, ParametrosSARForm, CategoriaForm, DocumentoForm, UserCreationForm, UserEditForm,  SeccionForm, ActitudForm
+from .models import Alumno,Empleado,Catedratico, ExpedienteEscolar, Grado, Municipio,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Departamento,  ParametrosSAR,  Meses, CategoriaEmpleado, DocumentoDPI,  Seccion, Actitud, CentroEducativo, TutoresAlumnos
+from .forms import AlumnoForm,EmpleadoForm,CatedraticoForm, ExpedienteEscolarForm, GradoForm, TutorForm,AsignaturaForm,MatriculaForm,ReportesForm,ExpedienteMedicoForm, HorariosForm, NivelesForm, ParcialesForm, NotasForm, DepartamentoForm, MunicipioForm, MensualidadForm, ParametrosSARForm, CategoriaForm, DocumentoForm, UserCreationForm, UserEditForm,  SeccionForm, ActitudForm, CentroEducativoForm, TutoresAlumnosForm
 
-from .models import TipoReporte, TipoSanguineo, Alumno,Empleado,Catedratico,TipoPago, ExpedienteEscolar, Grado, Municipio,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Departamento,  ParametrosSAR,  Meses, CategoriaEmpleado, DocumentoDPI,  Seccion, Actitud
-from .forms import TipoReporteForm,TipoSanguineoForm, AlumnoForm,EmpleadoForm,CatedraticoForm, TipoPagoForm,ExpedienteEscolarForm, GradoForm,TutorForm,AsignaturaForm,MatriculaForm,ReportesForm,ExpedienteMedicoForm, HorariosForm, NivelesForm, ParcialesForm, NotasForm, DepartamentoForm, MunicipioForm,  MensualidadForm, ParametrosSARForm, CategoriaForm, DocumentoForm,  SeccionForm, ActitudForm
+from .models import TipoReporte, TipoSanguineo, Alumno,Empleado,Catedratico,TipoPago, ExpedienteEscolar, Grado, Municipio,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Departamento,  ParametrosSAR,  Meses, CategoriaEmpleado, DocumentoDPI,  Seccion, Actitud, CentroEducativo, TutoresAlumnos
+from .forms import TipoReporteForm,TipoSanguineoForm, AlumnoForm,EmpleadoForm,CatedraticoForm, TipoPagoForm,ExpedienteEscolarForm, GradoForm,TutorForm,AsignaturaForm,MatriculaForm,ReportesForm,ExpedienteMedicoForm, HorariosForm, NivelesForm, ParcialesForm, NotasForm, DepartamentoForm, MunicipioForm,  MensualidadForm, ParametrosSARForm, CategoriaForm, DocumentoForm,  SeccionForm, ActitudForm, CentroEducativoForm, TutoresAlumnosForm
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -1011,3 +1011,59 @@ class ActitudDeleteView(DeleteView):
     model = Actitud
     template_name = 'Actitud/actitud_eliminar.html'
     success_url = reverse_lazy('actitud_listar')
+
+#views Centro Educativo
+
+class CentroEducativoListView(ListView):
+    model = CentroEducativo
+    template_name = 'CentroEducativo/centroeducativo_listar.html'
+    context_object_name = 'centroeducativos'
+
+class CentroEducativoCreateView(CreateView):
+    model = CentroEducativo
+    form_class = CentroEducativoForm
+    template_name = 'CentroEducativo/centroeducativo_crear.html'
+    success_url = reverse_lazy('centroeducativo_listar')
+
+class CentroEducativoDetailView(DetailView):
+    model = CentroEducativo
+    template_name = 'CentroEducativo/centroeducativo_detalle.html'
+
+class CentroEducativoUpdateView(UpdateView):
+    model = CentroEducativo
+    form_class = CentroEducativoForm
+    template_name = 'CentroEducativo/centroeducativo_editar.html'
+    success_url = reverse_lazy('centroeducativo_listar')
+
+class CentroEducativoDeleteView(DeleteView):
+    model = CentroEducativo
+    template_name = 'CentroEducativo/centroeducativo_eliminar.html'
+    success_url = reverse_lazy('centroeducativo_listar')
+
+#views TutoresAlumno
+
+class TutoresAlumnosListView(ListView):
+    model = TutoresAlumnos
+    template_name = 'TutoresAlumno/tutoresAlumno_listar.html'
+    context_object_name = 'tutoresalumnos'
+
+class TutoresAlumnosCreateView(CreateView):
+    model = TutoresAlumnos
+    form_class = TutoresAlumnosForm
+    template_name = 'TutoresAlumno/tutoresAlumno_crear.html'
+    success_url = reverse_lazy('tutoresAlumno_listar')
+
+class TutoresAlumnosDetailView(DetailView):
+    model = TutoresAlumnos
+    template_name = 'TutoresAlumno/tutoresAlumno_detalle.html'
+
+class TutoresAlumnosUpdateView(UpdateView):
+    model = TutoresAlumnos
+    form_class = TutoresAlumnosForm
+    template_name = 'TutoresAlumno/tutoresAlumno_editar.html'
+    success_url = reverse_lazy('tutoresAlumno_listar')
+
+class TutoresAlumnosDeleteView(DeleteView):
+    model = TutoresAlumnos
+    template_name = 'TutoresAlumno/tutoresAlumno_eliminar.html'
+    success_url = reverse_lazy('tutoresAlumno_listar')
