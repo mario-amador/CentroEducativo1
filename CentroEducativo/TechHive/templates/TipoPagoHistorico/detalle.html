@@ -20,16 +20,18 @@
 <!DOCTYPE html>
 <html>
   <body>
-    <form method="post">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <p><span class=> Tipo de Pago: </span> <br> {{tipopago.nombre}}</p>
-      <p><span class=> Descripción: </span> <br> {{tipopago.descripcion}}</p>
-      <p><span class=> Precio del Pago: </span> <br> {{tipopago.monto}}</p>
- 
-    <a href="{%  url 'tipopago_listar' %}" type="submit" class="btn btn-primary">
-    <i class="fas fa-reply"></i> Volver</a>
-    </form>
+    <div class="card-body">
+      <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <p><strong>Tipo de Pago:</strong><br>{{ object.tipo_pago }}</p>
+            <p><strong>Fecha Inicio:</strong><br>{{ object.fecha_inicio }}</p>
+            <p><strong>Fecha Final:</strong><br>{{ object.fecha_fin }}</p>
+            <p><strong>Precio del Pago:</strong><br>{{ object.monto }}</p>
+            <a href="{% url 'tipo_pago_historico_listar' %}" class="btn btn-primary">
+                <i class="fas fa-reply"></i> Volver
+            </a>
+        </form>
   </body>
 </div>
 </div>
