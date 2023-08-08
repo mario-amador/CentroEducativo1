@@ -1,24 +1,42 @@
+{% load static %} <!-- Agrega esta línea al comienzo de tu plantilla -->
+<!DOCTYPE html>
+<html>
 <head>
     <title>Factura N° {{ factura.numero_factura }}</title>
     <style>
         body {
             font-family: Arial, sans-serif;
+            background-image: url('/static/base/img/fondo.jpeg');
         }
-        table {
+        .logo-container {
+            position: relative;
+        }
+        .background-square {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
-            border-collapse: collapse;
+            height: 100%;
+            /* Color del cuadrado de fondo */
+            opacity: 0.5; /* Opacidad del cuadrado de fondo */
         }
-        th, td {
-            padding: 8px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background-color: #f2f2f2;
+        .logo {
+            position: absolute;
+            top: 50px; /* Ajusta la posición vertical del logo */
+            left: 50px; /* Ajusta la posición horizontal del logo */
+            width: 150px; /* Ajusta el ancho del logo */
+            z-index: 1; /* Coloca el logo en la parte superior */
+    
         }
     </style>
 </head>
 <body>
+    <div class="logo-container">
+        <div class="background-square"></div>
+        <img src="{% static 'base/img/fondo.jpeg' %}" alt="Logo" class="logo">
+    </div>
+    <!-- Encabezado con la imagen -->
+    
     <p>Empresa: {{ factura.CentroEducativo }}</p>
     <p>Factura N°: {{ factura.numero_factura }}</p>
     <p>Parametros SAR: {{ factura.ParametrosSAR}}</p>

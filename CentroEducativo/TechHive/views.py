@@ -146,31 +146,22 @@ def login_view(request):
     return render(request, 'base/login.html')
 
 
-
 def crear_pago(request):
-   
     if request.method == 'POST':
         form = PagoForm(request.POST)
         if form.is_valid():
             pago = form.save()
-            parametros_sar_id = 1  # Reemplaza con el ID correcto
-            parametros_sar = ParametrosSAR.objects.get(id=parametros_sar_id)
+            parametros_sar = ParametrosSAR.objects.latest('id')
     
-            centro_educativo_id = 1  # Reemplaza con el ID correcto
-            centro_educativo = CentroEducativo.objects.get(id=centro_educativo_id)
+            # Obtener el objeto CentroEducativo más reciente
+            centro_educativo = CentroEducativo.objects.latest('id')
 
-                # Crear la factura y asignar los valores necesarios
-            factura = Factura( ParametrosSAR=parametros_sar, CentroEducativo=centro_educativo, pago=pago)
-            generar_factura(request, pago.id)
-            
-            return JsonResponse({'pago_id': pago.id})
-        return redirect('lista_pagos')
+            # Crear la factura y asignar los valores necesarios
+            factura = Factura(ParametrosSAR=parametros_sar, CentroEducativo=centro_educativo, pago=pago)
+        return JsonResponse({'pago_id': pago.id})
     else:
         form = PagoForm()
     return render(request, 'crear_pago.html',{'form':form})
-
-
-
 
 
 
@@ -187,16 +178,10 @@ def lista_pagos(request):
 def generar_factura(request, pago_id):
     pago = get_object_or_404(Pago, pk=pago_id)
     
-    # Aquí obtienes los valores necesarios, por ejemplo:
-    parametros_sar_id = 1  # Reemplaza con el ID correcto
-    parametros_sar = ParametrosSAR.objects.get(id=parametros_sar_id)
-    
-    centro_educativo_id = 1  # Reemplaza con el ID correcto
-    centro_educativo = CentroEducativo.objects.get(id=centro_educativo_id)
-
-    # Crear la factura y asignar los valores necesarios
+    parametros_sar = ParametrosSAR.objects.latest('id')
+    centro_educativo = CentroEducativo.objects.latest('id')
+   
     factura = Factura( ParametrosSAR=parametros_sar, CentroEducativo=centro_educativo, pago=pago)
-    
     factura.save()
 
     context = {'factura': factura}
