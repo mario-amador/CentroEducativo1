@@ -346,7 +346,7 @@
     </button>
     </a>
 
-    <a>
+    <a href="{% url 'expedienteescolar_crear' %}">
     <button class="card-header py-3  flex-row align-items-center justify-content-between bg-white"style="width: -200PX;">
         <h6 class="m-0 font-weight-bold text-primary">Expedientes escolares</h6>
     </button>
@@ -367,7 +367,18 @@
     <a href="{% url 'horarios_crear' %}">
     <button class="card-header py-3  flex-row align-items-center justify-content-between bg-white"style="width: -100PX;">
         <h6 class="m-0 font-weight-bold text-primary">Horarios</h6>
-        <a class="dropdown-item mr-4" ></a>
+    </button>
+    </a>
+
+    <a href="{% url 'actitud_crear' %}">
+    <button class="card-header py-3  flex-row align-items-center justify-content-between bg-white"style="width: -100PX;">
+        <h6 class="m-0 font-weight-bold text-primary">Actitud</h6>
+    </button>
+    </a>
+
+    <a href="{% url 'centroeducativo_crear' %}">
+    <button class="card-header py-3  flex-row align-items-center justify-content-between bg-white"style="width: -100PX;">
+        <h6 class="m-0 font-weight-bold text-primary">Centro Educativo</h6>
     </button>
     </a>
     <hr></hr>
@@ -377,15 +388,15 @@
 
    <div class="card shadow mb-4">
     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-        <h6 class="m-0 font-weight-bold text-primary">Matriculas</h6>
+        <h6 class="m-0 font-weight-bold text-primary">Matrículas</h6>
         <div class="dropdown no-arrow justify-content-end">
             <a class="dropdown-item mr-4" href="{% url 'matricula_crear' %}">
                 <i class="fas fa-user-plus fa-lg fa-fw mr-2 text-gray-400"></i>
-                Matricula nueva
+                Agregar Matrícula
             </a>
             <a class="dropdown-item mr-4" href="{% url 'matricula_listar' %}">
                 <i class="fas fa-users fa-lg fa-fw mr-2 text-gray-400"></i>
-                Listar Matriculas
+                Listar Matrículas
             </a>
         </div>
     </div>
@@ -398,7 +409,7 @@
         <div class="dropdown no-arrow justify-content-end">
             <a class="dropdown-item mr-4" href="{% url 'crear_catedratico' %}">
                 <i class="fas fa-user-plus fa-lg fa-fw mr-2 text-gray-400"></i>
-                Agregar nuevo
+                Agregar Catedrático
             </a>
             <a class="dropdown-item mr-4" href="{% url 'listar_catedraticos' %}">
                 <i class="fas fa-users fa-lg fa-fw mr-2 text-gray-400"></i>
@@ -413,7 +424,7 @@
         <div class="dropdown no-arrow justify-content-end">
             <a class="dropdown-item mr-4" href="{% url 'crear_empleado' %}">
                 <i class="fas fa-user-plus fa-lg fa-fw mr-2 text-gray-400"></i>
-                Agregar nuevo
+                Agregar Empleado
             </a>
             <a class="dropdown-item mr-4" href="{% url 'listar_empleados' %}">
                 <i class="fas fa-users fa-lg fa-fw mr-2 text-gray-400"></i>
@@ -428,7 +439,7 @@
         <div class="dropdown no-arrow justify-content-end">
             <a class="dropdown-item mr-4" href="{% url 'asignatura_crear' %}">
                 <i class="fas fa-user-plus fa-lg fa-fw mr-2 text-gray-400"></i>
-                Agregar nuevo
+                Agregar Asignatura
             </a>
             <a class="dropdown-item mr-4" href="{% url 'asignatura_listar' %}">
                 <i class="fas fa-users fa-lg fa-fw mr-2 text-gray-400"></i>
@@ -443,11 +454,11 @@
         <div class="dropdown no-arrow justify-content-end">
             <a class="dropdown-item mr-4" href="{% url 'departamento_crear' %}">
                 <i class="fas fa-user-plus fa-lg fa-fw mr-2 text-gray-400"></i>
-                Agregar nuevos
+                Agregar Departamento
             </a>
             <a class="dropdown-item mr-4" href="{% url 'departamento_listar' %}">
                 <i class="fas fa-users fa-lg fa-fw mr-2 text-gray-400"></i>
-                Listar 
+                Listar Departamentos
             </a>
         </div>
     </div>
@@ -458,11 +469,11 @@
         <div class="dropdown no-arrow justify-content-end">
             <a class="dropdown-item mr-4" href="{% url 'municipio_crear' %}">
                 <i class="fas fa-user-plus fa-lg fa-fw mr-2 text-gray-400"></i>
-                Agregar nuevos
+                Agregar Municipio
             </a>
             <a class="dropdown-item mr-4" href="{% url 'municipio_listar' %}">
                 <i class="fas fa-users fa-lg fa-fw mr-2 text-gray-400"></i>
-                Listar 
+                Listar Municipios
             </a>
         </div>
     </div>
@@ -473,11 +484,11 @@
         <div class="dropdown no-arrow justify-content-end">
             <a class="dropdown-item mr-4" href="{% url 'crear_pago' %}">
                 <i class="fas fa-user-plus fa-lg fa-fw mr-2 text-gray-400"></i>
-                Agregar nuevos
+                Agregar Pago
             </a>
             <a class="dropdown-item mr-4" href="{% url 'lista_pagos' %}">
                 <i class="fas fa-users fa-lg fa-fw mr-2 text-gray-400"></i>
-                Listar 
+                Listar Pagos
             </a>
         </div>
     </div>
@@ -488,11 +499,11 @@
         <div class="dropdown no-arrow justify-content-end">
             <a class="dropdown-item mr-4" href="{% url 'mensualidad_crear' %}">
                 <i class="fas fa-user-plus fa-lg fa-fw mr-2 text-gray-400"></i>
-                Agregar nuevos
+                Agregar Mensualidad
             </a>
             <a class="dropdown-item mr-4" href="{% url 'mensualidad_listar' %}">
                 <i class="fas fa-users fa-lg fa-fw mr-2 text-gray-400"></i>
-                Listar 
+                Listar Mensualidades
             </a>
         </div>
     </div>
@@ -503,11 +514,11 @@
         <div class="dropdown no-arrow justify-content-end">
             <a class="dropdown-item mr-4" href="{% url 'parametros_crear' %}">
                 <i class="fas fa-user-plus fa-lg fa-fw mr-2 text-gray-400"></i>
-                Agregar nuevos
+                Agregar Paramentros SAR
             </a>
             <a class="dropdown-item mr-4" href="{% url 'parametros_listar' %}">
                 <i class="fas fa-users fa-lg fa-fw mr-2 text-gray-400"></i>
-                Listar 
+                Listar Paramentros SAR
             </a>
         </div>
     </div>
@@ -518,11 +529,11 @@
         <div class="dropdown no-arrow justify-content-end">
             <a class="dropdown-item mr-4" href="{% url 'documento_crear' %}">
                 <i class="fas fa-user-plus fa-lg fa-fw mr-2 text-gray-400"></i>
-                Agregar nuevos
+                Agregar Documento
             </a>
             <a class="dropdown-item mr-4" href="{% url 'documento_listar' %}">
                 <i class="fas fa-users fa-lg fa-fw mr-2 text-gray-400"></i>
-                Listar 
+                Listar Documentos
             </a>
         </div>
     </div>
@@ -533,11 +544,11 @@
         <div class="dropdown no-arrow justify-content-end">
             <a class="dropdown-item mr-4" href="{% url 'categoria_crear' %}">
                 <i class="fas fa-user-plus fa-lg fa-fw mr-2 text-gray-400"></i>
-                Agregar nuevos
+                Agregar Categoria
             </a>
             <a class="dropdown-item mr-4" href="{% url 'categoria_listar' %}">
                 <i class="fas fa-users fa-lg fa-fw mr-2 text-gray-400"></i>
-                Listar 
+                Listar Categorias
             </a>
         </div>
     </div>
@@ -548,30 +559,30 @@
         <div class="dropdown no-arrow justify-content-end">
             <a class="dropdown-item mr-4" href="{% url 'tipopago_crear' %}">
                 <i class="fas fa-user-plus fa-lg fa-fw mr-2 text-gray-400"></i>
-                Agregar nuevos
+                Agregar Tipo Pago
             </a>
             <a class="dropdown-item mr-4" href="{% url 'tipopago_listar' %}">
                 <i class="fas fa-users fa-lg fa-fw mr-2 text-gray-400"></i>
-                Listar 
+                Listar Tipos Pagos
             </a>
         </div>
     </div>
  </div>   
  <div class="card shadow mb-4">
     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-        <h6 class="m-0 font-weight-bold text-primary">Grados y secciones</h6>
+        <h6 class="m-0 font-weight-bold text-primary">Grados y Secciones</h6>
         <div class="dropdown no-arrow justify-content-end">
             <a class="dropdown-item mr-4" href="{% url 'grado_crear' %}">
                 <i class="fas fa-user-plus fa-lg fa-fw mr-2 text-gray-400"></i>
-                Agregar nuevos
+                Agregar Grados
             </a>
-            <a class="dropdown-item mr-4" href="{% url 'grado_listar' %}">
+            <a class="dropdown-item mr-4" href="{% url 'seccion_crear' %}">
                 <i class="fas fa-users fa-lg fa-fw mr-2 text-gray-400"></i>
-                Listar grados-seccion
+                Agregar Sección
             </a>
         </div>
     </div>
- </div>  
+ </div> 
  <div class="card shadow mb-4">
     <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
         <h6 class="m-0 font-weight-bold text-primary"> Notas</h6>
@@ -614,6 +625,36 @@
             <a class="dropdown-item mr-4" href="{% url 'tiposanguineo_listar' %}">
                 <i class="fas fa-users fa-lg fa-fw mr-2 text-gray-400"></i>
                 Listar Tipos Sanguineo
+            </a>
+        </div>
+    </div>
+ </div>
+ <div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary"> Tipo Reporte</h6>
+        <div class="dropdown no-arrow justify-content-end">
+            <a class="dropdown-item mr-4" href="{% url 'tiporeporte_crear' %}">
+                <i class="fas fa-user-plus fa-lg fa-fw mr-2 text-gray-400"></i>
+                Agregar Tipo Reporte
+            </a>
+            <a class="dropdown-item mr-4" href="{% url 'tiporeporte_listar' %}">
+                <i class="fas fa-users fa-lg fa-fw mr-2 text-gray-400"></i>
+                Listar Tipos Reporte
+            </a>
+        </div>
+    </div>
+ </div>
+ <div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary"> TutoresAlumnos</h6>
+        <div class="dropdown no-arrow justify-content-end">
+            <a class="dropdown-item mr-4" href="{% url 'tutoresalumno_crear' %}">
+                <i class="fas fa-user-plus fa-lg fa-fw mr-2 text-gray-400"></i>
+                Agregar TutoresAlumnos
+            </a>
+            <a class="dropdown-item mr-4" href="{% url 'tutoresalumno_listar' %}">
+                <i class="fas fa-users fa-lg fa-fw mr-2 text-gray-400"></i>
+                Listar TutoresAlumnos
             </a>
         </div>
     </div>
