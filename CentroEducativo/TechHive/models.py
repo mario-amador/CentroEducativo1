@@ -299,13 +299,19 @@ class Pago(models.Model):
 
     
     
+from django.db import models
+
 class Matricula(models.Model):
-    Pagos = models.ForeignKey(Pago, on_delete=models.CASCADE)
-    Usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
-    FechaMatricula = models.DateField()
+    pagos = models.ForeignKey(Pago, on_delete=models.CASCADE)
+    tutor = models.CharField(max_length=100)
+    alumno = models.CharField(max_length=100)
+    grado = models.ForeignKey(Grado, on_delete=models.CASCADE)
+    usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
+    fecha_matricula = models.DateField()
 
     def __str__(self):
-        return f"{self.Pagos} {self.FechaMatricula}"
+        return f"{self.pagos} {self.fecha_matricula}"
+
     
 class CentroEducativo(models.Model):
     NombreCentro= models.CharField(max_length=100)

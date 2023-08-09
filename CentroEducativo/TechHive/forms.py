@@ -682,25 +682,34 @@ class AsignaturaForm(forms.ModelForm):
         no_tres_letras_iguales_validator(asignatura)
         return asignatura.capitalize()
 
+from django import forms
+from .models import Matricula, Pago, Usuario
+
 class MatriculaForm(forms.ModelForm):
     class Meta:
         model = Matricula
-        fields = ['Pagos', 'Usuario', 'FechaMatricula']
+        fields = ['pagos', 'tutor', 'alumno', 'grado', 'usuario', 'fecha_matricula']
         labels = {
-            'Pagos': 'Pagos',
-            'Usuario': 'Nombre del Usuario',
-            'FechaMatricula': 'Fecha de la Matrícula',
+            'pagos': 'Pagos',
+            'tutor': 'Tutor',
+            'alumno': 'Alumno',
+            'grado': 'Grado',
+            'usuario': 'Nombre del Usuario',
+            'fecha_matricula': 'Fecha de la Matrícula',
         }
         widgets = {
-            'Pagos': forms.Select(
-                attrs={'class': 'form-control'}),
-            'Usuario': forms.Select(
-                attrs={'class': 'form-control'}),
-            'FechaMatricula': forms.DateInput(
-                attrs={'class': 'form-control', 
-                       'placeholder': 'YYYY-MM-DD',
-                        'type': 'date'}),
+            'pagos': forms.Select(attrs={'class': 'form-control'}),
+            'tutor': forms.TextInput(attrs={'class': 'form-control'}),
+            'alumno': forms.TextInput(attrs={'class': 'form-control'}),
+            'grado': forms.Select(attrs={'class': 'form-control'}),
+            'usuario': forms.Select(attrs={'class': 'form-control'}),
+            'fecha_matricula': forms.DateInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'YYYY-MM-DD',
+                'type': 'date',
+            }),
         }
+
 
     def clean_FechaMatricula(self):
         fecha_matricula = self.cleaned_data.get('FechaMatricula')
