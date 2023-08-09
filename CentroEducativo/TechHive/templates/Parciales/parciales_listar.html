@@ -347,16 +347,19 @@
                     {% for parcialesacademicos in parciales  %}
                     <tr>
                         <td>{{ parcialesacademicos.id}}</td>
-                        <td>{{ parcialesacademicos.NombresAlumno }}</td>
-                        <td>{{ parcialesacademicos.ApellidosAlumno}}</td>
-                        <td>{{ parcialesacademicos.DocumentoDPI }}</td>
-
+                        <td>{{ parcialesacademicos.ParcialAcademico }}</td>
+                        <td>{{ parcialesacademicos.FechaInicio}}</td>
+                        <td>{{ parcialesacademicos.FechaFinal }}</td>
+                        <td>{{ parcialesacademicos.Año }}</td>
                         <td>
-                            <a href="{% url 'parciales_crear'  %}"class="btn btn-link text-success">
+                            <a href="{% url 'parciales_detalle' parcialesacademicos.id %}"class="btn btn-link text-success">
                                 <i class="fas fa-eye"></i>
                             </a>
-                            <a href="{% url 'parciales_crear' %}"class="btn btn-link text-success">
+                            <a href="{% url 'parciales_editar' parcialesacademicos.id %}"class="btn btn-link text-success">
                                 <i class="fas fa-edit"></i>
+                            </a>
+                            <a href="{% url 'parciales_eliminar' parcialesacademicos.id  %}"class="btn btn-link text-danger">
+                                <i class="fas fa-trash"></i>
                             </a>
                         </td>
                     </tr>
