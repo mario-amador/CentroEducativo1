@@ -1,0 +1,13 @@
+{% extends 'base/base.html' %}
+
+{% block pagina_contenido %}
+  <h1>Editar Tipo de Pago Histórico</h1>
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" value="submit" class="btn btn-success">
+      <i class="fas fa-save"></i> Guardar</button>
+    <a href="{% url 'tipo_pago_historico_listar' %}" class="btn btn-secondary">
+      <i class="fas fa-times"></i> Cancelar</a>
+  </form>
+{% endblock pagina_contenido %}

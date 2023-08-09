@@ -314,7 +314,7 @@
     <div class="card shadow mb-4">
         <!-- Card Header - Dropdown -->
         <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-            <h6 class="m-0 font-weight-bold text-primary">Listado de tipos de pago</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Listado de tipos de pagos Historicos</h6>
             <div class="dropdown no-arrow">
                 <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
                     aria-haspopup="true" aria-expanded="false">
@@ -323,7 +323,7 @@
                 <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
                     aria-labelledby="dropdownMenuLink">
                     <div class="dropdown-header">ACCIONES:</div>
-                    <a class="dropdown-item" href="{% url 'tipopago_crear' %}">Nuevo municipio</a>
+                    <a class="dropdown-item" href="{% url 'tipo_pago_historico_crear' %}">Nuevo Tipo Pago Historico</a>
                     <a class="dropdown-item" href="{%  url 'bienvenida_administrador' %}">Principal</a>
                 </div>
             </div>
@@ -332,37 +332,38 @@
         <div class="card-body">
             {% if not tipopago %}
           {% endif %}
-          <table id="tipopago" class="table table-striped" style="width:100%">
+          <table id="tipo_pago_historico" class="table table-striped" style="width:100%">
             <thead>
                 <tr>
                     <th>ID</th>
                     <th>Tipo de Pago</th>
-                    <th>Descripción</th>
+                    <th>Fecha Inicio</th>
+                    <th>Fecha Final</th>
                     <th>Monto</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
-                {% for tipopago in tipospago %}
+              {% for tipo_pago_historico in tipos_pago_historicos %}
                 <tr>
-                    <td>{{ tipopago.id}}</td>
-                    <td>{{ tipopago.nombre}}</td>
-                    <td>{{ tipopago.descripcion}}</td>
-                    <td>{{ tipopago.monto}}</td>
+                    <td>{{ tipo_pago_historico.id}}</td>
+                    <td>{{ tipo_pago_historico.tipo_pago}}</td>
+                    <td>{{ tipo_pago_historico.fecha_inicio}}</td>
+                    <td>{{ tipo_pago_historico.fecha_fin}}</td>
+                    <td>{{ tipo_pago_historico.monto}}</td>
 
                     <td>
-                        <a href="{% url 'tipopago_detalle' tipopago.id %}"class="btn btn-link text-success">
+                        <a href="{% url 'tipo_pago_historico_detalle' tipo_pago_historico.id %}"class="btn btn-link text-success">
                             <i class="fas fa-eye"></i>
                         </a>
-                        <a href="{% url 'tipopago_editar' tipopago.id %}"class="btn btn-link text-success">
+                        <a href="{% url 'tipo_pago_historico_editar' tipo_pago_historico.id %}"class="btn btn-link text-success">
                             <i class="fas fa-edit"></i>
                         </a>
-                        <a href="{% url 'tipopago_eliminar' tipopago.id %}"class="btn btn-link text-danger">
+                        <a href="{% url 'tipo_pago_historico_eliminar' tipo_pago_historico.id %}"class="btn btn-link text-danger">
                             <i class="fas fa-trash"></i>
                         </a>
-                        <a href="{% url 'tipo_pago_actualizar' tipopago.id %}" class="btn btn-primary">Actualizar</a>
-
                     </td>
+                
                 </tr>
                 {% empty %}
                 <tr>
@@ -378,7 +379,7 @@
 
             <script type="text/javascript">
             $(document).ready(function() {
-                $('#tipospago').DataTable();
+                $('#tipo_pago_historico').DataTable();
             });
             </script>
 

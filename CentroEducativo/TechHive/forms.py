@@ -1412,17 +1412,18 @@ class DocumentoForm(forms.ModelForm):
 
 class TipoPagoForm(forms.ModelForm):
     class Meta:
-        model=TipoPago
-        fields=['TipoPago', 'PrecioPago']
-        labels={'TipoPago':'Nombre del pago',
-                'PrecioPago':'Precio del pago'}
-        widgets={
-            'TipoPago': forms.TextInput(
-                 attrs={'class': 'form-control'}),
-            'PrecioPago': forms.NumberInput(
-                 attrs={'class': 'form-control',
-                        'step':'.1'}),
-            }
+        model = TipoPago
+        fields = ['nombre', 'descripcion', 'monto']
+        labels = {
+            'nombre': 'Nombre del pago',
+            'descripcion': 'Descripción del pago',
+            'monto': 'Precio del pago'
+        }
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'descripcion': forms.TextInput(attrs={'class': 'form-control'}),
+            'monto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+        }
         
     def clean_TipoPago(self):
         tipopago = self.cleaned_data.get('TipoPago')
@@ -1432,7 +1433,82 @@ class TipoPagoForm(forms.ModelForm):
         no_numeros_validator(tipopago)
         no_tres_letras_iguales_validator(tipopago)
         return tipopago.capitalize()
+
+
+from django import forms
+from .models import TipoPago
+
+from django import forms
+from .models import TipoPago
+
+class TipoPagoEditForm(TipoPagoForm):
+    class Meta:
+        model = TipoPago
+        fields = ['nombre', 'descripcion', 'monto']
+        labels = {
+            'nombre': 'Nombre del pago',
+            'descripcion': 'Descripción del pago',
+            'monto': 'Precio del pago'
+        }
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'descripcion': forms.TextInput(attrs={'class': 'form-control'}),
+            'monto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'readonly': 'readonly'}),
+        }
+
+
+from django import forms
+from .models import TipoPagoHistorico
+
+class TipoPagoHistoricoForm(forms.ModelForm):
+    class Meta:
+        model = TipoPagoHistorico
+        fields = ['tipo_pago', 'fecha_inicio', 'fecha_fin', 'monto']
+        labels = {
+            'tipo_pago': 'Tipo de Pago',
+            'fecha_inicio': 'Fecha de Inicio',
+            'fecha_fin': 'Fecha de Fin',
+            'monto': 'Monto',
+        }
+        widgets = {
+            'tipo_pago': forms.Select(attrs={'class': 'form-control'}),
+            'fecha_inicio': forms.DateTimeInput(attrs={'class': 'form-control'}),
+            'fecha_fin': forms.DateTimeInput(attrs={'class': 'form-control'}),
+            'monto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+        }
         
+
+
+from django import forms
+from .models import TipoPago
+
+class TipoPagoActualizarForm(forms.ModelForm):
+    nueva_fecha_fin = forms.DateField(
+        label='Nueva Fecha Final',
+        widget=forms.DateInput(
+            attrs={
+                'class': 'form-control',
+                'placeholder': 'YYYY-MM-DD',
+                'type': 'date',
+            }
+        )
+    )
+
+    class Meta:
+        model = TipoPago
+        fields = ['nombre', 'monto', 'nueva_fecha_fin']  # Campos que se pueden actualizar
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        instance = kwargs.get('instance')
+        if instance:
+            self.fields['nombre'] = forms.CharField(
+                initial=instance.nombre,
+                widget=forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'})
+            )
+
+
+
 class TipoSanguineoForm(forms.ModelForm):
     class Meta:
         model = TipoSanguineo

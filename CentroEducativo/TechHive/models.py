@@ -170,11 +170,21 @@ class Seccion(models.Model):
 
 
 class TipoPago(models.Model):
-    TipoPago = models.CharField(max_length=30)
-    PrecioPago = models.DecimalField(max_digits=10, decimal_places=2)
+    nombre = models.CharField(max_length=40)
+    descripcion = models.CharField(max_length=40)
+    monto = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
 
     def __str__(self):
-        return self.TipoPago
+        return self.nombre
+
+class TipoPagoHistorico(models.Model):
+    tipo_pago = models.ForeignKey(TipoPago, on_delete=models.CASCADE)
+    fecha_inicio = models.DateTimeField()
+    fecha_fin = models.DateTimeField(null=True, blank=True)
+    monto = models.DecimalField(max_digits=8, decimal_places=2)
+    
+    def __str__(self):
+        return f"{self.tipo_pago} - {self.fecha_inicio} to {self.fecha_fin}"
 
 
 class Meses(models.Model):

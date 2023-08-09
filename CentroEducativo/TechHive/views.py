@@ -6,7 +6,7 @@ from django.views.generic import FormView
 from django.shortcuts import render
 from imaplib import _Authenticator
 import io
-
+from .forms import TipoPagoEditForm
 from xhtml2pdf import pisa
 from django.core.handlers.wsgi import WSGIRequest
 from django.contrib.auth import authenticate, login
@@ -29,8 +29,8 @@ from .models import Usuario
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView,TemplateView
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Alumno,Empleado,Catedratico, ExpedienteEscolar, Grado, Municipio,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Departamento,  ParametrosSAR,  Meses, CategoriaEmpleado, DocumentoDPI,  Seccion, Actitud, CentroEducativo, TutoresAlumnos
-from .forms import AlumnoForm,EmpleadoForm,CatedraticoForm, ExpedienteEscolarForm, GradoForm, TutorForm,AsignaturaForm,MatriculaForm,ReportesForm,ExpedienteMedicoForm, HorariosForm, NivelesForm, ParcialesForm, NotasForm, DepartamentoForm, MunicipioForm, MensualidadForm, ParametrosSARForm, CategoriaForm, DocumentoForm, UserCreationForm, UserEditForm,  SeccionForm, ActitudForm, CentroEducativoForm, TutoresAlumnosForm
+from .models import TipoPagoHistorico,Alumno,Empleado,Catedratico, ExpedienteEscolar, Grado, Municipio,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Departamento,  ParametrosSAR,  Meses, CategoriaEmpleado, DocumentoDPI,  Seccion, Actitud, CentroEducativo, TutoresAlumnos
+from .forms import TipoPagoHistoricoForm,AlumnoForm,EmpleadoForm,CatedraticoForm, ExpedienteEscolarForm, GradoForm, TutorForm,AsignaturaForm,MatriculaForm,ReportesForm,ExpedienteMedicoForm, HorariosForm, NivelesForm, ParcialesForm, NotasForm, DepartamentoForm, MunicipioForm, MensualidadForm, ParametrosSARForm, CategoriaForm, DocumentoForm, UserCreationForm, UserEditForm,  SeccionForm, ActitudForm, CentroEducativoForm, TutoresAlumnosForm
 
 from .models import TipoReporte, TipoSanguineo, Alumno,Empleado,Catedratico,TipoPago, ExpedienteEscolar, Grado, Municipio,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Departamento,  ParametrosSAR,  Meses, CategoriaEmpleado, DocumentoDPI,  Seccion, Actitud, CentroEducativo, TutoresAlumnos
 from .forms import TipoReporteForm,TipoSanguineoForm, AlumnoForm,EmpleadoForm,CatedraticoForm, TipoPagoForm,ExpedienteEscolarForm, GradoForm,TutorForm,AsignaturaForm,MatriculaForm,ReportesForm,ExpedienteMedicoForm, HorariosForm, NivelesForm, ParcialesForm, NotasForm, DepartamentoForm, MunicipioForm,  MensualidadForm, ParametrosSARForm, CategoriaForm, DocumentoForm,  SeccionForm, ActitudForm, CentroEducativoForm, TutoresAlumnosForm
@@ -914,7 +914,7 @@ class TipoPagoCreateView(CreateView):
 
 class TipoPagoUpdateView(UpdateView):
     model = TipoPago
-    form_class = TipoPagoForm
+    form_class = TipoPagoEditForm
     template_name = 'TipoPago/tipopago_editar.html'
     success_url = reverse_lazy('tipopago_listar')
 
@@ -1097,3 +1097,88 @@ class TutoresAlumnosDeleteView(DeleteView):
     model = TutoresAlumnos
     template_name = 'TutoresAlumno/tutoresAlumno_eliminar.html'
     success_url = reverse_lazy('tutoresAlumno_listar')
+
+
+#TipoPago Historicos
+
+class TipoPagoHistoricoListView(ListView):
+    model = TipoPagoHistorico
+    template_name = 'TipoPagoHistorico/listar.html'
+    context_object_name = 'tipos_pago_historicos'
+
+class TipoPagoHistoricoCreateView(CreateView):
+    model = TipoPagoHistorico
+    form_class = TipoPagoHistoricoForm
+    template_name = 'TipoPagoHistorico/agregar.html'
+    success_url = reverse_lazy('tipo_pago_historico_listar')
+
+class TipoPagoHistoricoUpdateView(UpdateView):
+    model = TipoPagoHistorico
+    form_class = TipoPagoEditForm
+    template_name = 'TipoPagoHistorico/editar.html'
+    success_url = reverse_lazy('tipo_pago_historico_listar')
+
+       
+
+class TipoPagoHistoricoDeleteView(DeleteView):
+    model = TipoPagoHistoricoForm
+    template_name = 'TipoPagoHistorico/eliminar.html'
+    success_url = reverse_lazy('tipo_pago_historico_listar')
+
+class TipoPagoHistoricoDetailView(DetailView):
+    model = TipoPagoHistorico
+    template_name = 'TipoPagoHistorico/detalle.html'
+
+
+from django.shortcuts import render, redirect
+from django.views import View
+from .models import TipoPago, TipoPagoHistorico
+from .forms import TipoPagoActualizarForm
+
+class TipoPagoActualizarView(View):
+    template_name = 'TipoPagoHistorico/actualizarMonto.html'
+    
+    def get(self, request, pk):
+        tipo_pago = TipoPago.objects.get(pk=pk)
+        form = TipoPagoActualizarForm(instance=tipo_pago)
+        return render(request, self.template_name, {'form': form})
+    
+    def get(self, request, pk):
+        tipo_pago = TipoPago.objects.get(pk=pk)
+        form = TipoPagoActualizarForm(instance=tipo_pago)
+        return render(request, self.template_name, {'form': form})
+    
+    def get(self, request, pk):
+        tipo_pago = TipoPago.objects.get(pk=pk)
+        form = TipoPagoActualizarForm(instance=tipo_pago)
+        return render(request, self.template_name, {'form': form})
+    
+    def post(self, request, pk):
+        tipo_pago = TipoPago.objects.get(pk=pk)
+        form = TipoPagoActualizarForm(request.POST, instance=tipo_pago)
+        
+        if form.is_valid():
+            nueva_fecha_fin = form.cleaned_data['nueva_fecha_fin']
+            nuevo_monto = tipo_pago.monto
+            
+            # Obtener el último registro de TipoPagoHistorico asociado a este TipoPago
+            try:
+                ultimo_historico = TipoPagoHistorico.objects.filter(tipo_pago=tipo_pago).latest('fecha_inicio')
+                ultimo_historico.fecha_fin = nueva_fecha_fin
+                ultimo_historico.save()
+            except TipoPagoHistorico.DoesNotExist:
+                pass  # No se encontró un registro en TipoPagoHistorico, no es un problema si está vacío
+            
+            # Crear un nuevo registro en TipoPagoHistorico antes de actualizar
+            TipoPagoHistorico.objects.create(
+                tipo_pago=tipo_pago,
+                fecha_inicio=nueva_fecha_fin,
+                fecha_fin=None,
+                monto=nuevo_monto
+            )
+            
+            tipo_pago.save()
+            
+            return redirect('tipopago_listar')  # Redirigir a la lista de tipos de pago
+        else:
+            return render(request, self.template_name, {'form': form})
