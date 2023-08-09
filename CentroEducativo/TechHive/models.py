@@ -334,30 +334,32 @@ class ParametrosSAR(models.Model):
 
 
 class Factura(models.Model):
-    numero_factura = models.CharField(unique=True, max_length=16)
+    numero_factura = models.CharField(unique=True, max_length=21)
     fecha_emision = models.DateField(auto_now_add=True)
     ParametrosSAR = models.ForeignKey(ParametrosSAR, on_delete=models.CASCADE)
     CentroEducativo = models.ForeignKey(CentroEducativo, on_delete=models.CASCADE)
     pago = models.ForeignKey(Pago, on_delete=models.CASCADE)
-
+    
     def save(self, *args, **kwargs):
         if not self.numero_factura:
             param_sar = self.ParametrosSAR
             rango_inicial = str(param_sar.RangoInicial)
-            longitud_rango = len(rango_inicial)
+            sucursal = self.ParametrosSAR.Sucursal.replace('-', '')  # Elimina los guiones
+            tipo_documento = self.ParametrosSAR.TipoDocumento.replace('-', '')  # Elimina los guiones
             
             # Encuentra el último número de factura existente
             ultima_factura = Factura.objects.order_by('-numero_factura').first()
             if ultima_factura:
-                ultimo_numero = ultima_factura.numero_factura
+                ultimo_numero = ultima_factura.numero_factura.split('-')[-1]
             else:
                 ultimo_numero = rango_inicial
             
-            nuevo_numero = str(int(ultimo_numero) + 1).zfill(longitud_rango)
+            nuevo_numero = str(int(ultimo_numero) + 1).zfill(len(rango_inicial))
             
-            self.numero_factura = nuevo_numero
+            self.numero_factura = f"{sucursal}-{tipo_documento}-{nuevo_numero}"
             
         super().save(*args, **kwargs)
+
 
     def __str__(self):
         return f"Sucursal: {self.CentroEducativo} - Factura N° {self.numero_factura} - Fecha de Emisión: {self.fecha_emision} - {self.ParametrosSAR} - Pago ID: {self.pago.id}"

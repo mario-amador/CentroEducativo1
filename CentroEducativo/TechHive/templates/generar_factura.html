@@ -49,6 +49,10 @@
     <h1>Factura N° {{ factura.numero_factura }}</h1>
     <p>Empresa: {{ factura.CentroEducativo }}</p>
     <p>Fecha de Emisión: {{ factura.fecha_emision }}</p>
+    <p>CAI: {{ factura.ParametrosSAR.CAI }}</p>
+    <p>RTN: {{ factura.ParametrosSAR.RTN }}</p>
+    <p>Rango Inicial: {{ factura.ParametrosSAR.RangoInicial }}</p>
+    <p>Rango Final: {{ factura.ParametrosSAR.RangoFinal }}</p>
     
     <h2>Detalle de Pago</h2>
     <table>
@@ -58,6 +62,7 @@
             <th class="header">Alumno</th>
             <th class="header">Fecha y Hora</th>
             <th class="header">Tipo de Pago</th>
+            <th class="header">Monto</th>
             <th class="header">Mes</th>
         </tr>
         <tr>
@@ -66,6 +71,7 @@
             <td>{{ factura.pago.Alumno }}</td>
             <td>{{ factura.pago.FechaHoraPago }}</td>
             <td>{{ factura.pago.TipoPago }}</td>
+            <td>{{ factura.pago.TipoPago.monto }}</td>
             <td>{{ factura.pago.Meses }}</td>
         </tr>
     </table>

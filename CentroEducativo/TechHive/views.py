@@ -152,7 +152,6 @@ def crear_pago(request):
         if form.is_valid():
             pago = form.save()
             parametros_sar = ParametrosSAR.objects.latest('id')
-    
             # Obtener el objeto CentroEducativo más reciente
             centro_educativo = CentroEducativo.objects.latest('id')
 
