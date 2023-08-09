@@ -6,7 +6,7 @@ from django.views.generic import FormView
 from django.shortcuts import render
 from imaplib import _Authenticator
 import io
-from .forms import TipoPagoEditForm
+
 from xhtml2pdf import pisa
 from django.core.handlers.wsgi import WSGIRequest
 from django.contrib.auth import authenticate, login
@@ -16,8 +16,8 @@ from django.shortcuts import get_object_or_404, render
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView,TemplateView
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Alumno, CentroEducativo,Empleado,Catedratico, ExpedienteEscolar, Factura, Grado, Municipio, Pago,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Departamento, ParametrosSAR, Meses, CategoriaEmpleado, DocumentoDPI
-from .forms import AlumnoForm,EmpleadoForm,CatedraticoForm, ExpedienteEscolarForm,GradoForm, PagoForm, TutorForm,AsignaturaForm,MatriculaForm,ReportesForm,ExpedienteMedicoForm, HorariosForm, NivelesForm, ParcialesForm, NotasForm, DepartamentoForm, MunicipioForm,  MensualidadForm, ParametrosSARForm, CategoriaForm, DocumentoForm, UserCreationForm, UserEditForm
+from .models import Alumno, CentroEducativo,Empleado,Catedratico, ExpedienteEscolar, Factura, Grado, Municipio, Pago,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Departamento, ParametrosSAR, Meses, CategoriaEmpleado, DocumentoDPI, TipoPagoHistorico
+from .forms import AlumnoForm,EmpleadoForm,CatedraticoForm, ExpedienteEscolarForm,GradoForm, PagoForm, TutorForm,AsignaturaForm,MatriculaForm,ReportesForm,ExpedienteMedicoForm, HorariosForm, NivelesForm, ParcialesForm, NotasForm, DepartamentoForm, MunicipioForm,  MensualidadForm, ParametrosSARForm, CategoriaForm, DocumentoForm, UserCreationForm, UserEditForm, TipoPagoEditForm, TipoPagoActualizarForm
 
 from .models import TipoReporte, TipoSanguineo, Alumno,Empleado,Catedratico,TipoPago, ExpedienteEscolar, Grado, Municipio,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Departamento, ParametrosSAR, Meses, CategoriaEmpleado, DocumentoDPI
 from .forms import TipoReporteForm,TipoSanguineoForm, AlumnoForm,EmpleadoForm,CatedraticoForm, TipoPagoForm,ExpedienteEscolarForm, GradoForm,TutorForm,AsignaturaForm,MatriculaForm,ReportesForm,ExpedienteMedicoForm, HorariosForm, NivelesForm, ParcialesForm, NotasForm, DepartamentoForm, MunicipioForm,  MensualidadForm, ParametrosSARForm, CategoriaForm, DocumentoForm
@@ -29,11 +29,11 @@ from .models import Usuario
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView,TemplateView
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import TipoPagoHistorico,Alumno,Empleado,Catedratico, ExpedienteEscolar, Grado, Municipio,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Departamento,  ParametrosSAR,  Meses, CategoriaEmpleado, DocumentoDPI,  Seccion, Actitud, CentroEducativo, TutoresAlumnos
-from .forms import TipoPagoHistoricoForm,AlumnoForm,EmpleadoForm,CatedraticoForm, ExpedienteEscolarForm, GradoForm, TutorForm,AsignaturaForm,MatriculaForm,ReportesForm,ExpedienteMedicoForm, HorariosForm, NivelesForm, ParcialesForm, NotasForm, DepartamentoForm, MunicipioForm, MensualidadForm, ParametrosSARForm, CategoriaForm, DocumentoForm, UserCreationForm, UserEditForm,  SeccionForm, ActitudForm, CentroEducativoForm, TutoresAlumnosForm
+from .models import Alumno,Empleado,Catedratico, ExpedienteEscolar, Grado, Municipio,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Departamento,  ParametrosSAR,  Meses, CategoriaEmpleado, DocumentoDPI,  Seccion, Actitud, CentroEducativo, TutoresAlumnos
+from .forms import AlumnoForm,EmpleadoForm,CatedraticoForm, ExpedienteEscolarForm, GradoForm, TutorForm,AsignaturaForm,MatriculaForm,ReportesForm,ExpedienteMedicoForm, HorariosForm, NivelesForm, ParcialesForm, NotasForm, DepartamentoForm, MunicipioForm, MensualidadForm, ParametrosSARForm, CategoriaForm, DocumentoForm, UserCreationForm, UserEditForm,  SeccionForm, ActitudForm, CentroEducativoForm, TutoresAlumnosForm
 
 from .models import TipoReporte, TipoSanguineo, Alumno,Empleado,Catedratico,TipoPago, ExpedienteEscolar, Grado, Municipio,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Departamento,  ParametrosSAR,  Meses, CategoriaEmpleado, DocumentoDPI,  Seccion, Actitud, CentroEducativo, TutoresAlumnos
-from .forms import TipoReporteForm,TipoSanguineoForm, AlumnoForm,EmpleadoForm,CatedraticoForm, TipoPagoForm,ExpedienteEscolarForm, GradoForm,TutorForm,AsignaturaForm,MatriculaForm,ReportesForm,ExpedienteMedicoForm, HorariosForm, NivelesForm, ParcialesForm, NotasForm, DepartamentoForm, MunicipioForm,  MensualidadForm, ParametrosSARForm, CategoriaForm, DocumentoForm,  SeccionForm, ActitudForm, CentroEducativoForm, TutoresAlumnosForm
+from .forms import TipoReporteForm,TipoSanguineoForm, AlumnoForm,EmpleadoForm,CatedraticoForm, TipoPagoForm,ExpedienteEscolarForm, GradoForm,TutorForm,AsignaturaForm,MatriculaForm,ReportesForm,ExpedienteMedicoForm, HorariosForm, NivelesForm, ParcialesForm, NotasForm, DepartamentoForm, MunicipioForm,  MensualidadForm, ParametrosSARForm, CategoriaForm, DocumentoForm,  SeccionForm, ActitudForm, CentroEducativoForm, TutoresAlumnosForm, TipoPagoHistoricoForm
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -163,32 +163,7 @@ def crear_pago(request):
         form = PagoForm()
     return render(request, 'crear_pago.html',{'form':form})
 
-def generar_factura(request, pago_id):
-    pago = get_object_or_404(Pago, pk=pago_id)
-    
-    parametros_sar = ParametrosSAR.objects.latest('id')
-    centro_educativo = CentroEducativo.objects.latest('id')
-   
-    factura = Factura( ParametrosSAR=parametros_sar, CentroEducativo=centro_educativo, pago=pago)
-    factura.save()
 
-    context = {'factura': factura}
-    template = 'generar_factura.html'
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="factura_{factura.numero_factura}.pdf"'
-    
-    # Configuración para incluir imágenes en el PDF
-    result = io.BytesIO()
-    pdf = pisa.pisaDocument(
-        io.StringIO(render_to_string(template, context)),
-        result,
-        encoding='UTF-8',
-        link_callback=lambda uri, rel: settings.MEDIA_ROOT + uri[1:] if (uri and uri.startswith('/media/')) else (settings.STATIC_ROOT + uri if uri else '')
-    )
-    
-    if not pdf.err:
-        return HttpResponse(result.getvalue(), content_type='application/pdf')
-    return HttpResponse('Error al generar el PDF', status=500)
 
 
 def detalle_factura(request, factura_id):
@@ -914,7 +889,7 @@ class TipoPagoCreateView(CreateView):
 
 class TipoPagoUpdateView(UpdateView):
     model = TipoPago
-    form_class = TipoPagoEditForm
+    form_class = TipoPagoForm
     template_name = 'TipoPago/tipopago_editar.html'
     success_url = reverse_lazy('tipopago_listar')
 
@@ -1181,4 +1156,4 @@ class TipoPagoActualizarView(View):
             
             return redirect('tipopago_listar')  # Redirigir a la lista de tipos de pago
         else:
-            return render(request, self.template_name, {'form': form})
+            return render(request, self.template_name,{'form':form})

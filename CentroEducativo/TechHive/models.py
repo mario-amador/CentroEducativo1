@@ -323,16 +323,18 @@ class ParametrosSAR(models.Model):
     RTN = models.CharField(max_length=14,help_text='No, debe contenes letras, digitos: 14 ')
     RangoInicial = models.CharField(max_length=8)
     RangoFinal = models.CharField(max_length=8)
+    TipoDocumento= models.CharField(max_length=12)
     FechaEmision = models.DateField()
     FechaVencimiento = models.DateField()
     Correlativo=models.CharField(max_length=100)
+    Sucursal=models.CharField(max_length=3)
     
     def __str__(self):
-        return f"CAI: {self.CAI} RTN: {self.RTN} Rango Inicial: {self.RangoInicial} Rango Final: {self.RangoFinal}"
+        return f"CAI: {self.CAI} RTN: {self.RTN} Rango Inicial: {self.RangoInicial} Rango Final: {self.RangoFinal}, Sucursal :{self.Sucursal}"
 
 
 class Factura(models.Model):
-    numero_factura = models.CharField(unique=True, max_length=8)
+    numero_factura = models.CharField(unique=True, max_length=16)
     fecha_emision = models.DateField(auto_now_add=True)
     ParametrosSAR = models.ForeignKey(ParametrosSAR, on_delete=models.CASCADE)
     CentroEducativo = models.ForeignKey(CentroEducativo, on_delete=models.CASCADE)
