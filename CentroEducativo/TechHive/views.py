@@ -80,7 +80,7 @@ from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import LoginForm
-
+from django.conf import settings
 from django.contrib.auth import authenticate
 
 from django.contrib.auth import authenticate, login
@@ -163,6 +163,32 @@ def crear_pago(request):
         form = PagoForm()
     return render(request, 'crear_pago.html',{'form':form})
 
+def generar_factura(request, pago_id):
+    pago = get_object_or_404(Pago, pk=pago_id)
+    
+    parametros_sar = ParametrosSAR.objects.latest('id')
+    centro_educativo = CentroEducativo.objects.latest('id')
+   
+    factura = Factura( ParametrosSAR=parametros_sar, CentroEducativo=centro_educativo, pago=pago)
+    factura.save()
+
+    context = {'factura': factura}
+    template = 'generar_factura.html'
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="factura_{factura.numero_factura}.pdf"'
+    
+    # Configuración para incluir imágenes en el PDF
+    result = io.BytesIO()
+    pdf = pisa.pisaDocument(
+        io.StringIO(render_to_string(template, context)),
+        result,
+        encoding='UTF-8',
+        link_callback=lambda uri, rel: settings.MEDIA_ROOT + uri[1:] if (uri and uri.startswith('/media/')) else (settings.STATIC_ROOT + uri if uri else '')
+    )
+    
+    if not pdf.err:
+        return HttpResponse(result.getvalue(), content_type='application/pdf')
+    return HttpResponse('Error al generar el PDF', status=500)
 
 
 def detalle_factura(request, factura_id):
@@ -174,6 +200,9 @@ def detalle_factura(request, factura_id):
 def lista_pagos(request):
     pagos = Pago.objects.all()
     return render(request, 'lista_pagos.html', {'pagos': pagos})
+
+from django.conf import settings
+import os
 
 def generar_factura(request, pago_id):
     pago = get_object_or_404(Pago, pk=pago_id)
@@ -195,6 +224,7 @@ def generar_factura(request, pago_id):
     
     response.write(pdf_data)
     return response
+
 
 def lista_facturas(request):
     facturas = Factura.objects.all()
