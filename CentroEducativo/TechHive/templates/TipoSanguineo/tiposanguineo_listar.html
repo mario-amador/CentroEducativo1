@@ -336,7 +336,7 @@
                 <thead>
                     <tr>
                         <th>ID</th>
-                        <th>Tipo Reporte</th>
+                        <th>Tipo Sanguineo</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -352,7 +352,7 @@
                             <a href="{% url 'tiposanguineo_editar' tiposanguineo.id %}"class="btn btn-link text-success">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            <a href="{% url 'tiporeporte_editar' tiposanguineo.id %}"class="btn btn-link text-danger">
+                            <a href="{% url 'tiposanguineo_eliminar' tiposanguineo.id %}"class="btn btn-link text-danger">
                                 <i class="fas fa-trash"></i>
                             </a>
                         </td>

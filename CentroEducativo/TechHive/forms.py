@@ -208,6 +208,28 @@ def notasfinales_longitud_validator(value):
     else:
         raise forms.ValidationError('La nota debe tener entre 4 y 5 dígitos antes del punto y hasta 2 dígitos después del punto.')
 
+def fechainicio_rango_parciales(value):
+    min_fecha = datetime.strptime('2023-01-01', '%Y-%m-%d').date()
+    max_fecha = datetime.strptime('2025-01-01', '%Y-%m-%d').date()
+
+    if value < min_fecha or value > max_fecha:
+        raise forms.ValidationError(' Ingrese una Fecha de Inicio Parcial.')
+
+def fechafinal_rango_parciales(value):
+    min_fecha = datetime.strptime('2023-01-01', '%Y-%m-%d').date()
+    max_fecha = datetime.strptime('2025-01-01', '%Y-%m-%d').date()
+
+    if value < min_fecha or value > max_fecha:
+        raise forms.ValidationError(' Ingrese una Fecha de Final Parcial.')
+
+def fechaaño_rango_año(value):
+    min_fecha = datetime.strptime('2023-01-01', '%Y-%m-%d').date()
+    max_fecha = datetime.strptime('2025-01-01', '%Y-%m-%d').date()
+
+    if value < min_fecha or value > max_fecha:
+        raise forms.ValidationError(' Ingrese una fecha del Año.')
+
+
 
 from django import forms
 from .models import Alumno, DocumentoDPI
@@ -854,6 +876,16 @@ class HorariosForm(forms.ModelForm):
             'HoraSalida': forms.TimeInput(
                 attrs={'class': 'form-control'}),
         }
+    
+    def clean_Horario(self):
+        horario = self.cleaned_data.get('Horario')
+        solo_letras_validator(horario)
+        no_campos_vacios_validator(horario)
+        no_dos_espacios_validator(horario)
+        no_numeros_validator(horario)
+        no_tres_letras_iguales_validator(horario)
+        no_numeros_ni_especiales_validator(horario)
+        return horario.capitalize()
 
 class NivelesForm(forms.ModelForm):
     class Meta:
@@ -918,17 +950,17 @@ class ParcialesForm(forms.ModelForm):
     
     def clean_FechaInicio(self):
         fecha_inicio = self.cleaned_data.get('FechaInicio')
-        fecha_rango_validator(fecha_inicio)
+        fechainicio_rango_parciales(fecha_inicio)
         return fecha_inicio
     
     def clean_FechaFinal(self):
         fecha_final = self.cleaned_data.get('FechaFinal')
-        fecha_rango_validator(fecha_final)
+        fechafinal_rango_parciales(fecha_final)
         return fecha_final
 
     def clean_Año(self):
         año = self.cleaned_data.get('Año')
-        fecha_rango_validator(año)
+        fechaaño_rango_año(año)
         return año
 
 class NotasForm(forms.ModelForm):
@@ -1523,7 +1555,6 @@ class TipoSanguineoForm(forms.ModelForm):
 
     def clean_TipoSanguineo(self):
         tipo_sanguineo = self.cleaned_data.get('TipoSanguineo')
-        solo_letras_validator(tipo_sanguineo)
         no_campos_vacios_validator(tipo_sanguineo)
         no_dos_espacios_validator(tipo_sanguineo)
         no_numeros_validator(tipo_sanguineo)
@@ -1670,10 +1701,7 @@ class CentroEducativoForm(forms.ModelForm):
         no_tres_letras_iguales_validator(titularidad)
         return titularidad.capitalize()
     
-    def clean_Telefono(self):
-        telefono = self.cleaned_data.get('Telefono')
-        telefono_validator(telefono)
-        return telefono
+    
 
 class TutoresAlumnosForm(forms.ModelForm):
     class Meta:

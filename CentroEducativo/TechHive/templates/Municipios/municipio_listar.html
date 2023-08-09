@@ -343,7 +343,7 @@
                 <tbody>
                     {% for municipio in municipios %}
                     <tr>
-                        <td>{{ municipio.idMunicipio}}</td>
+                        <td>{{ municipio.id}}</td>
                         <td>{{ municipio.nombreMunicipio }}</td>
                         <td>
                             <a href="{% url 'municipio_detalle' municipio.id %}"class="btn btn-link text-success">

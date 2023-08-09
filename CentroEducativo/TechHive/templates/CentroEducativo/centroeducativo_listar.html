@@ -324,7 +324,7 @@
                 <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
                     aria-labelledby="dropdownMenuLink">
                     <div class="dropdown-header">ACCIONES:</div>
-                    <a class="dropdown-item" href="{% url 'ventroeducativo_crear' %}">Nuevo Centro Educativo</a>
+                    <a class="dropdown-item" href="{% url 'centroeducativo_crear' %}">Nuevo Centro Educativo</a>
                     <a class="dropdown-item" href="{%  url 'bienvenida_administrador' %}">Home</a>
                 </div>
             </div>
@@ -359,7 +359,7 @@
                             <a href="{% url 'centroeducativo_detalle' centroeducativo.id %}"class="btn btn-link text-success">
                                 <i class="fas fa-eye"></i>
                             </a>
-                            <a href="{% url 'centroeducativo_editar' asignatura.id %}"class="btn btn-link text-success">
+                            <a href="{% url 'centroeducativo_editar' centroeducativo.id %}"class="btn btn-link text-success">
                                 <i class="fas fa-edit"></i>
                             </a>
                             <a href="{% url 'centroeducativo_eliminar' centroeducativo.id %}"class="btn btn-link text-danger">
