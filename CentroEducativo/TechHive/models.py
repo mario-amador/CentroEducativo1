@@ -324,6 +324,7 @@ class ParametrosSAR(models.Model):
     RangoInicial = models.CharField(max_length=8)
     RangoFinal = models.CharField(max_length=8)
     TipoDocumento= models.CharField(max_length=12)
+    Establecimiento=models.CharField(max_length=4)
     FechaEmision = models.DateField()
     FechaVencimiento = models.DateField()
     Correlativo=models.CharField(max_length=100)
@@ -344,6 +345,7 @@ class Factura(models.Model):
         if not self.numero_factura:
             param_sar = self.ParametrosSAR
             rango_inicial = str(param_sar.RangoInicial)
+            establecimiento = self.ParametrosSAR.Establecimiento.replace('-', '')  # Elimina los guiones
             sucursal = self.ParametrosSAR.Sucursal.replace('-', '')  # Elimina los guiones
             tipo_documento = self.ParametrosSAR.TipoDocumento.replace('-', '')  # Elimina los guiones
             
@@ -356,7 +358,7 @@ class Factura(models.Model):
             
             nuevo_numero = str(int(ultimo_numero) + 1).zfill(len(rango_inicial))
             
-            self.numero_factura = f"{sucursal}-{tipo_documento}-{nuevo_numero}"
+            self.numero_factura = f"{establecimiento}-{sucursal}-{tipo_documento}-{nuevo_numero}"
             
         super().save(*args, **kwargs)
 
