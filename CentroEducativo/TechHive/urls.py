@@ -53,7 +53,7 @@ urlpatterns = [
 
     path('matriculas/', MatriculaListView.as_view(), name='matricula_listar'),
     path('matriculas/crear/', MatriculaCreateView.as_view(), name='matricula_crear'),
-    path('matriculas/<int:pk>/ver/', MatriculaDetailView.as_view(), name='detalle_editar'),
+    path('matriculas/<int:pk>/ver/', MatriculaDetailView.as_view(), name='matricula_detalle'),
     path('matriculas/<int:pk>/editar/', MatriculaUpdateView.as_view(), name='matricula_editar'),
     path('matriculas/<int:pk>/eliminar/', MatriculaDeleteView.as_view(), name='matricula_eliminar'),
 

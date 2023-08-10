@@ -1,10 +1,48 @@
-{% extends 'base/base.html' %}
+{% extends "base/base.html" %}
+{% block pagina_contenido %}
 
-{% block content %}
-  <h2>Eliminar Alumno</h2>
-  <p>¿Estás seguro de que deseas eliminar la matrícula "{{matricula.Pagos }} {{ matricula.Usuario }}"?</p>
-  <form method="post">
-    {% csrf_token %}
-    <button type="submit">Eliminar</button>
-  </form>
-{% endblock %}
+<div class="card-body">
+    <form method="post">
+        {% csrf_token %}
+        <h1>¿Estás seguro de que deseas eliminar la Matriucla?</h1>
+        <div class="form-group">
+            <label for="id">ID:</label>
+            <input type="text" id="id" name="Id" value="{{ matricula.id }}" class="form-control" disabled readonly>
+        </div>
+        <div class="form-group">
+            <label for="pago">Pago:</label>
+            <input type="text" id="pago" name="Pago" value="{{ matricula.pagos}}" class="form-control" disabled readonly>
+        </div>
+        <div class="form-group">
+            <label for="nombretutor">Nombre del Tutor:</label>
+            <input type="text" id="nombretutor" name="Nombre del Tutor" value="{{  matricula.tutor}}" class="form-control" disabled readonly>
+        </div>
+        <div class="form-group">
+            <label for="nombrealumno">Nombre del alumno:</label>
+            <input type="text" id="nombre" name="Nombre del Alumno" value="{{  matricula.alumno}}" class="form-control" disabled readonly>
+        </div>
+        <div class="form-group">
+            <label for="grado">Grado:</label>
+            <input type="text" id="grado" name="Grado" value="{{  matricula.grado}}" class="form-control" disabled readonly>
+        </div>
+        <div class="form-group">
+          <label for="usuario">Nombre del Usuario:</label>
+          <input type="text" id="usuario" name="Nombre del Usuario" value="{{  matricula.usuario}}" class="form-control" disabled readonly>
+        </div>
+        <div class="form-group">
+          <label for="fechamatricula">Fecha Matricula:</label>
+          <input type="text" id="fechamatricula" name="Fecha Matricula" value="{{  matricula.fecha_matricula}}" class="form-control" disabled readonly>
+        </div>
+        <div class="btn-group">
+            <button class="btn btn-danger" type="submit" onclick="mensaje();"><i class="fas fa-trash-alt"></i> Eliminar</button>
+            <a class="btn btn-secondary" href="{% url 'matricula_listar' %}"><i class="fas fa-times"></i> Cancelar</a>
+        </div>
+    </form>
+
+    <script>
+        function mensaje() {
+            alert("¿Seguro que desea eliminar?");
+        }
+    </script>
+</div>
+{% endblock pagina_contenido %}

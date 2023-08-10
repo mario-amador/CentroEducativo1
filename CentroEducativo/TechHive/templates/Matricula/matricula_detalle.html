@@ -23,9 +23,12 @@
     <form method="post">
       {% csrf_token %}
       {{ form.as_p }}
-      <p><span class=> Pagos: </span> <br> {{matricula.Pagos}}</p>
-      <p><span class=> Nombre del Uusario: </span> <br> {{matricula.Usuario}}</p>
-      <p><span class=> Fecha de Matrícula: </span> <br> {{matricula.FechaMatricula}}</p>
+      <p><span class=> Pagos: </span> <br> {{matricula.pagos}}</p>
+      <p><span class=> Nombre del Uusario: </span> <br> {{matricula.tutor}}</p>
+      <p><span class=> Nombre del Uusario: </span> <br> {{matricula.alumno}}</p>
+      <p><span class=> Nombre del Uusario: </span> <br> {{matricula.grado}}</p>
+      <p><span class=> Nombre del Uusario: </span> <br> {{matricula.usuario}}</p>
+      <p><span class=> Fecha de Matrícula: </span> <br> {{matricula.fecha_matricula}}</p>
  
     <a href="{%  url 'matricula_listar' %}" type="submit" class="btn btn-primary">
     <i class="fas fa-reply"></i> Volver</a>

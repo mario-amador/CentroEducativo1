@@ -228,7 +228,7 @@ def fechaaño_rango_año(value):
 
     if value < min_fecha or value > max_fecha:
         raise forms.ValidationError(' Ingrese una fecha del Año.')
-
+    
 
 
 from django import forms
@@ -710,11 +710,25 @@ class MatriculaForm(forms.ModelForm):
             }),
         }
 
+    def clean_tutor(self):
+        tutor = self.cleaned_data.get('tutor')
+        solo_letras_validator(tutor)
+        no_campos_vacios_validator(tutor)
+        no_dos_espacios_validator(tutor)
+        no_numeros_validator(tutor)
+        no_tres_letras_iguales_validator(tutor)
+        return tutor.capitalize()
+    
+    def clean_alumno(self):
+        alumno = self.cleaned_data.get('alumno')
+        solo_letras_validator(alumno)
+        no_campos_vacios_validator(alumno)
+        no_dos_espacios_validator(alumno)
+        no_numeros_validator(alumno)
+        no_tres_letras_iguales_validator(alumno)
+        return alumno.capitalize()
+    
 
-    def clean_FechaMatricula(self):
-        fecha_matricula = self.cleaned_data.get('FechaMatricula')
-        fecha_rango_validator(fecha_matricula)
-        return fecha_matricula
 
 class ReportesForm(forms.ModelForm):
     class Meta:
