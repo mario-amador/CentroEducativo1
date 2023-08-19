@@ -1346,26 +1346,38 @@ class MunicipioForm(forms.ModelForm):
         no_numeros_validator(nombre_municipio)
         no_tres_letras_iguales_validator(nombre_municipio)
         return nombre_municipio.capitalize()
+
 class PagoForm(forms.ModelForm):
+    Tutor = forms.ModelChoiceField(queryset=Tutor.objects.distinct(), label='Tutor:', widget=forms.Select(attrs={'class': 'form-control'}))
+    Alumno = forms.ModelChoiceField(queryset=Alumno.objects.none(), label='Alumno:', widget=forms.Select(attrs={'class': 'form-control'}))
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['Tutor'].label_from_instance = lambda obj: f"{obj.NombresTutor} {obj.ApellidosTutor}"
+        self.fields['Alumno'].queryset = Alumno.objects.none()
+
+        if 'Tutor' in self.data:
+            try:
+                tutor_id = int(self.data.get('Tutor'))
+                alumno_ids = TutoresAlumnos.objects.filter(Tutor_id=tutor_id).values_list('Alumno_id', flat=True)
+                self.fields['Alumno'].queryset = Alumno.objects.filter(id__in=alumno_ids)
+            except (ValueError, TypeError):
+                pass
+
     class Meta:
         model = Pago
-        fields = ['Tutor', 'Alumno', 'TipoPago', 'Meses']
+        fields = ['Tutor', 'Alumno', 'Meses', 'TipoPago']
         labels = {
-            'Tutor': 'Tutor:',
-            'Alumno': 'Alumno:',
-            'TipoPago': 'Movimiento a pagar:',
             'Meses': 'Mes a pagar:',
+            'TipoPago': 'Movimiento(s) a pagar:',
         }
         widgets = {
-            'Tutor': forms.Select(
-                attrs={'class': 'form-control'}),
-            'Alumno': forms.Select(
-                attrs={'class': 'form-control'}),
-            'TipoPago': forms.Select(
-                attrs={'class': 'form-control'}),
-            'Meses': forms.Select(
-                attrs={'class': 'form-control'}),    
+            'Meses': forms.Select(attrs={'class': 'form-control'}),
+            'TipoPago': forms.Select(attrs={'class': 'form-control'}),
         }
+
+
+
 
 class MensualidadForm(forms.ModelForm):
     class Meta:

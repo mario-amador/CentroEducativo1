@@ -146,23 +146,66 @@ def login_view(request):
     return render(request, 'base/login.html')
 
 
+from django.shortcuts import render
+from .models import Tutor, TutoresAlumnos
+
+
 def crear_pago(request):
+    tutores_distinct = TutoresAlumnos.objects.order_by('Tutor').values('Tutor').distinct()
+    tutor_ids = [tutor['Tutor'] for tutor in tutores_distinct]
+    tutores = Tutor.objects.filter(id__in=tutor_ids)
+
+    tutores_choices = [(tutor.id, f"{tutor.NombresTutor} {tutor.ApellidosTutor}") for tutor in tutores]
+
     if request.method == 'POST':
         form = PagoForm(request.POST)
+        form.fields['Tutor'].choices = [('', 'Seleccione un tutor')] + tutores_choices
+
         if form.is_valid():
             pago = form.save()
+
             parametros_sar = ParametrosSAR.objects.latest('id')
-            # Obtener el objeto CentroEducativo más reciente
             centro_educativo = CentroEducativo.objects.latest('id')
 
-            # Crear la factura y asignar los valores necesarios
             factura = Factura(ParametrosSAR=parametros_sar, CentroEducativo=centro_educativo, pago=pago)
-        return JsonResponse({'pago_id': pago.id})
+            factura.save()
+
+            return JsonResponse({'pago_id': pago.id})
+            # Realizar otras acciones si es necesario
+            
     else:
         form = PagoForm()
-    return render(request, 'crear_pago.html',{'form':form})
+        form.fields['Tutor'].choices = [('', 'Seleccione un tutor')] + tutores_choices
+
+    context = {
+        'form': form,
+    }
+
+    return render(request, 'crear_pago.html', context)
 
 
+def get_alumnos(request):
+    tutor_id = request.GET.get('tutor_id')
+
+    if tutor_id:
+        try:
+            tutor_id = int(tutor_id)
+            alumnos = TutoresAlumnos.objects.filter(Tutor_id=tutor_id).values_list('Alumno_id', flat=True)
+            alumnos_relacionados = Alumno.objects.filter(id__in=alumnos)
+            
+            alumnos_data = []
+            for alumno in alumnos_relacionados:
+                alumnos_data.append({
+                    'id': alumno.id,
+                    'NombresAlumno': alumno.NombresAlumno,
+                    'ApellidosAlumno': alumno.ApellidosAlumno,
+                })
+
+            return JsonResponse(alumnos_data, safe=False)
+        except (ValueError, TypeError):
+            pass
+
+    return JsonResponse([], safe=False)  # Retornar una lista vacía en caso de error o sin tu
 
 
 def detalle_factura(request, factura_id):

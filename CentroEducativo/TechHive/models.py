@@ -203,7 +203,7 @@ class Tutor(models.Model):
     
 
     def __str__(self):
-        return f"{self.NombresTutor} {self.ApellidosTutor} {self.Parentesco} "
+        return f"{self.NombresTutor} {self.ApellidosTutor} , Parentesco: {self.Parentesco} "
 
 
 class Alumno(models.Model):
@@ -222,7 +222,7 @@ class Alumno(models.Model):
     TipoSanguineo = models.ForeignKey(TipoSanguineo, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f"{self.NombresAlumno} {self.ApellidosAlumno} {self.Grado}"    
+        return f"{self.NombresAlumno} {self.ApellidosAlumno}"    
 
 
 class Catedratico(models.Model):
@@ -283,19 +283,19 @@ class TutoresAlumnos(models.Model):
 
 
     def __str__(self):
-        return f"Encargados de {self.Alumno} : {self.Tutor}"
+        return f"{self.Tutor}"
 
 
     
 class Pago(models.Model):
-    Tutor= models.ForeignKey(Tutor, on_delete=models.CASCADE)
-    Alumno = models.ForeignKey(Alumno, on_delete=models.CASCADE)
+    Tutor = models.ForeignKey(TutoresAlumnos, related_name='pagos_tutor', on_delete=models.CASCADE)
+    Alumno = models.ForeignKey(TutoresAlumnos, related_name='pagos_alumno', on_delete=models.CASCADE)
     FechaHoraPago = models.DateTimeField(auto_now_add=True)
     TipoPago = models.ForeignKey(TipoPago, on_delete=models.CASCADE)
     Meses= models.ForeignKey(Meses, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f" Pago: {self.id} - Tutor: {self.Tutor} Alumno: {self.Alumno}, Fecha y hora: {self.FechaHoraPago} Tipo Pago: {self.TipoPago} Mes: {self.Meses}"
+        return f" Pago: {self.id} - Tutor: {self.Tutor.Tutor} Alumno: {self.Alumno.Alumno}, Fecha y hora: {self.FechaHoraPago} Tipo Pago: {self.TipoPago} Mes: {self.Meses}"
 
     
     

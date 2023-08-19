@@ -311,68 +311,88 @@
 {% endblock barra_arriba %}
 {% block pagina_contenido %}
  <!-- Dropdown Card Example -->
- <div class="card shadow mb-4">
-    <!-- Card Header - Dropdown -->
-    <div
-        class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-        <h6 class="m-0 font-weight-bold text-primary">Realizar un nuevo pago</h6>
-        <div class="dropdown no-arrow">
-            <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
-                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
-                aria-labelledby="dropdownMenuLink">
-                <div class="dropdown-header">ACCIONES:</div>
-                <a class="dropdown-item" href="{%  url 'lista_pagos' %}">Lista de pagos</a>
+ <div class="card-body">
+    <html>
+    <head>
+        <title>Realizar pago</title>
+    </head>
+    <body>
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        <form method="post" id="PagoForm">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="{{ form.Tutor.id_for_label }}">{{ form.Tutor.label }}</label>
+                {{ form.Tutor }}
             </div>
-        </div>
-    </div>
-    <!-- Card Body -->
-    <div class="card-body">
-        <div class="card-body">
-            <html>
-            <head>
-                <title>Realizar pago</title>
-            </head>
-            <body>
-                {% if messages %}
-                <ul class="messages">
-                    {% for message in messages %}
-                    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-                    {% endfor %}
-                </ul>
-                {% endif %}
-                <form method="post" id="PagoForm"> <!-- Agregamos un ID al formulario -->
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                    <button type="submit" value="submit" class="btn btn-success">
-                        <i class="fas fa-save"></i> Guardar y Generar Factura</button>
-                    <a href="{% url 'lista_pagos' %}" class="btn btn-secondary">
-                        <i class="fas fa-times"></i> Cancelar</a>
-                </form>
-                <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.js"></script>
-                <script>
-                    document.getElementById('PagoForm').addEventListener('submit', function (event) {
-                        // Evitar el envío normal del formulario
-                        event.preventDefault();
-                
-                        // Enviar el formulario de manera asíncrona
-                        fetch(this.action, {
-                            method: this.method,
-                            body: new FormData(this)
-                        }).then(response => response.json())
-                          .then(data => {
-                              // Redireccionar a la página de generación de factura con el ID del pago
-                              window.location.href = `/generar_factura/${data.pago_id}/`;
+            <div class="form-group">
+                <label for="{{ form.Alumno.id_for_label }}">{{ form.Alumno.label }}</label>
+                <select name="{{ form.Alumno.name }}" id="{{ form.Alumno.id_for_label }}" class="form-control">
+                    <option value="" selected>Seleccione un alumno</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="{{ form.Meses.id_for_label }}">{{ form.Meses.label }}</label>
+                {{ form.Meses }}
+            </div>
+            <div class="form-group">
+                <label for="{{ form.TipoPago.id_for_label }}">{{ form.TipoPago.label }}</label>
+                {{ form.TipoPago }}
+            </div>
+            <button type="submit" value="submit" class="btn btn-success">
+                <i class="fas fa-save"></i> Guardar y Generar Factura</button>
+            <a href="{% url 'lista_pagos' %}" class="btn btn-secondary">
+                <i class="fas fa-times"></i> Cancelar</a>
+        </form>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.js"></script>
+        <script>
+            document.getElementById('PagoForm').addEventListener('submit', function (event) {
+                event.preventDefault();
+
+                fetch(this.action, {
+                    method: this.method,
+                    body: new FormData(this)
+                }).then(response => response.json())
+                  .then(data => {
+                      window.location.href = `/generar_factura/${data.pago_id}/`;
+                  })
+                  .catch(error => console.error('Error:', error));
+            });
+
+            const tutorSelect = document.getElementById('{{ form.Tutor.id_for_label }}');
+            const alumnoSelect = document.getElementById('{{ form.Alumno.id_for_label }}');
+
+            tutorSelect.addEventListener('change', () => {
+                const tutorId = tutorSelect.value;
+                alumnoSelect.innerHTML = ''; // Limpiar la lista de alumnos
+
+                if (tutorId !== '') {
+                    fetch(`/get_alumnos/?tutor_id=${tutorId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                         console.log(data); // Agrega esta línea para depurar
+                         data.forEach(alumno => {
+                         const option = document.createElement('option');
+                         option.value = alumno.id;
+                         option.textContent = `${alumno.NombresAlumno} ${alumno.ApellidosAlumno}`;
+                         alumnoSelect.appendChild(option);
+                           });
                           })
-                          .catch(error => console.error('Error:', error));
-                    });
-                </script>
-                
-            </body>
-            </html>
-        </div>
+
+                        .catch(error => console.error('Error:', error));
+                }
+            });
+        </script>
+    </body>
+    </html>
+</div>
+    </div>
+    
     </div>
     
 {% endblock pagina_contenido %}
