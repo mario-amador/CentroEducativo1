@@ -102,20 +102,6 @@ class Rol(models.Model):
     def __str__(self):
         return self.nombre
 
-class Usuario(AbstractBaseUser):
-    username = models.CharField(max_length=150, unique=True)
-    password = models.CharField(max_length=128, help_text="La contraseña debe tener al menos 8 caracteres y contener al menos un número, una letra mayúscula y una letra minúscula.")
-    rol = models.ForeignKey(Rol, on_delete=models.SET_NULL, null=True)
-    intentos_fallidos = models.IntegerField(default=0)
-    activo = models.BooleanField(default=True)
-
-    USERNAME_FIELD = 'username'
-
-    def save(self, *args, **kwargs):
-        if not self.pk:
-            self.password = make_password(self.password)
-        super(Usuario, self).save(*args, **kwargs)
-
 
 class Departamento(models.Model):
     departamento = models.CharField(max_length=100,unique=True)
@@ -250,22 +236,6 @@ class CategoriaEmpleado(models.Model):
         return self.CategoriaEmpleado
 
 
-class Empleado(models.Model):
-    NombresEmpleado = models.CharField(max_length=20, validators=[
-        RegexValidator(r'^[^\d]{3,20}$', 'No debe contener números, caracteres: 3-20'),
-        no_numeros_validator
-    ])
-    ApellidosEmpleado = models.CharField(max_length=30, help_text='No debe contener numeros, caracteres 2-30 ')
-    DocumentoDPI = models.ForeignKey(DocumentoDPI, on_delete=models.CASCADE)
-    DPI = models.CharField(max_length=20, unique=True,help_text='No, debe contenes letras, digitos: 13-15 ')
-    FechaNacimientoEmpleado = models.DateField()
-    CategoriaEmpleado = models.ForeignKey(CategoriaEmpleado, on_delete=models.CASCADE)
-    Tel_Empleado = models.CharField(max_length=8, help_text='No debe contener letras, 8 digitos ')
-
-    def __str__(self):
-        return f"{self.NombresEmpleado} {self.ApellidosEmpleado}"
-    
-       
 
 class TipoReporte(models.Model):
     TipoReporte = models.CharField(max_length=40)
@@ -304,7 +274,46 @@ class Pago(models.Model):
         return f" Pago: {self.id} - Tutor: {self.Tutor.Tutor} Alumno: {self.Alumno.Alumno}, Fecha y hora: {self.FechaHoraPago} Tipo Pago: {self.TipoPago} Mes: {self.Meses}"
 
     
-    
+class CentroEducativo(models.Model):
+    NombreCentro= models.CharField(max_length=100)
+    CodigoCentro = models.IntegerField()
+    Titularidad= models.CharField(max_length=100)
+    Localidad = models.ForeignKey(Departamento, on_delete=models.CASCADE)
+    Sucursal = models.CharField(max_length=100)
+    Telefono=models.IntegerField()
+
+    def __str__(self):
+        return f"{self.NombreCentro}, {self.CodigoCentro} ,{self.Localidad}, {self.Sucursal}, {self.Telefono}"
+
+class Empleado(models.Model):
+    NombresEmpleado = models.CharField(max_length=20)
+    ApellidosEmpleado = models.CharField(max_length=30, help_text='No debe contener numeros, caracteres 2-30 ')
+    DocumentoDPI = models.ForeignKey(DocumentoDPI, on_delete=models.CASCADE)
+    DPI = models.CharField(max_length=20, unique=True,help_text='No, debe contenes letras, digitos: 13-15 ')
+    FechaNacimientoEmpleado = models.DateField()
+    CategoriaEmpleado = models.ForeignKey(CategoriaEmpleado, on_delete=models.CASCADE)
+    Tel_Empleado = models.CharField(max_length=8, help_text='No debe contener letras, 8 digitos ')
+    Sucursal=models.ForeignKey(CentroEducativo, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.NombresEmpleado} {self.ApellidosEmpleado}"
+
+class Usuario(AbstractBaseUser):
+    username = models.CharField(max_length=150, unique=True)
+    password = models.CharField(max_length=128, help_text="La contraseña debe tener al menos 8 caracteres y contener al menos un número, una letra mayúscula y una letra minúscula.")
+    rol = models.ForeignKey(Rol, on_delete=models.SET_NULL, null=True)
+    Empleado= models.ForeignKey(Empleado,  on_delete=models.CASCADE)
+    intentos_fallidos = models.IntegerField(default=0)
+    activo = models.BooleanField(default=True)
+
+    USERNAME_FIELD = 'username'
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.password = make_password(self.password)
+        super(Usuario, self).save(*args, **kwargs)
+
+
 from django.db import models
 
 class Matricula(models.Model):
@@ -317,18 +326,6 @@ class Matricula(models.Model):
 
     def __str__(self):
         return f"{self.pagos} {self.fecha_matricula}"
-
-    
-class CentroEducativo(models.Model):
-    NombreCentro= models.CharField(max_length=100)
-    CodigoCentro = models.IntegerField()
-    Titularidad= models.CharField(max_length=100)
-    Localidad = models.ForeignKey(Departamento, on_delete=models.CASCADE)
-    Sucursal = models.CharField(max_length=100)
-    Telefono=models.IntegerField()
-
-    def __str__(self):
-        return f"{self.NombreCentro}, {self.CodigoCentro} ,{self.Localidad}, {self.Sucursal}, {self.Telefono}"
 
 class ParametrosSAR(models.Model):
     CAI = models.CharField(max_length=100)

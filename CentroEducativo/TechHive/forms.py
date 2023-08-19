@@ -1144,7 +1144,6 @@ class UserEditForm(forms.ModelForm):
 import re
 import re
 
-
 class UserCreationForm(forms.ModelForm):
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Contraseña'})
@@ -1163,14 +1162,15 @@ class UserCreationForm(forms.ModelForm):
 
     class Meta:
         model = Usuario
-        fields = ['username', 'password', 'confirm_password', 'rol', 'activo']
+        fields = ['username', 'password', 'confirm_password', 'rol', 'activo','Empleado']
         widgets = {
             'username': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Usuario'}),
             'rol': forms.Select(attrs={'class': 'form-control'}),
+            'Empleado': forms.Select(attrs={'class': 'form-control'}),
         }
 
-    def __init__(self, *args, **kwargs):
-        super(UserCreationForm, self).__init__(*args, **kwargs)
+    def _init_(self, *args, **kwargs):
+        super(UserCreationForm, self)._init_(*args, **kwargs)
         self.fields['username'].label = 'Nombre de usuario'
         self.fields['password'].label = 'Contraseña'
         self.fields['confirm_password'].label = 'Confirmar Contraseña'
@@ -1223,7 +1223,6 @@ class UserCreationForm(forms.ModelForm):
         if len(password) < 8:
             raise forms.ValidationError('La contraseña debe tener al menos 8 caracteres.')
         return password
-
 
 
 
