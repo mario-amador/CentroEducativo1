@@ -182,7 +182,14 @@ def crear_pago(request):
     }
 
     return render(request, 'crear_pago.html', context)
-
+def get_monto(request):
+    tipo_pago_id = request.GET.get('tipo_pago_id')
+    try:
+        tipo_pago = TipoPago.objects.get(pk=tipo_pago_id)
+        monto = tipo_pago.monto
+        return JsonResponse({'monto': str(monto)})  # Convertir el monto a cadena
+    except TipoPago.DoesNotExist:
+        return JsonResponse({'monto': ''})  
 
 def get_alumnos(request):
     tutor_id = request.GET.get('tutor_id')

@@ -1350,7 +1350,8 @@ class MunicipioForm(forms.ModelForm):
 class PagoForm(forms.ModelForm):
     Tutor = forms.ModelChoiceField(queryset=Tutor.objects.distinct(), label='Tutor:', widget=forms.Select(attrs={'class': 'form-control'}))
     Alumno = forms.ModelChoiceField(queryset=Alumno.objects.none(), label='Alumno:', widget=forms.Select(attrs={'class': 'form-control'}))
-
+    TipoPago = forms.ModelChoiceField(queryset=TipoPago.objects.all(), label='Tipo de Pago:', widget=forms.Select(attrs={'class': 'form-control'}))
+    monto = forms.DecimalField(label='Precio:', disabled=True, widget=forms.TextInput(attrs={'class': 'form-control'}))
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['Tutor'].label_from_instance = lambda obj: f"{obj.NombresTutor} {obj.ApellidosTutor}"
@@ -1366,14 +1367,14 @@ class PagoForm(forms.ModelForm):
 
     class Meta:
         model = Pago
-        fields = ['Tutor', 'Alumno', 'Meses', 'TipoPago']
+        fields = ['Tutor', 'Alumno', 'Meses', 'TipoPago', 'monto']
         labels = {
             'Meses': 'Mes a pagar:',
-            'TipoPago': 'Movimiento(s) a pagar:',
+            
         }
         widgets = {
             'Meses': forms.Select(attrs={'class': 'form-control'}),
-            'TipoPago': forms.Select(attrs={'class': 'form-control'}),
+            
         }
 
 
