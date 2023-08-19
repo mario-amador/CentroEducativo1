@@ -1,5 +1,6 @@
 import re
 from typing import Required
+from django.contrib.auth.hashers import make_password
 from django.db import models
 from django.db.models.signals import pre_save
 from django import forms
@@ -109,6 +110,11 @@ class Usuario(AbstractBaseUser):
     activo = models.BooleanField(default=True)
 
     USERNAME_FIELD = 'username'
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.password = make_password(self.password)
+        super(Usuario, self).save(*args, **kwargs)
 
 
 class Departamento(models.Model):

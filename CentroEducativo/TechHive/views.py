@@ -87,6 +87,7 @@ from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .models import Usuario
+from django.contrib.auth.hashers import check_password
 
 def login_view(request):
     if request.method == 'POST':
@@ -98,7 +99,7 @@ def login_view(request):
         except Usuario.DoesNotExist:
             user = None
 
-        if user is not None and user.password == password:
+        if user is not None and check_password(password, user.password):
             # Las credenciales son correctas
             if user.activo:
                 if user.intentos_fallidos >= 3:
