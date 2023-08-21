@@ -21,7 +21,7 @@ from .models import (
     TutoresAlumnos,
     Usuario,
     Matricula,
-
+    Seccion,
     ParametrosSAR,
     Reportes,
     ExpedienteEscolar,
@@ -40,6 +40,7 @@ admin.site.register(DocumentoDPI)
 admin.site.register(HorariosNivelEducativo)
 admin.site.register(NivelEducativo)
 admin.site.register(Grado)
+admin.site.register(Seccion)
 admin.site.register(TipoPago)
 admin.site.register(Meses)
 admin.site.register(Tutor)
