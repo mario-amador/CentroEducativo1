@@ -1623,7 +1623,10 @@ class TutoresAlumnosForm(forms.ModelForm):
 
 
 
-class TipoPagoEditForm(forms.Models):
+from django import forms
+from .models import TipoPago
+
+class TipoPagoEditForm(forms.ModelForm):
     class Meta:
         model = TipoPago
         fields = ['nombre', 'descripcion', 'monto']
@@ -1637,6 +1640,37 @@ class TipoPagoEditForm(forms.Models):
             'descripcion': forms.TextInput(attrs={'class': 'form-control'}),
             'monto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'readonly': 'readonly'}),
         }
+
+    def clean_nombre(self):
+        nombre = self.cleaned_data['nombre']
+
+        if "  " in nombre:
+            raise forms.ValidationError('El nombre no debe contener más de un espacio en blanco consecutivo.')
+
+        for i in range(len(nombre) - 2):
+            if nombre[i] == nombre[i+1] == nombre[i+2]:
+                raise forms.ValidationError('El nombre no debe contener tres letras iguales consecutivas.')
+
+        if any(char.isdigit() for char in nombre):
+            raise forms.ValidationError('El nombre no debe contener números.')
+
+        return nombre
+
+    def clean_descripcion(self):
+        descripcion = self.cleaned_data['descripcion']
+
+        if "  " in descripcion:
+            raise forms.ValidationError('La descripción no debe contener más de un espacio en blanco consecutivo.')
+
+        for i in range(len(descripcion) - 2):
+            if descripcion[i] == descripcion[i+1] == descripcion[i+2]:
+                raise forms.ValidationError('La descripción no debe contener tres letras iguales consecutivas.')
+
+        if any(char.isdigit() for char in descripcion):
+            raise forms.ValidationError('La descripción no debe contener números.')
+
+        return descripcion
+
 
 class TipoPagoForm(forms.ModelForm):
     class Meta:
@@ -1681,8 +1715,13 @@ class TipoPagoForm(forms.ModelForm):
             raise forms.ValidationError('La descripción no debe contener números.')
         
         return descripcion
-         
+    
     def clean_monto(self):
+        monto = self.cleaned_data['monto']
+        if monto is None or monto <= 0:
+            raise forms.ValidationError('El monto debe ser mayor que cero.')
+        return monto
+         
 
 
 
@@ -1714,9 +1753,19 @@ class TipoPagoActualizarForm(forms.ModelForm):
         if value <= 0:
             raise forms.ValidationError('El monto debe ser mayor que cero.')
 
-
-
-
-
-
-
+class TipoPagoHistoricoForm(forms.ModelForm):
+    class Meta:
+        model = TipoPagoHistorico
+        fields = ['tipo_pago', 'fecha_inicio', 'fecha_fin', 'monto']
+        labels = {
+            'tipo_pago': 'Tipo de Pago',
+            'fecha_inicio': 'Fecha de Inicio',
+            'fecha_fin': 'Fecha de Fin',
+            'monto': 'Monto',
+        }
+        widgets = {
+            'tipo_pago': forms.Select(attrs={'class': 'form-control'}),
+            'fecha_inicio': forms.DateTimeInput(attrs={'class': 'form-control'}),
+            'fecha_fin': forms.DateTimeInput(attrs={'class': 'form-control'}),
+            'monto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+        }

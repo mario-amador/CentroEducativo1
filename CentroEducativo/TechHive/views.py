@@ -33,7 +33,7 @@ from .models import Alumno,Empleado,Catedratico, ExpedienteEscolar, Grado, Munic
 from .forms import AlumnoForm,EmpleadoForm,CatedraticoForm, ExpedienteEscolarForm, GradoForm, TutorForm,AsignaturaForm,MatriculaForm,ReportesForm,ExpedienteMedicoForm, HorariosForm, NivelesForm, ParcialesForm, NotasForm, DepartamentoForm, MunicipioForm, MensualidadForm, ParametrosSARForm, CategoriaForm, DocumentoForm, UserCreationForm, UserEditForm,  SeccionForm, ActitudForm, CentroEducativoForm, TutoresAlumnosForm
 
 from .models import TipoReporte, TipoSanguineo, Alumno,Empleado,Catedratico,TipoPago, ExpedienteEscolar, Grado, Municipio,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Departamento,  ParametrosSAR,  Meses, CategoriaEmpleado, DocumentoDPI,  Seccion, Actitud, CentroEducativo, TutoresAlumnos
-from .forms import TipoReporteForm,TipoSanguineoForm, AlumnoForm,EmpleadoForm,CatedraticoForm, TipoPagoForm,ExpedienteEscolarForm, GradoForm,TutorForm,AsignaturaForm,MatriculaForm,ReportesForm,ExpedienteMedicoForm, HorariosForm, NivelesForm, ParcialesForm, NotasForm, DepartamentoForm, MunicipioForm,  MensualidadForm, ParametrosSARForm, CategoriaForm, DocumentoForm,  SeccionForm, ActitudForm, CentroEducativoForm, TutoresAlumnosForm, TipoPagoHistoricoForm
+from .forms import TipoPagoHistoricoForm,TipoReporteForm,TipoSanguineoForm, AlumnoForm,EmpleadoForm,CatedraticoForm, TipoPagoForm,ExpedienteEscolarForm, GradoForm,TutorForm,AsignaturaForm,MatriculaForm,ReportesForm,ExpedienteMedicoForm, HorariosForm, NivelesForm, ParcialesForm, NotasForm, DepartamentoForm, MunicipioForm,  MensualidadForm, ParametrosSARForm, CategoriaForm, DocumentoForm,  SeccionForm, ActitudForm, CentroEducativoForm, TutoresAlumnosForm
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -1190,7 +1190,7 @@ class TipoPagoHistoricoUpdateView(UpdateView):
        
 
 class TipoPagoHistoricoDeleteView(DeleteView):
-    model = TipoPagoHistoricoForm
+    model = TipoPagoHistorico
     template_name = 'TipoPagoHistorico/eliminar.html'
     success_url = reverse_lazy('tipo_pago_historico_listar')
 
