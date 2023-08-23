@@ -228,7 +228,33 @@ def fechaaño_rango_año(value):
 
     if value < min_fecha or value > max_fecha:
         raise forms.ValidationError(' Ingrese una fecha del Año.')
+
+def fecha_rango_emision(value):
+    min_fecha = datetime.strptime('2023-01-01', '%Y-%m-%d').date()
+    max_fecha = datetime.strptime('2025-01-01', '%Y-%m-%d').date()
+
+    if value < min_fecha or value > max_fecha:
+        raise forms.ValidationError(' Ingrese una Fecha de Emisión.')
     
+def fecha_rango_vencimiento(value):
+    min_fecha = datetime.strptime('2023-01-01', '%Y-%m-%d').date()
+    max_fecha = datetime.strptime('2025-01-01', '%Y-%m-%d').date()
+
+    if value < min_fecha or value > max_fecha:
+        raise forms.ValidationError(' Ingrese una Fecha de Vencimiento.')
+
+def correlativo_validator(value):
+    if not value.isdigit():
+        raise forms.ValidationError('El Correlativo debe contener solo dígitos numéricos.')
+
+    if len(value) != 8:
+        raise forms.ValidationError('El Correlativo debe tener 8 dígitos.')
+    
+def RTN_longitud_validator(value):
+    if len(value) != 15:
+        raise forms.ValidationError('El RTN debe contener exactamente 15 dígitos numéricos.')
+
+
 
 
 from django import forms
@@ -1434,6 +1460,22 @@ class ParametrosSARForm(forms.ModelForm):
             'Correlativo': forms.DateInput(
                 attrs={'class': 'form-control'}),
         }
+    
+    def clean_FechaEmision(self):
+        fecha_emision = self.cleaned_data.get('FechaEmision')
+        fecha_rango_emision(fecha_emision)
+        return fecha_emision
+    
+    def clean_FechaVencimiento(self):
+        fecha_vencimiento = self.cleaned_data.get('FechaVencimiento')
+        fecha_rango_vencimiento(fecha_vencimiento)
+        return fecha_vencimiento
+    
+    def clean_Correlativo(self):
+        correlativo = self.cleaned_data['Correlativo']
+        correlativo_validator(correlativo)
+        return correlativo
+
 class CategoriaForm(forms.ModelForm):
     class Meta:
         model = CategoriaEmpleado
@@ -1492,14 +1534,24 @@ class TipoPagoForm(forms.ModelForm):
             'monto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
         }
         
-    def clean_TipoPago(self):
-        tipopago = self.cleaned_data.get('TipoPago')
-        solo_letras_validator(tipopago)
-        no_campos_vacios_validator(tipopago)
-        no_dos_espacios_validator(tipopago)
-        no_numeros_validator(tipopago)
-        no_tres_letras_iguales_validator(tipopago)
-        return tipopago.capitalize()
+    def clean_nombre(self):
+        nombre = self.cleaned_data.get('nombre')
+        solo_letras_validator(nombre)
+        no_campos_vacios_validator(nombre)
+        no_dos_espacios_validator(nombre)
+        no_numeros_validator(nombre)
+        no_tres_letras_iguales_validator(nombre)
+        return nombre.capitalize()
+    
+    def clean_descripcion(self):
+        descripcion = self.cleaned_data.get('descripcion')
+        solo_letras_validator(descripcion)
+        no_campos_vacios_validator(descripcion)
+        no_dos_espacios_validator(descripcion)
+        no_numeros_validator(descripcion)
+        no_tres_letras_iguales_validator(descripcion)
+        return descripcion.capitalize()
+
 
 
 from django import forms

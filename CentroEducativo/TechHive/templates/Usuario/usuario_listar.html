@@ -337,6 +337,7 @@
                     <thead>
                         <tr>
                             <th>ID</th>
+                            <th>Nombre de Usuario</th>
                             <th>Usuario</th>
                             <th>Rol</th>
                             <th>Activo</th>
@@ -347,6 +348,7 @@
                         {% for usuario in usuarios %}
                             <tr>
                                 <td>{{ usuario.id }}</td>
+                                <td>{{ usuario.Empleado }}</td>
                                 <td>{{ usuario.username }}</td>
                                 <td>{{ usuario.rol.nombre }}</td>
                                 <td>{{ usuario.activo }}</td>
