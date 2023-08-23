@@ -1,3 +1,4 @@
+
 {% extends "base/base.html" %}
 {% block barra_izquierda %}
 <!-- Page Wrapper -->
@@ -315,7 +316,7 @@
     <!-- Card Header - Dropdown -->
     <div
         class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
-        <h6 class="m-0 font-weight-bold text-primary">Editar Parametros SAR</h6>
+        <h6 class="m-0 font-weight-bold text-primary">Editar parametros SAR</h6>
         <div class="dropdown no-arrow">
             <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -331,47 +332,41 @@
     <!-- Card Body -->
     <div class="card-body">
 <div class="card-body">
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <title>Actualizar parametros SAR</title>
-      </head>
-      <body>
-        <form method="post">
-          {% csrf_token %}
-          {{ form.as_p }}
-          <button type="submit" class="btn btn-success">
-            <i class="fas fa-save"></i>Guardar</button>
-          <a href="{% url 'parametros_listar' %}" class="btn btn-secondary">
-            <i class="fas fa-times"></i> Cancelar</a>
-        </form>
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.js"></script>
-        <script>
-          document.querySelector('form').addEventListener('submit', function(event) {
-            // Realiza las validaciones y guarda el formulario
-    
-            // Simulando el guardado exitoso del formulario
-            var formularioGuardadoExitosamente = true;
-    
-            if (formularioGuardadoExitosamente) {
-              event.preventDefault();
-    
-              var successMessage = "Los parametros SAR se ha guardado correctamente.";
-              Swal.fire({
-                icon: 'success',
-                title: 'Éxito',
-                text: successMessage,
-              }).then((result) => {
-                if (result.isConfirmed) {
-                  // Redirige a la página de listado de alumnos
-                  window.location.href = "{% url 'parametros_listar' %}";
-                }
-              });
-            }
-          });
-        </script>
-      </body>
-    </div>
-    </div>
-    {% endblock pagina_contenido %}
-    </html>
+<html>
+  <head>
+    <title>Editar parametros SAR</title>
+  </head>
+  <body>
+    <form method="post">
+        {% csrf_token %}
+        {% if form.errors %}
+          <div class="alert alert-danger" role="alert">
+            <strong>Error de validación:</strong>
+            <ul>
+              {% for field in form %}
+                {% for error in field.errors %}
+                  <li>{{ field.label }}: {{ error }}</li>
+                {% endfor %}
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+        {% for field in form %}
+          <div class="form-group">
+            <label for="{{ field.auto_id }}">{{ field.label }}</label>
+            {{ field }}
+          </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-success">
+          <i class="fas fa-save"></i> Guardar
+        </button>
+      <a href="{% url 'parametros_listar' %}" class="btn btn-secondary">
+        <i class="fas fa-times"></i> Cancelar</a>
+    </form>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.js"></script>
+        
+  </body>
+</div>
+</div>
+{% endblock pagina_contenido %}
+</html>

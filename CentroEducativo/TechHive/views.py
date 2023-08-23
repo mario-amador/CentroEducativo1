@@ -1142,29 +1142,30 @@ class CentroEducativoDeleteView(DeleteView):
 
 class TutoresAlumnosListView(ListView):
     model = TutoresAlumnos
-    template_name = 'TutoresAlumno/tutoresAlumno_listar.html'
+    template_name = 'TutoresAlumno/tutoresalumno_listar.html'
     context_object_name = 'tutoresalumnos'
 
 class TutoresAlumnosCreateView(CreateView):
     model = TutoresAlumnos
     form_class = TutoresAlumnosForm
-    template_name = 'TutoresAlumno/tutoresAlumno_crear.html'
-    success_url = reverse_lazy('tutoresAlumno_listar')
+    template_name = 'TutoresAlumno/tutoresalumno_crear.html'
+    success_url = reverse_lazy('tutoresalumno_listar')
 
 class TutoresAlumnosDetailView(DetailView):
     model = TutoresAlumnos
-    template_name = 'TutoresAlumno/tutoresAlumno_detalle.html'
+    template_name = 'TutoresAlumno/tutoresalumno_detalle.html'
 
 class TutoresAlumnosUpdateView(UpdateView):
     model = TutoresAlumnos
     form_class = TutoresAlumnosForm
-    template_name = 'TutoresAlumno/tutoresAlumno_editar.html'
-    success_url = reverse_lazy('tutoresAlumno_listar')
+    template_name = 'TutoresAlumno/tutoresalumno_editar.html'
+    success_url = reverse_lazy('tutoresalumno_listar')
 
 class TutoresAlumnosDeleteView(DeleteView):
     model = TutoresAlumnos
-    template_name = 'TutoresAlumno/tutoresAlumno_eliminar.html'
-    success_url = reverse_lazy('tutoresAlumno_listar')
+    template_name = 'TutoresAlumno/tutoresalumno_eliminar.html'
+    success_url = reverse_lazy('tutoresalumno_listar')
+
 
 
 #TipoPago Historicos

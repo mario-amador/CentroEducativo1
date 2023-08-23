@@ -325,7 +325,7 @@
             <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
                 aria-labelledby="dropdownMenuLink">
                 <div class="dropdown-header">ACCIONES:</div>
-                <a class="dropdown-item" href="{%  url 'asignatura_listar' %}">Lista de registros</a>
+                <a class="dropdown-item" href="{%  url 'parametros_listar' %}">Lista de cambios en parametros SAR</a>
             </div>
         </div>
     </div>
@@ -337,19 +337,30 @@
     <title>Agregar parametros SAR</title>
   </head>
   <body>
-    {% if messages %}
-      <ul class="messages">
-        {% for message in messages %}
-          <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-        {% endfor %}
-      </ul>
-    {% endif %}
     <form method="post">
-      {% csrf_token %}
-      {{ form.as_p }}
-      <button type="submit" value="submit" class="btn btn-success">
-        <i class="fas fa-save"></i> Guardar</button>
-      <a href="{% url 'asignatura_listar' %}" class="btn btn-secondary">
+        {% csrf_token %}
+        {% if form.errors %}
+          <div class="alert alert-danger" role="alert">
+            <strong>Error de validación:</strong>
+            <ul>
+              {% for field in form %}
+                {% for error in field.errors %}
+                  <li>{{ field.label }}: {{ error }}</li>
+                {% endfor %}
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+        {% for field in form %}
+          <div class="form-group">
+            <label for="{{ field.auto_id }}">{{ field.label }}</label>
+            {{ field }}
+          </div>
+        {% endfor %}
+        <button type="submit" class="btn btn-success">
+          <i class="fas fa-save"></i> Guardar
+        </button>
+      <a href="{% url 'parametros_listar' %}" class="btn btn-secondary">
         <i class="fas fa-times"></i> Cancelar</a>
     </form>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.0.18/dist/sweetalert2.min.js"></script>
