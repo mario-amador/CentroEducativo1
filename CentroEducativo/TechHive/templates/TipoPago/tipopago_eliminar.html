@@ -10,11 +10,15 @@
         </div>
         <div class="form-group">
             <label for="tipodepago">Tipo de pago:</label>
-            <input type="text" id="tipodepago" name="TipoPago" value="{{ tipopago.TipoPago }}" class="form-control" disabled readonly>
+            <input type="text" id="tipodepago" name="nombre" value="{{ tipopago.nombre }}" class="form-control" disabled readonly>
+        </div>
+        <div class="form-group">
+            <label for="precio del pago">Descripción:</label>
+            <input type="text" id="tipodepago" name="descripcion" value="{{ tipopago.descripcion }}" class="form-control" disabled readonly>
         </div>
         <div class="form-group">
             <label for="precio del pago">Precio del pago:</label>
-            <input type="text" id="tipodepago" name="TipoPago" value="{{ tipopago.TipoPago }}" class="form-control" disabled readonly>
+            <input type="text" id="tipodepago" name="monto" value="{{ tipopago.monto }}" class="form-control" disabled readonly>
         </div>
         <div class="btn-group">
             <button class="btn btn-danger" type="submit" onclick="mensaje();"><i class="fas fa-trash-alt"></i> Eliminar</button>

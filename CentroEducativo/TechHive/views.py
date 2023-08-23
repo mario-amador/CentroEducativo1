@@ -75,7 +75,11 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import login
 from .models import Usuario
-
+from django.views.generic.edit import CreateView, UpdateView
+from django.urls import reverse_lazy
+from django.utils import timezone
+from datetime import timedelta
+from .models import TipoPago, TipoPagoHistorico
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -931,15 +935,54 @@ class TipoPagoListView(ListView):
     template_name = 'TipoPago/tipopago_listar.html'
     context_object_name = 'tipospago'
 
+
+
 class TipoPagoCreateView(CreateView):
     model = TipoPago
     form_class = TipoPagoForm
     template_name = 'TipoPago/tipopago_crear.html'
     success_url = reverse_lazy('tipopago_listar')
 
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        tipo_pago = form.instance
+        TipoPagoHistorico.objects.create(
+            tipo_pago=tipo_pago,
+            fecha_inicio=timezone.now().date(),  # Fecha actual
+            monto=tipo_pago.monto
+        )
+
+        return response
+
+class TipoPagoActualizarView(UpdateView):
+    model = TipoPago
+    form_class = TipoPagoActualizarForm
+    template_name = 'TipoPagoHistorico/actualizarMonto.html'
+    success_url = reverse_lazy('tipopago_listar')
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+
+        
+        tipo_pago = form.instance
+        registro_anterior = TipoPagoHistorico.objects.filter(tipo_pago=tipo_pago).order_by('-fecha_inicio').first()
+
+        if registro_anterior:
+            registro_anterior.fecha_fin = timezone.now().date() - timedelta(days=1)
+            registro_anterior.save()
+
+            TipoPagoHistorico.objects.create(
+                tipo_pago=tipo_pago,
+                fecha_inicio=timezone.now().date(),
+                monto=tipo_pago.monto
+            )
+
+        return response
+
+
 class TipoPagoUpdateView(UpdateView):
     model = TipoPago
-    form_class = TipoPagoForm
+    form_class = TipoPagoEditForm
     template_name = 'TipoPago/tipopago_editar.html'
     success_url = reverse_lazy('tipopago_listar')
 
@@ -1154,56 +1197,3 @@ class TipoPagoHistoricoDetailView(DetailView):
     model = TipoPagoHistorico
     template_name = 'TipoPagoHistorico/detalle.html'
 
-
-from django.shortcuts import render, redirect
-from django.views import View
-from .models import TipoPago, TipoPagoHistorico
-from .forms import TipoPagoActualizarForm
-
-class TipoPagoActualizarView(View):
-    template_name = 'TipoPagoHistorico/actualizarMonto.html'
-    
-    def get(self, request, pk):
-        tipo_pago = TipoPago.objects.get(pk=pk)
-        form = TipoPagoActualizarForm(instance=tipo_pago)
-        return render(request, self.template_name, {'form': form})
-    
-    def get(self, request, pk):
-        tipo_pago = TipoPago.objects.get(pk=pk)
-        form = TipoPagoActualizarForm(instance=tipo_pago)
-        return render(request, self.template_name, {'form': form})
-    
-    def get(self, request, pk):
-        tipo_pago = TipoPago.objects.get(pk=pk)
-        form = TipoPagoActualizarForm(instance=tipo_pago)
-        return render(request, self.template_name, {'form': form})
-    
-    def post(self, request, pk):
-        tipo_pago = TipoPago.objects.get(pk=pk)
-        form = TipoPagoActualizarForm(request.POST, instance=tipo_pago)
-        
-        if form.is_valid():
-            nueva_fecha_fin = form.cleaned_data['nueva_fecha_fin']
-            nuevo_monto = tipo_pago.monto
-            
-            # Obtener el último registro de TipoPagoHistorico asociado a este TipoPago
-            try:
-                ultimo_historico = TipoPagoHistorico.objects.filter(tipo_pago=tipo_pago).latest('fecha_inicio')
-                ultimo_historico.fecha_fin = nueva_fecha_fin
-                ultimo_historico.save()
-            except TipoPagoHistorico.DoesNotExist:
-                pass  # No se encontró un registro en TipoPagoHistorico, no es un problema si está vacío
-            
-            # Crear un nuevo registro en TipoPagoHistorico antes de actualizar
-            TipoPagoHistorico.objects.create(
-                tipo_pago=tipo_pago,
-                fecha_inicio=nueva_fecha_fin,
-                fecha_fin=None,
-                monto=nuevo_monto
-            )
-            
-            tipo_pago.save()
-            
-            return redirect('tipopago_listar')  # Redirigir a la lista de tipos de pago
-        else:
-            return render(request, self.template_name,{'form':form})

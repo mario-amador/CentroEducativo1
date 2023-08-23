@@ -236,7 +236,7 @@ urlpatterns = [
     path('tipo_pago_historico/crear/', views.TipoPagoHistoricoCreateView.as_view(), name='tipo_pago_historico_crear'),
     path('tipo_pago_historico/<int:pk>/editar/', views.TipoPagoHistoricoUpdateView.as_view(), name='tipo_pago_historico_editar'),
     path('tipo_pago_historico/<int:pk>/eliminar/', views.TipoPagoHistoricoDeleteView.as_view(), name='tipo_pago_historico_eliminar'),
-  path('tipo_pago/<int:pk>/actualizar/', TipoPagoActualizarView.as_view(), name='tipo_pago_actualizar'),
+    path('tipo_pago/<int:pk>/actualizar/', TipoPagoActualizarView.as_view(), name='tipo_pago_actualizar'),
     # ...
 
     path('tipo_pago_historico/<int:pk>/', views.TipoPagoHistoricoDetailView.as_view(), name='tipo_pago_historico_detalle'),
