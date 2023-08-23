@@ -1,11 +1,13 @@
 from ast import pattern
 from datetime import datetime
-
+from django import forms
+from .models import TipoPago
+from .models import TipoPagoHistorico
 from ast import pattern
 from datetime import datetime
 
 import re
-from django import forms
+
 from .models import Alumno, DocumentoDPI,Empleado,Catedratico, Factura, Pago,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Municipio, TipoPago,Seccion, Actitud, CentroEducativo, TutoresAlumnos
 from typing import Required, Self
 	
@@ -14,7 +16,7 @@ from .models import Grado,ParametrosSAR,Meses,TipoReporte,Departamento,TipoPago,
 
 
 import re
-from django import forms
+
 from .models import Alumno, DocumentoDPI,Empleado,Catedratico,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Municipio, TipoPago, Seccion, Actitud, CentroEducativo, TutoresAlumnos
 from typing import Required, Self
 	
@@ -22,7 +24,6 @@ from django.core.validators import RegexValidator
 from .models import Grado,ParametrosSAR,Meses,TipoReporte,Departamento,TipoPago,CategoriaEmpleado,ExpedienteEscolar,ExpedienteMedico,TipoSanguineo
 
 
-from django.core.exceptions import ValidationError
 
 from django.core.exceptions import ValidationError
 from django.core.validators import EmailValidator
@@ -1446,130 +1447,6 @@ class DocumentoForm(forms.ModelForm):
         no_tres_letras_iguales_validator(documentodpi)
         return documentodpi.capitalize()
 
-
-class TipoPagoForm(forms.ModelForm):
-    class Meta:
-        model = TipoPago
-        fields = ['nombre', 'descripcion', 'monto']
-        labels = {
-            'nombre': 'Nombre del pago',
-            'descripcion': 'Descripción del pago',
-            'monto': 'Precio del pago'
-        }
-        widgets = {
-            'nombre': forms.TextInput(attrs={'class': 'form-control'}),
-            'descripcion': forms.TextInput(attrs={'class': 'form-control'}),
-            'monto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
-        }
-
-    def clean_nombre(self):
-        nombre = self.cleaned_data['nombre']
-        if "  " in nombre:
-            raise forms.ValidationError('El nombre no debe contener más de un espacio en blanco consecutivo.')
-        
-        for i in range(len(nombre) - 2):
-            if nombre[i] == nombre[i+1] == nombre[i+2]:
-                raise forms.ValidationError('El nombre no debe contener tres letras iguales consecutivas.')
-        
-        if any(char.isdigit() for char in nombre):
-            raise forms.ValidationError('El nombre no debe contener números.')
-        
-        return nombre
-
-    def clean_descripcion(self):
-        descripcion = self.cleaned_data['descripcion']
-        
-        if "  " in descripcion:
-            raise forms.ValidationError('La descripción no debe contener más de un espacio en blanco consecutivo.')
-        
-        for i in range(len(descripcion) - 2):
-            if descripcion[i] == descripcion[i+1] == descripcion[i+2]:
-                raise forms.ValidationError('La descripción no debe contener tres letras iguales consecutivas.')
-        
-        if any(char.isdigit() for char in descripcion):
-            raise forms.ValidationError('La descripción no debe contener números.')
-        
-        return descripcion
-         
-    def clean_monto(self):
-    
-
-
-
-from django import forms
-from .models import TipoPago
-
-class TipoPagoEditForm(TipoPagoForm):
-    class Meta:
-        model = TipoPago
-        fields = ['nombre', 'descripcion', 'monto']
-        labels = {
-            'nombre': 'Nombre del pago',
-            'descripcion': 'Descripción del pago',
-            'monto': 'Precio del pago'
-        }
-        widgets = {
-            'nombre': forms.TextInput(attrs={'class': 'form-control'}),
-            'descripcion': forms.TextInput(attrs={'class': 'form-control'}),
-            'monto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'readonly': 'readonly'}),
-        }
-
-
-from django import forms
-from .models import TipoPagoHistorico
-
-class TipoPagoHistoricoForm(forms.ModelForm):
-    class Meta:
-        model = TipoPagoHistorico
-        fields = ['tipo_pago', 'fecha_inicio', 'fecha_fin', 'monto']
-        labels = {
-            'tipo_pago': 'Tipo de Pago',
-            'fecha_inicio': 'Fecha de Inicio',
-            'fecha_fin': 'Fecha de Fin',
-            'monto': 'Monto',
-        }
-        widgets = {
-            'tipo_pago': forms.Select(attrs={'class': 'form-control'}),
-            'fecha_inicio': forms.DateTimeInput(attrs={'class': 'form-control'}),
-            'fecha_fin': forms.DateTimeInput(attrs={'class': 'form-control'}),
-            'monto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
-        }
-
-
-from django import forms
-from .models import TipoPago
-
-class TipoPagoActualizarForm(forms.ModelForm):
-    class Meta:
-        model = TipoPago
-        fields = ['nombre', 'monto']  # Campos que se pueden actualizar
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        instance = kwargs.get('instance')
-        
-        if instance:
-            self.fields['nombre'] = forms.CharField(
-                initial=instance.nombre,
-                widget=forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'})
-            )
-            
-        self.fields['monto'] = forms.DecimalField(
-            widget=forms.TextInput(attrs={'class': 'form-control'}),
-            label='Nuevo Monto',
-            help_text='Ingrese el nuevo monto.',
-            validators=[self.validate_monto]
-        )
-
-    def validate_monto(self, value):
-        if value <= 0:
-            raise forms.ValidationError('El monto debe ser mayor que cero.')
-
-
-
-
-
-
 class TipoSanguineoForm(forms.ModelForm):
     class Meta:
         model = TipoSanguineo
@@ -1746,7 +1623,96 @@ class TutoresAlumnosForm(forms.ModelForm):
 
 
 
+class TipoPagoEditForm(forms.Models):
+    class Meta:
+        model = TipoPago
+        fields = ['nombre', 'descripcion', 'monto']
+        labels = {
+            'nombre': 'Nombre del pago',
+            'descripcion': 'Descripción del pago',
+            'monto': 'Precio del pago'
+        }
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'descripcion': forms.TextInput(attrs={'class': 'form-control'}),
+            'monto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'readonly': 'readonly'}),
+        }
 
+class TipoPagoForm(forms.ModelForm):
+    class Meta:
+        model = TipoPago
+        fields = ['nombre', 'descripcion', 'monto']
+        labels = {
+            'nombre': 'Nombre del pago',
+            'descripcion': 'Descripción del pago',
+            'monto': 'Precio del pago'
+        }
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'descripcion': forms.TextInput(attrs={'class': 'form-control'}),
+            'monto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+        }
+
+    def clean_nombre(self):
+        nombre = self.cleaned_data['nombre']
+        if "  " in nombre:
+            raise forms.ValidationError('El nombre no debe contener más de un espacio en blanco consecutivo.')
+        
+        for i in range(len(nombre) - 2):
+            if nombre[i] == nombre[i+1] == nombre[i+2]:
+                raise forms.ValidationError('El nombre no debe contener tres letras iguales consecutivas.')
+        
+        if any(char.isdigit() for char in nombre):
+            raise forms.ValidationError('El nombre no debe contener números.')
+        
+        return nombre
+
+    def clean_descripcion(self):
+        descripcion = self.cleaned_data['descripcion']
+        
+        if "  " in descripcion:
+            raise forms.ValidationError('La descripción no debe contener más de un espacio en blanco consecutivo.')
+        
+        for i in range(len(descripcion) - 2):
+            if descripcion[i] == descripcion[i+1] == descripcion[i+2]:
+                raise forms.ValidationError('La descripción no debe contener tres letras iguales consecutivas.')
+        
+        if any(char.isdigit() for char in descripcion):
+            raise forms.ValidationError('La descripción no debe contener números.')
+        
+        return descripcion
+         
+    def clean_monto(self):
+
+
+
+
+
+class TipoPagoActualizarForm(forms.ModelForm):
+    class Meta:
+        model = TipoPago
+        fields = ['nombre', 'monto']  # Campos que se pueden actualizar
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        instance = kwargs.get('instance')
+        
+        if instance:
+            self.fields['nombre'] = forms.CharField(
+                initial=instance.nombre,
+                widget=forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'})
+            )
+            
+        self.fields['monto'] = forms.DecimalField(
+            widget=forms.TextInput(attrs={'class': 'form-control'}),
+            label='Nuevo Monto',
+            help_text='Ingrese el nuevo monto.',
+            validators=[self.validate_monto]
+        )
+
+    def validate_monto(self, value):
+        if value <= 0:
+            raise forms.ValidationError('El monto debe ser mayor que cero.')
 
 
 

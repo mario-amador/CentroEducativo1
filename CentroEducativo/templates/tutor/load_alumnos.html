@@ -1,0 +1,5 @@
+<!-- load_alumnos.html -->
+
+{% for alumno in alumnos %}
+    <option value="{{ alumno.Alumno_id }}">{{ alumno.Alumno__nombre }}</option>
+{% endfor %}
