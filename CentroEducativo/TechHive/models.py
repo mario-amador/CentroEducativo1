@@ -95,6 +95,19 @@ def pasaporte_validator(value):
     if len(value) != 20:
         raise ValidationError('El pasaporte debe tener 20 caracteres.')
 
+class Impuestos(models.Model):
+    NombreImpuesto=models.CharField(max_length=30)
+    Tasa= models.DecimalField(max_digits=3, decimal_places=2)
+
+    def __str__(self):
+        return self.NombreImpuesto
+
+class Parentesco(models.Model):
+    Parentesco=models.CharField(max_length=15)
+
+    def __str__(self):
+        return self.Parentesco
+
 
 class Rol(models.Model):
     nombre = models.CharField(max_length=50, unique=True)
@@ -191,7 +204,7 @@ class Tutor(models.Model):
     DocumentoDPI = models.ForeignKey(DocumentoDPI, on_delete=models.CASCADE)
     DPI = models.CharField(max_length=20, unique=True,help_text='No, debe contenes letras, digitos: 13-15 ')
     Tel_Tutor = models.CharField(max_length=8,  help_text='Longitud requerida: 8 digitos ')
-    Parentesco = models.CharField(max_length=15, help_text='No debe contener numeros, caracteres 3-15 ')
+    Parentesco = models.ForeignKey(Parentesco, on_delete=models.CASCADE)
     
 
     def __str__(self):
@@ -269,10 +282,16 @@ class Pago(models.Model):
     FechaHoraPago = models.DateTimeField(auto_now_add=True)
     TipoPago = models.ForeignKey(TipoPago, on_delete=models.CASCADE)
     Meses= models.ForeignKey(Meses, on_delete=models.CASCADE)
+    Impuestos=models.ForeignKey(Impuestos, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f" Pago: {self.id} - Tutor: {self.Tutor.Tutor} Alumno: {self.Alumno.Alumno}, Fecha y hora: {self.FechaHoraPago} Tipo Pago: {self.TipoPago} Mes: {self.Meses}"
-
+        return f" Pago: {self.id} - Tutor: {self.Tutor.Tutor} Alumno: {self.Alumno.Alumno}, Fecha y hora: {self.FechaHoraPago} Tipo Pago: {self.TipoPago} Mes: {self.Meses}, Impuesto:{self.Impuestos}"
+    @property
+    def monto(self):
+        return self.TipoPago.monto
+    @property
+    def total(self):
+        return self.monto * self.Impuestos.Tasa
     
 class CentroEducativo(models.Model):
     NombreCentro= models.CharField(max_length=100)

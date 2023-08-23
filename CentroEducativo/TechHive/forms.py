@@ -2,10 +2,11 @@ from ast import pattern
 from datetime import datetime
 from django import forms
 from .models import TipoPago
-from .models import TipoPagoHistorico
+from .models import TipoPagoHistorico,Parentesco
 from ast import pattern
 from datetime import datetime
 
+import re
 import re
 
 from .models import Alumno, DocumentoDPI,Empleado,Catedratico, Factura, Pago,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Municipio, TipoPago,Seccion, Actitud, CentroEducativo, TutoresAlumnos
@@ -632,7 +633,7 @@ class TutorForm(forms.ModelForm):
                 attrs={'class': 'form-control',
                 
                     'placeholder': '########'}),
-            'Parentesco': forms.TextInput(
+            'Parentesco': forms.Select(
                 attrs={'class': 'form-control',
                        }),
         }
@@ -658,12 +659,6 @@ class TutorForm(forms.ModelForm):
 
 
 
-    def clean_Parentesco(self):
-        parentesco = self.cleaned_data.get('Parentesco')
-        solo_letras_validator(parentesco)
-        no_campos_vacios_validator(parentesco)
-        no_tres_letras_iguales_validator(parentesco)
-        return parentesco.capitalize()
 
 class AsignaturaForm(forms.ModelForm):
     class Meta:
@@ -1497,7 +1492,8 @@ class FacturaForm(forms.ModelForm):
 class PagoForm(forms.ModelForm):
     Tutor = forms.ModelChoiceField(queryset=Tutor.objects.distinct(), label='Tutor:', widget=forms.Select(attrs={'class': 'form-control'}))
     Alumno = forms.ModelChoiceField(queryset=Alumno.objects.none(), label='Alumno:', widget=forms.Select(attrs={'class': 'form-control'}))
-
+    TipoPago = forms.ModelChoiceField(queryset=TipoPago.objects.all(), label='Tipo de Pago:', widget=forms.Select(attrs={'class': 'form-control'}))
+    monto = forms.DecimalField(label='Precio:', disabled=True, widget=forms.TextInput(attrs={'class': 'form-control'}))
     def _init_(self, *args, **kwargs):
         super()._init_(*args, **kwargs)
         self.fields['Tutor'].label_from_instance = lambda obj: f"{obj.NombresTutor} {obj.ApellidosTutor}"
@@ -1513,14 +1509,15 @@ class PagoForm(forms.ModelForm):
 
     class Meta:
         model = Pago
-        fields = ['Tutor', 'Alumno', 'Meses', 'TipoPago']
+        fields = ['Tutor', 'Alumno', 'Meses', 'TipoPago', 'monto', 'Impuestos']
         labels = {
             'Meses': 'Mes a pagar:',
-            'TipoPago': 'Movimiento(s) a pagar:',
+            'Impuestos':'Impuesto:',
         }
         widgets = {
             'Meses': forms.Select(attrs={'class': 'form-control'}),
-            'TipoPago': forms.Select(attrs={'class': 'form-control'}),
+            'Impuestos': forms.Select(attrs={'class': 'form-control'}),
+            
         }
 
 
@@ -1769,3 +1766,34 @@ class TipoPagoHistoricoForm(forms.ModelForm):
             'fecha_fin': forms.DateTimeInput(attrs={'class': 'form-control'}),
             'monto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
         }
+
+
+
+
+
+class ParentescoForm(forms.ModelForm):
+    class Meta:
+        model = Parentesco
+        fields = ['Parentesco']
+        widgets = {
+            'Parentesco': forms.TextInput(attrs={'placeholder': 'Ingrese el Parentesco'})
+        }
+
+    def clean_Parentesco(self):
+        parentesco = self.cleaned_data['Parentesco']
+
+        # Validation: Only letters are allowed
+        if not parentesco.isalpha():
+            raise forms.ValidationError("Solo se permiten letras en este campo.")
+
+        # Validation: No whitespaces allowed
+        if ' ' in parentesco:
+            raise forms.ValidationError("No se permiten espacios en blanco.")
+
+        # Validation: No three identical consecutive letters
+        if re.search(r'(.)\1\1', parentesco):
+            raise forms.ValidationError("No se permiten tres letras idénticas consecutivas.")
+
+        return parentesco
+
+

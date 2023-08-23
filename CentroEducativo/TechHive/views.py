@@ -25,7 +25,7 @@ from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
-from .models import Usuario
+from .models import Usuario,Parentesco
 from django.views.generic import ListView, CreateView, DetailView, UpdateView, DeleteView,TemplateView
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -33,7 +33,7 @@ from .models import Alumno,Empleado,Catedratico, ExpedienteEscolar, Grado, Munic
 from .forms import AlumnoForm,EmpleadoForm,CatedraticoForm, ExpedienteEscolarForm, GradoForm, TutorForm,AsignaturaForm,MatriculaForm,ReportesForm,ExpedienteMedicoForm, HorariosForm, NivelesForm, ParcialesForm, NotasForm, DepartamentoForm, MunicipioForm, MensualidadForm, ParametrosSARForm, CategoriaForm, DocumentoForm, UserCreationForm, UserEditForm,  SeccionForm, ActitudForm, CentroEducativoForm, TutoresAlumnosForm
 
 from .models import TipoReporte, TipoSanguineo, Alumno,Empleado,Catedratico,TipoPago, ExpedienteEscolar, Grado, Municipio,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Departamento,  ParametrosSAR,  Meses, CategoriaEmpleado, DocumentoDPI,  Seccion, Actitud, CentroEducativo, TutoresAlumnos
-from .forms import TipoPagoHistoricoForm,TipoReporteForm,TipoSanguineoForm, AlumnoForm,EmpleadoForm,CatedraticoForm, TipoPagoForm,ExpedienteEscolarForm, GradoForm,TutorForm,AsignaturaForm,MatriculaForm,ReportesForm,ExpedienteMedicoForm, HorariosForm, NivelesForm, ParcialesForm, NotasForm, DepartamentoForm, MunicipioForm,  MensualidadForm, ParametrosSARForm, CategoriaForm, DocumentoForm,  SeccionForm, ActitudForm, CentroEducativoForm, TutoresAlumnosForm
+from .forms import ParentescoForm, TipoPagoHistoricoForm,TipoReporteForm,TipoSanguineoForm, AlumnoForm,EmpleadoForm,CatedraticoForm, TipoPagoForm,ExpedienteEscolarForm, GradoForm,TutorForm,AsignaturaForm,MatriculaForm,ReportesForm,ExpedienteMedicoForm, HorariosForm, NivelesForm, ParcialesForm, NotasForm, DepartamentoForm, MunicipioForm,  MensualidadForm, ParametrosSARForm, CategoriaForm, DocumentoForm,  SeccionForm, ActitudForm, CentroEducativoForm, TutoresAlumnosForm
 from django.contrib import messages
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -187,6 +187,7 @@ def crear_pago(request):
     }
 
     return render(request, 'crear_pago.html', context)
+
 def get_monto(request):
     tipo_pago_id = request.GET.get('tipo_pago_id')
     try:
@@ -1198,3 +1199,47 @@ class TipoPagoHistoricoDetailView(DetailView):
     model = TipoPagoHistorico
     template_name = 'TipoPagoHistorico/detalle.html'
 
+#Parentezco
+
+
+
+class ParentescoListView(ListView):
+    model = Parentesco
+    template_name = 'Parentesco/parentesco_lista.html'  # Replace with your template path
+    context_object_name = 'parentescos'  # Name used in the template context
+
+
+
+
+import re
+class ParentescoCreateView(CreateView):
+    template_name = 'Parentesco/parentesco_crear.html'
+
+    def get(self, request):
+        form = ParentescoForm()
+        return render(request, self.template_name, {'form': form})
+
+    def post(self, request):
+        form = ParentescoForm(request.POST)
+        if form.is_valid():
+            parentesco = form.cleaned_data['Parentesco']
+
+            # Custom validation: Only letters are allowed
+            if not parentesco.isalpha():
+                form.add_error('Parentesco', 'Solo se permiten letras en este campo.')
+
+            # Custom validation: No whitespaces allowed
+            if ' ' in parentesco:
+                form.add_error('Parentesco', 'No se permiten espacios en blanco.')
+
+            # Custom validation: No three identical consecutive letters
+            if re.search(r'(.)\1\1', parentesco):
+                form.add_error('Parentesco', 'No se permiten tres letras idénticas consecutivas.')
+
+            if form.errors:
+                return render(request, self.template_name, {'form': form})
+
+            Parentesco.objects.create(Parentesco=parentesco)
+            return redirect(reverse_lazy('parentesco_list'))
+
+        return render(request, self.template_name, {'form': form})
