@@ -1,9 +1,9 @@
 from ast import pattern
 from datetime import datetime
-from .models import TipoPago
+
 from ast import pattern
 from datetime import datetime
-from .models import TipoPagoHistorico
+
 import re
 from django import forms
 from .models import Alumno, DocumentoDPI,Empleado,Catedratico, Factura, Pago,Tutor,Asignatura,Matricula,Reportes,ExpedienteMedico, HorariosNivelEducativo, NivelEducativo, ParcialesAcademicos, NotasAlumnos, Municipio, TipoPago,Seccion, Actitud, CentroEducativo, TutoresAlumnos
@@ -23,6 +23,15 @@ from .models import Grado,ParametrosSAR,Meses,TipoReporte,Departamento,TipoPago,
 
 
 from django.core.exceptions import ValidationError
+
+from django.core.exceptions import ValidationError
+from django.core.validators import EmailValidator
+
+def custom_email_validator(value):
+    validator = EmailValidator("Ingrese una dirección de correo válida.")
+    validator(value)  # Esto lanzará una excepción si la validación falla.
+
+
 
 def validate_direccion(value):
     # Verificar que la dirección no esté vacía
@@ -228,33 +237,7 @@ def fechaaño_rango_año(value):
 
     if value < min_fecha or value > max_fecha:
         raise forms.ValidationError(' Ingrese una fecha del Año.')
-
-def fecha_rango_emision(value):
-    min_fecha = datetime.strptime('2023-01-01', '%Y-%m-%d').date()
-    max_fecha = datetime.strptime('2025-01-01', '%Y-%m-%d').date()
-
-    if value < min_fecha or value > max_fecha:
-        raise forms.ValidationError(' Ingrese una Fecha de Emisión.')
     
-def fecha_rango_vencimiento(value):
-    min_fecha = datetime.strptime('2023-01-01', '%Y-%m-%d').date()
-    max_fecha = datetime.strptime('2025-01-01', '%Y-%m-%d').date()
-
-    if value < min_fecha or value > max_fecha:
-        raise forms.ValidationError(' Ingrese una Fecha de Vencimiento.')
-
-def correlativo_validator(value):
-    if not value.isdigit():
-        raise forms.ValidationError('El Correlativo debe contener solo dígitos numéricos.')
-
-    if len(value) != 8:
-        raise forms.ValidationError('El Correlativo debe tener 8 dígitos.')
-    
-def RTN_longitud_validator(value):
-    if len(value) != 15:
-        raise forms.ValidationError('El RTN debe contener exactamente 15 dígitos numéricos.')
-
-
 
 
 from django import forms
@@ -1098,17 +1081,6 @@ class LoginForm(forms.Form):
         return cleaned_data
     
 
-from django import forms
-from .models import Usuario
-
-from django import forms
-from .models import Usuario
-
-from django import forms
-
-
-    
-
 
 from django import forms
 from django.contrib.auth.models import User
@@ -1170,6 +1142,7 @@ class UserEditForm(forms.ModelForm):
 import re
 import re
 
+
 class UserCreationForm(forms.ModelForm):
     password = forms.CharField(
         widget=forms.PasswordInput(attrs={'class': 'form-control', 'placeholder': 'Contraseña'})
@@ -1195,8 +1168,8 @@ class UserCreationForm(forms.ModelForm):
             'Empleado': forms.Select(attrs={'class': 'form-control'}),
         }
 
-    def _init_(self, *args, **kwargs):
-        super(UserCreationForm, self)._init_(*args, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super(UserCreationForm, self).__init__(*args, **kwargs)
         self.fields['username'].label = 'Nombre de usuario'
         self.fields['password'].label = 'Contraseña'
         self.fields['confirm_password'].label = 'Confirmar Contraseña'
@@ -1249,6 +1222,7 @@ class UserCreationForm(forms.ModelForm):
         if len(password) < 8:
             raise forms.ValidationError('La contraseña debe tener al menos 8 caracteres.')
         return password
+
 
 
 
@@ -1371,38 +1345,7 @@ class MunicipioForm(forms.ModelForm):
         no_numeros_validator(nombre_municipio)
         no_tres_letras_iguales_validator(nombre_municipio)
         return nombre_municipio.capitalize()
-
-class PagoForm(forms.ModelForm):
-    Tutor = forms.ModelChoiceField(queryset=Tutor.objects.distinct(), label='Tutor:', widget=forms.Select(attrs={'class': 'form-control'}))
-    Alumno = forms.ModelChoiceField(queryset=Alumno.objects.none(), label='Alumno:', widget=forms.Select(attrs={'class': 'form-control'}))
-    TipoPago = forms.ModelChoiceField(queryset=TipoPago.objects.all(), label='Tipo de Pago:', widget=forms.Select(attrs={'class': 'form-control'}))
-    monto = forms.DecimalField(label='Precio:', disabled=True, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.fields['Tutor'].label_from_instance = lambda obj: f"{obj.NombresTutor} {obj.ApellidosTutor}"
-        self.fields['Alumno'].queryset = Alumno.objects.none()
-
-        if 'Tutor' in self.data:
-            try:
-                tutor_id = int(self.data.get('Tutor'))
-                alumno_ids = TutoresAlumnos.objects.filter(Tutor_id=tutor_id).values_list('Alumno_id', flat=True)
-                self.fields['Alumno'].queryset = Alumno.objects.filter(id__in=alumno_ids)
-            except (ValueError, TypeError):
-                pass
-
-    class Meta:
-        model = Pago
-        fields = ['Tutor', 'Alumno', 'Meses', 'TipoPago', 'monto']
-        labels = {
-            'Meses': 'Mes a pagar:',
-            
-        }
-        widgets = {
-            'Meses': forms.Select(attrs={'class': 'form-control'}),
-            
-        }
-
-
+    
 
 
 class MensualidadForm(forms.ModelForm):
@@ -1460,22 +1403,6 @@ class ParametrosSARForm(forms.ModelForm):
             'Correlativo': forms.DateInput(
                 attrs={'class': 'form-control'}),
         }
-    
-    def clean_FechaEmision(self):
-        fecha_emision = self.cleaned_data.get('FechaEmision')
-        fecha_rango_emision(fecha_emision)
-        return fecha_emision
-    
-    def clean_FechaVencimiento(self):
-        fecha_vencimiento = self.cleaned_data.get('FechaVencimiento')
-        fecha_rango_vencimiento(fecha_vencimiento)
-        return fecha_vencimiento
-    
-    def clean_Correlativo(self):
-        correlativo = self.cleaned_data['Correlativo']
-        correlativo_validator(correlativo)
-        return correlativo
-
 class CategoriaForm(forms.ModelForm):
     class Meta:
         model = CategoriaEmpleado
@@ -1496,54 +1423,7 @@ class CategoriaForm(forms.ModelForm):
         no_numeros_validator(categoria_empleado)
         no_tres_letras_iguales_validator(categoria_empleado)
         return categoria_empleado.capitalize()
-
-class TipoPagoEditForm(TipoPagoForm):
-    class Meta:
-        model = TipoPago
-        fields = ['nombre', 'descripcion', 'monto']
-        labels = {
-            'nombre': 'Nombre del pago',
-            'descripcion': 'Descripción del pago',
-            'monto': 'Precio del pago'
-        }
-        widgets = {
-            'nombre': forms.TextInput(attrs={'class': 'form-control'}),
-            'descripcion': forms.TextInput(attrs={'class': 'form-control'}),
-            'monto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'readonly': 'readonly'}),
-        }
-
-    def clean_nombre(self):
-        nombre = self.cleaned_data['nombre']
-
-        if "  " in nombre:
-            raise forms.ValidationError('El nombre no debe contener más de un espacio en blanco consecutivo.')
-
-        for i in range(len(nombre) - 2):
-            if nombre[i] == nombre[i+1] == nombre[i+2]:
-                raise forms.ValidationError('El nombre no debe contener tres letras iguales consecutivas.')
-
-        if any(char.isdigit() for char in nombre):
-            raise forms.ValidationError('El nombre no debe contener números.')
-
-        return nombre
-
-    def clean_descripcion(self):
-        descripcion = self.cleaned_data['descripcion']
-
-        if "  " in descripcion:
-            raise forms.ValidationError('La descripción no debe contener más de un espacio en blanco consecutivo.')
-
-        for i in range(len(descripcion) - 2):
-            if descripcion[i] == descripcion[i+1] == descripcion[i+2]:
-                raise forms.ValidationError('La descripción no debe contener tres letras iguales consecutivas.')
-
-        if any(char.isdigit() for char in descripcion):
-            raise forms.ValidationError('La descripción no debe contener números.')
-
-        return descripcion
-
-
-
+    
 class DocumentoForm(forms.ModelForm):
     class Meta:
         model = DocumentoDPI
@@ -1566,11 +1446,6 @@ class DocumentoForm(forms.ModelForm):
         no_tres_letras_iguales_validator(documentodpi)
         return documentodpi.capitalize()
 
-from django import forms
-from .models import TipoPago
-
-from django import forms
-from .models import TipoPago
 
 class TipoPagoForm(forms.ModelForm):
     class Meta:
@@ -1617,10 +1492,48 @@ class TipoPagoForm(forms.ModelForm):
         return descripcion
          
     def clean_monto(self):
-        
+    
 
 
-        
+
+from django import forms
+from .models import TipoPago
+
+class TipoPagoEditForm(TipoPagoForm):
+    class Meta:
+        model = TipoPago
+        fields = ['nombre', 'descripcion', 'monto']
+        labels = {
+            'nombre': 'Nombre del pago',
+            'descripcion': 'Descripción del pago',
+            'monto': 'Precio del pago'
+        }
+        widgets = {
+            'nombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'descripcion': forms.TextInput(attrs={'class': 'form-control'}),
+            'monto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'readonly': 'readonly'}),
+        }
+
+
+from django import forms
+from .models import TipoPagoHistorico
+
+class TipoPagoHistoricoForm(forms.ModelForm):
+    class Meta:
+        model = TipoPagoHistorico
+        fields = ['tipo_pago', 'fecha_inicio', 'fecha_fin', 'monto']
+        labels = {
+            'tipo_pago': 'Tipo de Pago',
+            'fecha_inicio': 'Fecha de Inicio',
+            'fecha_fin': 'Fecha de Fin',
+            'monto': 'Monto',
+        }
+        widgets = {
+            'tipo_pago': forms.Select(attrs={'class': 'form-control'}),
+            'fecha_inicio': forms.DateTimeInput(attrs={'class': 'form-control'}),
+            'fecha_fin': forms.DateTimeInput(attrs={'class': 'form-control'}),
+            'monto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
+        }
 
 
 from django import forms
@@ -1651,6 +1564,7 @@ class TipoPagoActualizarForm(forms.ModelForm):
     def validate_monto(self, value):
         if value <= 0:
             raise forms.ValidationError('El monto debe ser mayor que cero.')
+
 
 
 
@@ -1703,29 +1617,38 @@ class FacturaForm(forms.ModelForm):
         fields=['numero_factura', 'ParametrosSAR', 'CentroEducativo', 'pago']
 
 
-
-
-
 class PagoForm(forms.ModelForm):
+    Tutor = forms.ModelChoiceField(queryset=Tutor.objects.distinct(), label='Tutor:', widget=forms.Select(attrs={'class': 'form-control'}))
+    Alumno = forms.ModelChoiceField(queryset=Alumno.objects.none(), label='Alumno:', widget=forms.Select(attrs={'class': 'form-control'}))
+
+    def _init_(self, *args, **kwargs):
+        super()._init_(*args, **kwargs)
+        self.fields['Tutor'].label_from_instance = lambda obj: f"{obj.NombresTutor} {obj.ApellidosTutor}"
+        self.fields['Alumno'].queryset = Alumno.objects.none()
+
+        if 'Tutor' in self.data:
+            try:
+                tutor_id = int(self.data.get('Tutor'))
+                alumno_ids = TutoresAlumnos.objects.filter(Tutor_id=tutor_id).values_list('Alumno_id', flat=True)
+                self.fields['Alumno'].queryset = Alumno.objects.filter(id__in=alumno_ids)
+            except (ValueError, TypeError):
+                pass
+
     class Meta:
         model = Pago
-        fields = ['Tutor', 'Alumno', 'TipoPago', 'Meses']
+        fields = ['Tutor', 'Alumno', 'Meses', 'TipoPago']
         labels = {
-            'Tutor': 'Tutor:',
-            'Alumno': 'Alumno:',
-            'TipoPago': 'Movimiento a pagar:',
             'Meses': 'Mes a pagar:',
+            'TipoPago': 'Movimiento(s) a pagar:',
         }
         widgets = {
-            'Tutor': forms.Select(
-                attrs={'class': 'form-control'}),
-            'Alumno': forms.Select(
-                attrs={'class': 'form-control'}),
-            'TipoPago': forms.Select(
-                attrs={'class': 'form-control'}),
-            'Meses': forms.Select(
-                attrs={'class': 'form-control'}),    
+            'Meses': forms.Select(attrs={'class': 'form-control'}),
+            'TipoPago': forms.Select(attrs={'class': 'form-control'}),
         }
+
+
+
+
 class SeccionForm(forms.ModelForm):
     class Meta:
         model = Seccion
@@ -1771,31 +1694,26 @@ class ActitudForm(forms.ModelForm):
         return actitud.capitalize()
 
 class CentroEducativoForm(forms.ModelForm):
+    Correo = forms.EmailField(
+        validators=[custom_email_validator],
+        widget=forms.TextInput(attrs={'class': 'form-control'}),
+        label='Código del Centro Educativo'
+    )
+
     class Meta:
         model = CentroEducativo
-        fields = ['NombreCentro', 'CodigoCentro', 'Titularidad', 'Localidad', 'Sucursal', 'Telefono']
+        fields = ['NombreCentro', 'Correo', 'Localidad', 'Sucursal', 'Telefono']
         labels = {
             'NombreCentro': 'Nombre del Centro Educativo',
-            'CodigoCentro': 'Código del Centro Educativo',
-            'Titularidad': 'Titularidad del Centro Educativo',
             'Localidad': 'Localidad del Centro Educativo',
             'Sucursal': 'Sucursal del Centro Educativo',
             'Telefono': 'Teléfono del Centro Educativo',
         }
         widgets = {
-            'NombreCentro': forms.TextInput(
-                attrs={'class': 'form-control'}),
-            'CodigoCentro': forms.TextInput(
-                attrs={'class': 'form-control'}),
-            'Titularidad': forms.TextInput(
-                attrs={'class': 'form-control'}),
-            'Localidad': forms.Select(
-                attrs={'class': 'form-control'}),
-            'Sucursal': forms.TextInput(
-                attrs={'class': 'form-control'}),
-            'Telefono': forms.TextInput(
-                attrs={'class': 'form-control',
-                    'placeholder': '########'}),
+            'NombreCentro': forms.TextInput(attrs={'class': 'form-control'}),
+            'Localidad': forms.Select(attrs={'class': 'form-control'}),
+            'Sucursal': forms.TextInput(attrs={'class': 'form-control'}),
+            'Telefono': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '########'}),
         }
 
     def clean_NombreCentro(self):
@@ -1807,14 +1725,6 @@ class CentroEducativoForm(forms.ModelForm):
         no_tres_letras_iguales_validator(nombre_centro)
         return nombre_centro.capitalize()
     
-    def clean_Titularidad(self):
-        titularidad = self.cleaned_data.get('Titularidad')
-        solo_letras_validator(titularidad)
-        no_campos_vacios_validator(titularidad)
-        no_dos_espacios_validator(titularidad)
-        no_numeros_validator(titularidad)
-        no_tres_letras_iguales_validator(titularidad)
-        return titularidad.capitalize()
     
     
 
@@ -1832,6 +1742,12 @@ class TutoresAlumnosForm(forms.ModelForm):
             'Alumno': forms.Select(
                 attrs={'class': 'form-control'}),
         }
+
+
+
+
+
+
 
 
 
