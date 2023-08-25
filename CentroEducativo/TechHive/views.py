@@ -937,7 +937,6 @@ class TipoPagoListView(ListView):
     context_object_name = 'tipospago'
 
 
-
 class TipoPagoCreateView(CreateView):
     model = TipoPago
     form_class = TipoPagoForm
@@ -947,13 +946,17 @@ class TipoPagoCreateView(CreateView):
     def form_valid(self, form):
         response = super().form_valid(form)
         tipo_pago = form.instance
+
         TipoPagoHistorico.objects.create(
             tipo_pago=tipo_pago,
-            fecha_inicio=timezone.now().date(),  # Fecha actual
-            monto=tipo_pago.monto
+            fecha_inicio=timezone.now().date(),
+            fecha_fin=None,  # Deja la fecha final vacía
+            monto=tipo_pago.monto,  # Utiliza el monto proporcionado en el formulario
+            Impuesto=tipo_pago.Impuesto
         )
 
         return response
+
 
 class TipoPagoActualizarView(UpdateView):
     model = TipoPago
@@ -964,21 +967,32 @@ class TipoPagoActualizarView(UpdateView):
     def form_valid(self, form):
         response = super().form_valid(form)
 
-        
         tipo_pago = form.instance
+
         registro_anterior = TipoPagoHistorico.objects.filter(tipo_pago=tipo_pago).order_by('-fecha_inicio').first()
 
         if registro_anterior:
             registro_anterior.fecha_fin = timezone.now().date() - timedelta(days=1)
             registro_anterior.save()
 
-            TipoPagoHistorico.objects.create(
-                tipo_pago=tipo_pago,
-                fecha_inicio=timezone.now().date(),
-                monto=tipo_pago.monto
-            )
+        TipoPagoHistorico.objects.create(
+            tipo_pago=tipo_pago,
+            fecha_inicio=timezone.now().date(),
+            fecha_fin=None,  # Deja la fecha final vacía
+            monto=form.cleaned_data['monto'],  # Utiliza el monto del formulario
+            Impuesto=tipo_pago.Impuesto
+        )
 
         return response
+
+
+
+
+
+
+
+
+
 
 
 class TipoPagoUpdateView(UpdateView):

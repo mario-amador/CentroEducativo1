@@ -97,10 +97,26 @@ def pasaporte_validator(value):
 
 class Impuestos(models.Model):
     NombreImpuesto=models.CharField(max_length=30)
-    Tasa= models.DecimalField(max_digits=3, decimal_places=2)
+    valor = models.DecimalField(max_digits=4, decimal_places=2)
 
     def __str__(self):
         return self.NombreImpuesto
+    
+class ImpuestoHistorico(models.Model):
+    impuesto = models.ForeignKey(Impuestos, on_delete=models.PROTECT)
+    fecha_inicio = models.DateTimeField()
+    fecha_final = models.DateTimeField(null=True, blank=True)
+    valor = models.DecimalField(max_digits=4, decimal_places=2)
+
+    def __str__(self):
+        return f"{self.impuesto.NombreImpuesto} - {self.fecha_inicio}"
+    
+class Descuento(models.Model):
+    nombre = models.CharField(max_length=20)
+    valor = models.DecimalField(max_digits=4, decimal_places=2)
+
+    def __str__(self):
+        return f"{self.nombre} - {self.valor}%"
 
 class Parentesco(models.Model):
     Parentesco=models.CharField(max_length=15)
@@ -177,7 +193,9 @@ class Seccion(models.Model):
 class TipoPago(models.Model):
     nombre = models.CharField(max_length=40)
     descripcion = models.CharField(max_length=40)
+    Impuesto  = models.ForeignKey(Impuestos, on_delete=models.PROTECT, null=True, blank=True)
     monto = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
+    
 
     def __str__(self):
         return self.nombre
@@ -186,6 +204,7 @@ class TipoPagoHistorico(models.Model):
     tipo_pago = models.ForeignKey(TipoPago, on_delete=models.CASCADE)
     fecha_inicio = models.DateTimeField()
     fecha_fin = models.DateTimeField(null=True, blank=True)
+    Impuesto  = models.ForeignKey(Impuestos, on_delete=models.PROTECT, null=True, blank=True)
     monto = models.DecimalField(max_digits=8, decimal_places=2)
     
     def __str__(self):
@@ -212,8 +231,6 @@ class Tutor(models.Model):
 
 
 class Alumno(models.Model):
-    
-
     NombresAlumno = models.CharField(max_length=20, help_text='No debe contener numeros, caracteres: 3-20 ')
     ApellidosAlumno = models.CharField(max_length=30, help_text='No debe contener numeros, caracteres: 2-30 ')
     DocumentoDPI = models.ForeignKey(DocumentoDPI, on_delete=models.CASCADE)
@@ -276,22 +293,26 @@ class TutoresAlumnos(models.Model):
 
 
     
+
 class Pago(models.Model):
     Tutor = models.ForeignKey(TutoresAlumnos, related_name='pagos_tutor', on_delete=models.CASCADE)
     Alumno = models.ForeignKey(TutoresAlumnos, related_name='pagos_alumno', on_delete=models.CASCADE)
     FechaHoraPago = models.DateTimeField(auto_now_add=True)
     TipoPago = models.ForeignKey(TipoPago, on_delete=models.CASCADE)
-    Meses= models.ForeignKey(Meses, on_delete=models.CASCADE)
-    Impuestos=models.ForeignKey(Impuestos, on_delete=models.CASCADE)
+    Meses = models.ForeignKey(Meses, on_delete=models.CASCADE)
+    Descuento = models.ForeignKey(Descuento, null=True, blank=True, on_delete=models.PROTECT)
 
     def __str__(self):
-        return f" Pago: {self.id} - Tutor: {self.Tutor.Tutor} Alumno: {self.Alumno.Alumno}, Fecha y hora: {self.FechaHoraPago} Tipo Pago: {self.TipoPago} Mes: {self.Meses}, Impuesto:{self.Impuestos}"
+        return f"Pago: {self.id} - Tutor: {self.Tutor.Tutor}, Alumno: {self.Alumno.Alumno}, Fecha y hora: {self.FechaHoraPago}, Tipo Pago: {self.TipoPago}, Mes: {self.Meses}, Descuento: {self.Descuento}"
+
     @property
     def monto(self):
         return self.TipoPago.monto
+
     @property
     def total(self):
-        return self.monto * self.Impuestos.Tasa
+        return self.monto * (1 - self.Descuento.valor / 100)
+
     
 class CentroEducativo(models.Model):
     NombreCentro= models.CharField(max_length=100)

@@ -339,6 +339,7 @@
                     <th>Tipo de Pago</th>
                     <th>Descripción</th>
                     <th>Monto</th>
+                    <th>Impuesto</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -349,6 +350,7 @@
                     <td>{{ tipopago.nombre}}</td>
                     <td>{{ tipopago.descripcion}}</td>
                     <td>{{ tipopago.monto}}</td>
+                    <td>{{ tipopago.Impuesto.NombreImpuesto}}</td>
 
                     <td>
                         <a href="{% url 'tipopago_detalle' tipopago.id %}"class="btn btn-link text-success">

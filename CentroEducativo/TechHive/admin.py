@@ -19,7 +19,7 @@ from .models import (
     TipoReporte,
     Asignatura,
     TutoresAlumnos,
-    Usuario,
+    Usuario,Impuestos,Descuento,
     Matricula,
     Seccion,
     ParametrosSAR,
@@ -28,7 +28,7 @@ from .models import (
     Actitud,
     ExpedienteMedico,
     NotasAlumnos,
-    ParcialesAcademicos,
+    ParcialesAcademicos,Pago,
     CentroEducativo
 )
 admin.site.register(Rol)
@@ -44,6 +44,7 @@ admin.site.register(Seccion)
 admin.site.register(TipoPago)
 admin.site.register(Meses)
 admin.site.register(Tutor)
+admin.site.register(Pago)
 admin.site.register(Catedratico)
 admin.site.register(CategoriaEmpleado)
 admin.site.register(Empleado)
@@ -60,6 +61,8 @@ admin.site.register(ExpedienteMedico)
 admin.site.register(NotasAlumnos)
 admin.site.register(ParcialesAcademicos)
 admin.site.register(CentroEducativo)
+admin.site.register(Impuestos)
+admin.site.register(Descuento)
 
 
 

@@ -1,7 +1,7 @@
 from ast import pattern
 from datetime import datetime
 from django import forms
-from .models import TipoPago
+from .models import TipoPago,Impuestos
 from .models import TipoPagoHistorico,Parentesco
 from ast import pattern
 from datetime import datetime
@@ -1489,13 +1489,17 @@ class FacturaForm(forms.ModelForm):
         fields=['numero_factura', 'ParametrosSAR', 'CentroEducativo', 'pago']
 
 
+from django import forms
+from .models import Pago, TutoresAlumnos, Alumno, TipoPago, Meses
+
 class PagoForm(forms.ModelForm):
-    Tutor = forms.ModelChoiceField(queryset=Tutor.objects.distinct(), label='Tutor:', widget=forms.Select(attrs={'class': 'form-control'}))
+    Tutor = forms.ModelChoiceField(queryset=TutoresAlumnos.objects.distinct(), label='Tutor:', widget=forms.Select(attrs={'class': 'form-control'}))
     Alumno = forms.ModelChoiceField(queryset=Alumno.objects.none(), label='Alumno:', widget=forms.Select(attrs={'class': 'form-control'}))
     TipoPago = forms.ModelChoiceField(queryset=TipoPago.objects.all(), label='Tipo de Pago:', widget=forms.Select(attrs={'class': 'form-control'}))
     monto = forms.DecimalField(label='Precio:', disabled=True, widget=forms.TextInput(attrs={'class': 'form-control'}))
-    def _init_(self, *args, **kwargs):
-        super()._init_(*args, **kwargs)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.fields['Tutor'].label_from_instance = lambda obj: f"{obj.NombresTutor} {obj.ApellidosTutor}"
         self.fields['Alumno'].queryset = Alumno.objects.none()
 
@@ -1509,15 +1513,14 @@ class PagoForm(forms.ModelForm):
 
     class Meta:
         model = Pago
-        fields = ['Tutor', 'Alumno', 'Meses', 'TipoPago', 'monto', 'Impuestos']
+        fields = ['Tutor', 'Alumno', 'Meses', 'TipoPago', 'monto', 'Descuento']
         labels = {
             'Meses': 'Mes a pagar:',
-            'Impuestos':'Impuesto:',
+            'Descuento': 'Descuento:',
         }
         widgets = {
             'Meses': forms.Select(attrs={'class': 'form-control'}),
-            'Impuestos': forms.Select(attrs={'class': 'form-control'}),
-            
+            'Descuento': forms.Select(attrs={'class': 'form-control'}),
         }
 
 
@@ -1626,17 +1629,21 @@ from .models import TipoPago
 class TipoPagoEditForm(forms.ModelForm):
     class Meta:
         model = TipoPago
-        fields = ['nombre', 'descripcion', 'monto']
+        fields = ['nombre', 'descripcion', 'Impuesto', 'monto']
         labels = {
             'nombre': 'Nombre del pago',
             'descripcion': 'Descripción del pago',
+            'Impuesto': 'Impuesto',
             'monto': 'Precio del pago'
         }
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'form-control'}),
             'descripcion': forms.TextInput(attrs={'class': 'form-control'}),
-            'monto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01', 'readonly': 'readonly'}),
+            'Impuesto': forms.Select(attrs={'class': 'form-control', 'readonly': 'readonly'}),  # Campo de solo lectura
+            'monto': forms.NumberInput(attrs={'class': 'form-control', 'readonly': 'readonly'}),
         }
+
+
 
     def clean_nombre(self):
         nombre = self.cleaned_data['nombre']
@@ -1672,17 +1679,20 @@ class TipoPagoEditForm(forms.ModelForm):
 class TipoPagoForm(forms.ModelForm):
     class Meta:
         model = TipoPago
-        fields = ['nombre', 'descripcion', 'monto']
+        fields = ['nombre', 'descripcion', 'Impuesto', 'monto']  # Asegúrate de usar 'Impuesto' (mayúscula) para coincidir con el nombre del campo en el modelo
         labels = {
             'nombre': 'Nombre del pago',
             'descripcion': 'Descripción del pago',
+            'Impuesto': 'Impuesto',  # Usando 'Impuesto' en mayúscula para coincidir con el nombre del campo en el modelo
             'monto': 'Precio del pago'
         }
         widgets = {
             'nombre': forms.TextInput(attrs={'class': 'form-control'}),
             'descripcion': forms.TextInput(attrs={'class': 'form-control'}),
+            'Impuesto': forms.Select(attrs={'class': 'form-control'}),
             'monto': forms.NumberInput(attrs={'class': 'form-control', 'step': '0.01'}),
         }
+
 
     def clean_nombre(self):
         nombre = self.cleaned_data['nombre']
@@ -1727,24 +1737,33 @@ class TipoPagoForm(forms.ModelForm):
 class TipoPagoActualizarForm(forms.ModelForm):
     class Meta:
         model = TipoPago
-        fields = ['nombre', 'monto']  # Campos que se pueden actualizar
+        fields = ['nombre', 'Impuesto', 'monto']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         instance = kwargs.get('instance')
-        
+
         if instance:
             self.fields['nombre'] = forms.CharField(
                 initial=instance.nombre,
                 widget=forms.TextInput(attrs={'class': 'form-control', 'readonly': 'readonly'})
             )
-            
+            self.fields['Impuesto'] = forms.ModelChoiceField(
+                queryset=Impuestos.objects.all(),
+                initial=instance.Impuesto,
+                widget=forms.Select(attrs={'class': 'form-control', 'id': 'id_impuesto'}),
+            )
+
         self.fields['monto'] = forms.DecimalField(
             widget=forms.TextInput(attrs={'class': 'form-control'}),
             label='Nuevo Monto',
             help_text='Ingrese el nuevo monto.',
-            validators=[self.validate_monto]
         )
+
+
+
+
+
 
     def validate_monto(self, value):
         if value <= 0:
